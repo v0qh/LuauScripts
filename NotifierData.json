@@ -37,6 +37,10 @@ local Emojis = {
 	["Zombie"] = "1459722326575812668",
 }
 
+local Branding = { 
+	["Footer"] = "https://media.discordapp.net/attachments/1457535472413970503/1459695036274049261/Comis-removebg-preview.png?ex=69643670&is=6962e4f0&hm=acccc1e54c8f985ea75c00a41b2aa220a943f2fb1d6dce7e9abc55358027597f&=&format=webp&quality=lossless&width=625&height=625"
+}
+
 local Highlights = {
 	["La Grande Combinasion"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/d/d8/Carti.png/revision/latest?cb=20250909171004",
