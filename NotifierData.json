@@ -163,7 +163,7 @@ local Highlights = {
 		Min = nil,
 	},
 	["Los 67"] = {
-		Icon = "https://static.wikia.nocookie.net/stealabr/images/e/e0/Chilin.png/revision/latest?cb=20251226231712",
+		Icon = "https://static.wikia.nocookie.net/stealabr/images/d/db/Los-67.png/revision/latest?cb=20251103171526",
 		Min = nil,
 	},
 	["La Secret Combinasion"] = {
