@@ -116,11 +116,11 @@ local Highlights = {
 	},
 	["Los Chicleteiras"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/4/4d/Los_ditos.png/revision/latest?cb=20251221211400",
-		Min = nil,
+		Min = 50000000,
 	},
 	["67"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/4/40/Fourtyone.png/revision/latest?cb=20251014024859",
-		Min = nil,
+		Min = 100000000,
 	},
 	["Las Sis"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/e/e8/Las_Sis.png/revision/latest?cb=20250914042020",
