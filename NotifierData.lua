@@ -367,3 +367,9 @@ local Highlights = {
 		Min = nil,
 	},
 }
+
+return {
+    Emojis = Emojis,
+    Highlights = Highlights,
+    Branding = Branding
+}
