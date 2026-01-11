@@ -38,7 +38,7 @@ local Emojis = {
 }
 
 local Branding = { 
-	["Footer"] = "https://media.discordapp.net/attachments/1457535472413970503/1459695036274049261/Comis-removebg-preview.png?ex=69643670&is=6962e4f0&hm=acccc1e54c8f985ea75c00a41b2aa220a943f2fb1d6dce7e9abc55358027597f&=&format=webp&quality=lossless&width=625&height=625"
+	["Footer"] = "https://i.imgur.com/pcouB43_d.webp?maxwidth=760&fidelity=grand"
 }
 
 local Highlights = {
@@ -251,7 +251,7 @@ local Highlights = {
 		Min = nil,
 	},
 	["Orcaledon"] = {
-		Icon = "cdnlihttps://static.wikia.nocookie.net/stealabr/images/a/a6/Orcaledon.png/revision/latest?cb=20251119170121nk",
+		Icon = "https://static.wikia.nocookie.net/stealabr/images/a/a6/Orcaledon.png/revision/latest?cb=20251119170121nk",
 		Min = nil,
 	},
 	["Los Burritos"] = {
