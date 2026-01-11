@@ -342,6 +342,14 @@ local Highlights = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/8/85/GingerGerat.png/revision/latest?cb=20251227115546",
 		Min = nil,
 	},
+	["Tuff Toucan"] = {
+		Icon = "https://static.wikia.nocookie.net/stealabr/images/3/3e/TuffToucan.png/revision/latest?cb=20260101134815",
+		Min = nil,
+	},
+	["Cerberus"] = {
+		Icon = "https://static.wikia.nocookie.net/stealabr/images/4/45/Cerberus.png/revision/latest?cb=20260109170320",
+		Min = nil,
+	},
 	["Skibidi Toilet"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/3/34/Skibidi_toilet.png/revision/latest?cb=20251227221221",
 		Min = nil,
