@@ -56,7 +56,7 @@ local Highlights = {
 	},
 	["Los Combinasionas"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/3/36/Stop_taking_my_chips_im_just_a_baybeh.png/revision/latest?cb=20250909223756",
-		Min = 15000000,
+		Min = 100000000,
 	},
 	["Dragon Cannelloni"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/3/31/Nah_uh.png/revision/latest?cb=20250919124457",
@@ -64,7 +64,7 @@ local Highlights = {
 	},
 	["Los Hotspotsitos"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/6/69/Loshotspotsitos.png/revision/latest?cb=20251226204212",
-		Min = nil,
+		Min = 50000000,
 	},
 	["Esok Sekolah"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/2/2a/EsokSekolah2.png/revision/latest?cb=20250819001020",
@@ -92,7 +92,7 @@ local Highlights = {
 	},
 	["Los Nooo My Hotspotsitos"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/c/cb/LosNooMyHotspotsitos.png/revision/latest?cb=20250903124000",
-		Min = nil,
+		Min = 75000000,
 	},
 	["Trenostruzzo Turbo 4000"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/b/b0/Trenostruzzo4000.png/revision/latest?cb=20250920025139",
@@ -256,7 +256,7 @@ local Highlights = {
 	},
 	["Los Burritos"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/9/97/LosBurritos.png/revision/latest?cb=20251123123907",
-		Min = 50000000,
+		Min = 150000000,
 	},
 	["Fishino Clownino"] = {
 		Icon = "https://static.wikia.nocookie.net/stealabr/images/d/d6/Fishino_Clownino.png/revision/latest?cb=20251123122601",
