@@ -5,15 +5,14 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
 local player = Players.LocalPlayer
-local pg = player:WaitForChild("PlayerGui")
 
 local RoSense = {
     config = {},
     tabs = {},
     currentTab = nil,
     minimized = false,
-    tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-    fastTween = TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+    tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+    fastTween = TweenInfo.new(0.12, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 }
 
 local function tween(obj, props, info)
@@ -33,22 +32,6 @@ local function create(class, props)
     return obj
 end
 
-local function createCorner(parent, radius)
-    return create("UICorner", {
-        CornerRadius = UDim.new(0, radius or 10),
-        Parent = parent
-    })
-end
-
-local function createStroke(parent, color, thickness, transparency)
-    return create("UIStroke", {
-        Color = color or Color3.fromRGB(100, 70, 180),
-        Thickness = thickness or 1,
-        Transparency = transparency or 0.5,
-        Parent = parent
-    })
-end
-
 local sg = create("ScreenGui", {
     Name = "RoSense",
     Parent = game:GetService("CoreGui"),
@@ -56,243 +39,201 @@ local sg = create("ScreenGui", {
     ResetOnSpawn = false
 })
 
-local main = create("Frame", {
-    Name = "Main",
-    Size = UDim2.new(0, 720, 0, 480),
-    Position = UDim2.new(0.5, -360, 0.5, -240),
-    BackgroundColor3 = Color3.fromRGB(12, 12, 16),
-    BackgroundTransparency = 0.08,
+local statsBar = create("Frame", {
+    Name = "StatsBar",
+    Size = UDim2.new(0, 140, 0, 26),
+    Position = UDim2.new(0.5, -70, 0, 10),
+    BackgroundColor3 = Color3.fromRGB(8, 8, 12),
+    BackgroundTransparency = 0.15,
     BorderSizePixel = 0,
     Parent = sg
 })
 
-createCorner(main, 16)
-createStroke(main, Color3.fromRGB(100, 70, 180), 1.2, 0.4)
-
-local mainShadow = create("ImageLabel", {
-    Size = UDim2.new(1, 40, 1, 40),
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    AnchorPoint = Vector2.new(0.5, 0.5),
-    BackgroundTransparency = 1,
-    Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
-    ImageColor3 = Color3.fromRGB(0, 0, 0),
-    ImageTransparency = 0.7,
-    ScaleType = Enum.ScaleType.Slice,
-    SliceCenter = Rect.new(10, 10, 118, 118),
-    Parent = main,
-    ZIndex = 0
-})
-
-local topBar = create("Frame", {
-    Name = "TopBar",
-    Size = UDim2.new(1, 0, 0, 50),
-    BackgroundColor3 = Color3.fromRGB(18, 18, 24),
-    BackgroundTransparency = 0.2,
-    BorderSizePixel = 0,
-    Parent = main
-})
-
-createCorner(topBar, 16)
-
-local topBarMask = create("Frame", {
-    Size = UDim2.new(1, 0, 0, 16),
-    Position = UDim2.new(0, 0, 1, -16),
-    BackgroundColor3 = Color3.fromRGB(18, 18, 24),
-    BackgroundTransparency = 0.2,
-    BorderSizePixel = 0,
-    Parent = topBar
-})
-
-local title = create("TextLabel", {
-    Name = "Title",
-    Size = UDim2.new(0, 150, 1, 0),
-    Position = UDim2.new(0, 20, 0, 0),
-    BackgroundTransparency = 1,
-    Text = "RoSense",
-    Font = Enum.Font.GothamBold,
-    TextSize = 20,
-    TextColor3 = Color3.fromRGB(140, 110, 220),
-    TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = topBar
-})
-
-local statsContainer = create("Frame", {
-    Name = "Stats",
-    Size = UDim2.new(0, 160, 0, 32),
-    Position = UDim2.new(1, -170, 0.5, -16),
-    BackgroundColor3 = Color3.fromRGB(22, 22, 30),
-    BackgroundTransparency = 0.3,
-    BorderSizePixel = 0,
-    Parent = topBar
-})
-
-createCorner(statsContainer, 8)
-createStroke(statsContainer, Color3.fromRGB(80, 60, 150), 1, 0.6)
+create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = statsBar})
+create("UIStroke", {Color = Color3.fromRGB(40, 40, 50), Thickness = 1, Transparency = 0.7, Parent = statsBar})
 
 local fpsLabel = create("TextLabel", {
-    Name = "FPS",
     Size = UDim2.new(0.5, -4, 1, 0),
-    Position = UDim2.new(0, 8, 0, 0),
+    Position = UDim2.new(0, 6, 0, 0),
     BackgroundTransparency = 1,
-    Text = "60 FPS",
+    Text = "60",
     Font = Enum.Font.GothamMedium,
-    TextSize = 13,
-    TextColor3 = Color3.fromRGB(180, 180, 200),
+    TextSize = 11,
+    TextColor3 = Color3.fromRGB(160, 160, 170),
     TextXAlignment = Enum.TextXAlignment.Left,
-    Parent = statsContainer
+    Parent = statsBar
 })
 
 local pingLabel = create("TextLabel", {
-    Name = "Ping",
     Size = UDim2.new(0.5, -4, 1, 0),
     Position = UDim2.new(0.5, 0, 0, 0),
     BackgroundTransparency = 1,
     Text = "0ms",
     Font = Enum.Font.GothamMedium,
-    TextSize = 13,
-    TextColor3 = Color3.fromRGB(180, 180, 200),
+    TextSize = 11,
+    TextColor3 = Color3.fromRGB(160, 160, 170),
     TextXAlignment = Enum.TextXAlignment.Right,
-    Parent = statsContainer
+    Parent = statsBar
 })
 
-create("UIPadding", {
-    PaddingRight = UDim.new(0, 8),
-    Parent = statsContainer
-})
+create("UIPadding", {PaddingRight = UDim.new(0, 6), Parent = statsBar})
 
-local minimizeBtn = create("TextButton", {
-    Name = "Minimize",
-    Size = UDim2.new(0, 36, 0, 36),
-    Position = UDim2.new(1, -44, 0.5, -18),
-    BackgroundColor3 = Color3.fromRGB(25, 25, 35),
-    BackgroundTransparency = 0.2,
+local main = create("Frame", {
+    Name = "Main",
+    Size = UDim2.new(0, 560, 0, 340),
+    Position = UDim2.new(0.5, -280, 0.5, -170),
+    BackgroundColor3 = Color3.fromRGB(10, 10, 14),
+    BackgroundTransparency = 0.12,
     BorderSizePixel = 0,
-    Text = "─",
-    Font = Enum.Font.GothamBold,
-    TextSize = 18,
-    TextColor3 = Color3.fromRGB(180, 180, 200),
+    Parent = sg
+})
+
+create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = main})
+create("UIStroke", {Color = Color3.fromRGB(45, 45, 55), Thickness = 1, Transparency = 0.6, Parent = main})
+
+local topBar = create("Frame", {
+    Size = UDim2.new(1, 0, 0, 36),
+    BackgroundColor3 = Color3.fromRGB(14, 14, 18),
+    BackgroundTransparency = 0.3,
+    BorderSizePixel = 0,
+    Parent = main
+})
+
+create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = topBar})
+
+local topBarBase = create("Frame", {
+    Size = UDim2.new(1, 0, 0, 8),
+    Position = UDim2.new(0, 0, 1, -8),
+    BackgroundColor3 = Color3.fromRGB(14, 14, 18),
+    BackgroundTransparency = 0.3,
+    BorderSizePixel = 0,
     Parent = topBar
 })
 
-createCorner(minimizeBtn, 8)
+local title = create("TextLabel", {
+    Size = UDim2.new(0, 100, 1, 0),
+    Position = UDim2.new(0, 12, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "RoSense",
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextColor3 = Color3.fromRGB(200, 200, 210),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = topBar
+})
+
+local minimizeBtn = create("TextButton", {
+    Size = UDim2.new(0, 24, 0, 24),
+    Position = UDim2.new(1, -30, 0.5, -12),
+    BackgroundColor3 = Color3.fromRGB(20, 20, 26),
+    BackgroundTransparency = 0.4,
+    BorderSizePixel = 0,
+    Text = "_",
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextColor3 = Color3.fromRGB(160, 160, 170),
+    Parent = topBar
+})
+
+create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = minimizeBtn})
 
 minimizeBtn.MouseEnter:Connect(function()
-    tween(minimizeBtn, {BackgroundColor3 = Color3.fromRGB(100, 70, 180), BackgroundTransparency = 0}, RoSense.fastTween)
+    tween(minimizeBtn, {BackgroundColor3 = Color3.fromRGB(70, 50, 110)}, RoSense.fastTween)
 end)
 
 minimizeBtn.MouseLeave:Connect(function()
-    tween(minimizeBtn, {BackgroundColor3 = Color3.fromRGB(25, 25, 35), BackgroundTransparency = 0.2}, RoSense.fastTween)
+    tween(minimizeBtn, {BackgroundColor3 = Color3.fromRGB(20, 20, 26)}, RoSense.fastTween)
 end)
 
 minimizeBtn.MouseButton1Click:Connect(function()
     RoSense.minimized = not RoSense.minimized
     if RoSense.minimized then
-        tween(main, {Size = UDim2.new(0, 720, 0, 50)})
-        minimizeBtn.Text = "□"
+        tween(main, {Size = UDim2.new(0, 560, 0, 36)})
+        minimizeBtn.Text = "+"
     else
-        tween(main, {Size = UDim2.new(0, 720, 0, 480)})
-        minimizeBtn.Text = "─"
+        tween(main, {Size = UDim2.new(0, 560, 0, 340)})
+        minimizeBtn.Text = "_"
     end
 end)
 
-local contentArea = create("Frame", {
-    Name = "Content",
-    Size = UDim2.new(1, -24, 1, -66),
-    Position = UDim2.new(0, 12, 0, 58),
+local content = create("Frame", {
+    Size = UDim2.new(1, -16, 1, -48),
+    Position = UDim2.new(0, 8, 0, 40),
     BackgroundTransparency = 1,
     Parent = main
 })
 
-local tabBar = create("ScrollingFrame", {
-    Name = "TabBar",
-    Size = UDim2.new(0, 160, 1, 0),
-    BackgroundColor3 = Color3.fromRGB(16, 16, 22),
-    BackgroundTransparency = 0.3,
+local sidebar = create("Frame", {
+    Size = UDim2.new(0, 110, 1, 0),
+    BackgroundTransparency = 1,
+    Parent = content
+})
+
+local tabScroll = create("ScrollingFrame", {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
     BorderSizePixel = 0,
-    ScrollBarThickness = 4,
-    ScrollBarImageColor3 = Color3.fromRGB(100, 70, 180),
+    ScrollBarThickness = 3,
+    ScrollBarImageColor3 = Color3.fromRGB(70, 50, 110),
     CanvasSize = UDim2.new(0, 0, 0, 0),
     AutomaticCanvasSize = Enum.AutomaticSize.Y,
-    Parent = contentArea
+    Parent = sidebar
 })
 
-createCorner(tabBar, 12)
+create("UIListLayout", {Padding = UDim.new(0, 4), Parent = tabScroll})
+create("UIPadding", {PaddingTop = UDim.new(0, 2), Parent = tabScroll})
 
-local tabList = create("UIListLayout", {
-    Padding = UDim.new(0, 6),
-    Parent = tabBar
-})
-
-create("UIPadding", {
-    PaddingLeft = UDim.new(0, 8),
-    PaddingRight = UDim.new(0, 8),
-    PaddingTop = UDim.new(0, 8),
-    PaddingBottom = UDim.new(0, 8),
-    Parent = tabBar
-})
-
-local tabContainer = create("Frame", {
-    Name = "TabContainer",
-    Size = UDim2.new(1, -172, 1, 0),
-    Position = UDim2.new(0, 172, 0, 0),
-    BackgroundColor3 = Color3.fromRGB(16, 16, 22),
-    BackgroundTransparency = 0.3,
+local tabContent = create("Frame", {
+    Size = UDim2.new(1, -118, 1, 0),
+    Position = UDim2.new(0, 118, 0, 0),
+    BackgroundColor3 = Color3.fromRGB(12, 12, 16),
+    BackgroundTransparency = 0.5,
     BorderSizePixel = 0,
-    Parent = contentArea
+    Parent = content
 })
 
-createCorner(tabContainer, 12)
+create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = tabContent})
 
 local componentLib = {}
 
 function componentLib.Toggle(props)
     local container = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 28),
-        BackgroundTransparency = 0.4,
-        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundTransparency = 1,
         Parent = props.parent
     })
     
-    createCorner(container, 8)
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 14),
-        PaddingRight = UDim.new(0, 14),
-        Parent = container
-    })
-    
     local label = create("TextLabel", {
-        Size = UDim2.new(1, -56, 1, 0),
+        Size = UDim2.new(1, -42, 1, 0),
         BackgroundTransparency = 1,
         Text = props.text or "Toggle",
-        Font = Enum.Font.GothamMedium,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(220, 220, 230),
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(200, 200, 210),
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = container
     })
     
     local toggle = create("Frame", {
-        Size = UDim2.new(0, 44, 0, 24),
-        Position = UDim2.new(1, -44, 0.5, -12),
-        BackgroundColor3 = Color3.fromRGB(30, 30, 40),
+        Size = UDim2.new(0, 34, 0, 18),
+        Position = UDim2.new(1, -34, 0.5, -9),
+        BackgroundColor3 = Color3.fromRGB(25, 25, 32),
         BorderSizePixel = 0,
         Parent = container
     })
     
-    createCorner(toggle, 12)
-    createStroke(toggle, Color3.fromRGB(60, 60, 80), 1.5, 0.5)
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = toggle})
+    create("UIStroke", {Color = Color3.fromRGB(40, 40, 50), Thickness = 1, Transparency = 0.7, Parent = toggle})
     
     local knob = create("Frame", {
-        Size = UDim2.new(0, 18, 0, 18),
-        Position = UDim2.new(0, 3, 0.5, -9),
-        BackgroundColor3 = Color3.fromRGB(200, 200, 210),
+        Size = UDim2.new(0, 14, 0, 14),
+        Position = UDim2.new(0, 2, 0.5, -7),
+        BackgroundColor3 = Color3.fromRGB(160, 160, 170),
         BorderSizePixel = 0,
         Parent = toggle
     })
     
-    createCorner(knob, 9)
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = knob})
     
     local btn = create("TextButton", {
         Size = UDim2.new(1, 0, 1, 0),
@@ -305,11 +246,11 @@ function componentLib.Toggle(props)
     
     local function update()
         if enabled then
-            tween(toggle, {BackgroundColor3 = Color3.fromRGB(100, 70, 180)})
-            tween(knob, {Position = UDim2.new(1, -21, 0.5, -9), BackgroundColor3 = Color3.fromRGB(255, 255, 255)})
+            tween(toggle, {BackgroundColor3 = Color3.fromRGB(70, 50, 110)})
+            tween(knob, {Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.fromRGB(230, 230, 240)})
         else
-            tween(toggle, {BackgroundColor3 = Color3.fromRGB(30, 30, 40)})
-            tween(knob, {Position = UDim2.new(0, 3, 0.5, -9), BackgroundColor3 = Color3.fromRGB(200, 200, 210)})
+            tween(toggle, {BackgroundColor3 = Color3.fromRGB(25, 25, 32)})
+            tween(knob, {Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Color3.fromRGB(160, 160, 170)})
         end
         if props.callback then
             props.callback(enabled)
@@ -327,26 +268,26 @@ end
 
 function componentLib.Button(props)
     local btn = create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 38),
-        BackgroundColor3 = Color3.fromRGB(25, 25, 35),
-        BackgroundTransparency = 0.3,
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         Text = props.text or "Button",
-        Font = Enum.Font.GothamSemibold,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(220, 220, 230),
+        Font = Enum.Font.GothamMedium,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(200, 200, 210),
         Parent = props.parent
     })
     
-    createCorner(btn, 8)
-    createStroke(btn, Color3.fromRGB(100, 70, 180), 1.2, 0.5)
+    create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = btn})
+    create("UIStroke", {Color = Color3.fromRGB(50, 50, 60), Thickness = 1, Transparency = 0.6, Parent = btn})
     
     btn.MouseEnter:Connect(function()
-        tween(btn, {BackgroundColor3 = Color3.fromRGB(100, 70, 180), BackgroundTransparency = 0}, RoSense.fastTween)
+        tween(btn, {BackgroundColor3 = Color3.fromRGB(70, 50, 110), BackgroundTransparency = 0}, RoSense.fastTween)
     end)
     
     btn.MouseLeave:Connect(function()
-        tween(btn, {BackgroundColor3 = Color3.fromRGB(25, 25, 35), BackgroundTransparency = 0.3}, RoSense.fastTween)
+        tween(btn, {BackgroundColor3 = Color3.fromRGB(18, 18, 24), BackgroundTransparency = 0.5}, RoSense.fastTween)
     end)
     
     btn.MouseButton1Click:Connect(function()
@@ -360,76 +301,70 @@ end
 
 function componentLib.Slider(props)
     local container = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 54),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 28),
-        BackgroundTransparency = 0.4,
-        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 40),
+        BackgroundTransparency = 1,
         Parent = props.parent
     })
     
-    createCorner(container, 8)
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 14),
-        PaddingRight = UDim.new(0, 14),
-        PaddingTop = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10),
+    local header = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 16),
+        BackgroundTransparency = 1,
         Parent = container
     })
     
     local label = create("TextLabel", {
-        Size = UDim2.new(1, -60, 0, 16),
+        Size = UDim2.new(1, -40, 1, 0),
         BackgroundTransparency = 1,
         Text = props.text or "Slider",
-        Font = Enum.Font.GothamMedium,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(220, 220, 230),
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(200, 200, 210),
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = container
+        Parent = header
     })
     
     local value = create("TextLabel", {
-        Size = UDim2.new(0, 50, 0, 16),
-        Position = UDim2.new(1, -50, 0, 0),
+        Size = UDim2.new(0, 35, 1, 0),
+        Position = UDim2.new(1, -35, 0, 0),
         BackgroundTransparency = 1,
         Text = tostring(props.default or props.min or 0),
         Font = Enum.Font.GothamBold,
-        TextSize = 13,
-        TextColor3 = Color3.fromRGB(140, 110, 220),
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(150, 140, 180),
         TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = container
+        Parent = header
     })
     
-    local sliderBg = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 8),
-        Position = UDim2.new(0, 0, 1, -12),
-        BackgroundColor3 = Color3.fromRGB(30, 30, 40),
+    local track = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 6),
+        Position = UDim2.new(0, 0, 0, 22),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 26),
         BorderSizePixel = 0,
         Parent = container
     })
     
-    createCorner(sliderBg, 4)
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = track})
     
     local fill = create("Frame", {
         Size = UDim2.new(0.5, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(100, 70, 180),
+        BackgroundColor3 = Color3.fromRGB(70, 50, 110),
         BorderSizePixel = 0,
-        Parent = sliderBg
+        Parent = track
     })
     
-    createCorner(fill, 4)
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = fill})
     
     local knob = create("Frame", {
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0.5, -8, 0.5, -8),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        Size = UDim2.new(0, 12, 0, 12),
+        Position = UDim2.new(0.5, -6, 0.5, -6),
+        BackgroundColor3 = Color3.fromRGB(230, 230, 240),
         BorderSizePixel = 0,
-        Parent = sliderBg,
-        ZIndex = 2
+        ZIndex = 2,
+        Parent = track
     })
     
-    createCorner(knob, 8)
-    createStroke(knob, Color3.fromRGB(100, 70, 180), 2, 0.3)
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = knob})
+    create("UIStroke", {Color = Color3.fromRGB(70, 50, 110), Thickness = 1.5, Transparency = 0.4, Parent = knob})
     
     local min = props.min or 0
     local max = props.max or 100
@@ -437,24 +372,24 @@ function componentLib.Slider(props)
     local dragging = false
     
     local function update(input)
-        local pos = math.clamp((input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
+        local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
         current = math.floor(min + (max - min) * pos)
         value.Text = tostring(current)
         tween(fill, {Size = UDim2.new(pos, 0, 1, 0)}, RoSense.fastTween)
-        tween(knob, {Position = UDim2.new(pos, -8, 0.5, -8)}, RoSense.fastTween)
+        tween(knob, {Position = UDim2.new(pos, -6, 0.5, -6)}, RoSense.fastTween)
         if props.callback then
             props.callback(current)
         end
     end
     
-    sliderBg.InputBegan:Connect(function(input)
+    track.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             update(input)
         end
     end)
     
-    sliderBg.InputEnded:Connect(function(input)
+    track.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
@@ -468,116 +403,101 @@ function componentLib.Slider(props)
     
     local initPos = (current - min) / (max - min)
     fill.Size = UDim2.new(initPos, 0, 1, 0)
-    knob.Position = UDim2.new(initPos, -8, 0.5, -8)
+    knob.Position = UDim2.new(initPos, -6, 0.5, -6)
     
     return container
 end
 
 function componentLib.Dropdown(props)
     local container = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 40),
+        Size = UDim2.new(1, 0, 0, 28),
         BackgroundTransparency = 1,
-        Parent = props.parent,
         ClipsDescendants = false,
-        ZIndex = 5
+        ZIndex = 5,
+        Parent = props.parent
     })
     
     local dropdown = create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(25, 25, 35),
-        BackgroundTransparency = 0.3,
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BackgroundTransparency = 0.5,
         BorderSizePixel = 0,
         Text = "",
         Parent = container
     })
     
-    createCorner(dropdown, 8)
-    createStroke(dropdown, Color3.fromRGB(70, 60, 120), 1, 0.5)
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 14),
-        PaddingRight = UDim.new(0, 14),
-        Parent = dropdown
-    })
+    create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = dropdown})
+    create("UIStroke", {Color = Color3.fromRGB(50, 50, 60), Thickness = 1, Transparency = 0.6, Parent = dropdown})
+    create("UIPadding", {PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), Parent = dropdown})
     
     local label = create("TextLabel", {
-        Size = UDim2.new(1, -30, 1, 0),
+        Size = UDim2.new(1, -20, 1, 0),
         BackgroundTransparency = 1,
         Text = props.options[1] or "Select",
-        Font = Enum.Font.GothamMedium,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(220, 220, 230),
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(200, 200, 210),
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = dropdown
     })
     
     local arrow = create("TextLabel", {
-        Size = UDim2.new(0, 20, 1, 0),
-        Position = UDim2.new(1, -20, 0, 0),
+        Size = UDim2.new(0, 14, 1, 0),
+        Position = UDim2.new(1, -14, 0, 0),
         BackgroundTransparency = 1,
         Text = "▼",
         Font = Enum.Font.GothamBold,
-        TextSize = 10,
-        TextColor3 = Color3.fromRGB(140, 110, 220),
+        TextSize = 8,
+        TextColor3 = Color3.fromRGB(150, 140, 180),
         Parent = dropdown
     })
     
-    local listContainer = create("Frame", {
+    local list = create("Frame", {
         Size = UDim2.new(1, 0, 0, 0),
-        Position = UDim2.new(0, 0, 1, 4),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 28),
-        BackgroundTransparency = 0.05,
+        Position = UDim2.new(0, 0, 1, 3),
+        BackgroundColor3 = Color3.fromRGB(16, 16, 20),
+        BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
         Visible = false,
         ClipsDescendants = true,
-        Parent = container,
-        ZIndex = 10
+        ZIndex = 10,
+        Parent = container
     })
     
-    createCorner(listContainer, 8)
-    createStroke(listContainer, Color3.fromRGB(100, 70, 180), 1.2, 0.3)
+    create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = list})
+    create("UIStroke", {Color = Color3.fromRGB(60, 60, 70), Thickness = 1, Transparency = 0.5, Parent = list})
     
-    local listLayout = create("UIListLayout", {
-        Padding = UDim.new(0, 2),
-        Parent = listContainer
-    })
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 4),
-        PaddingRight = UDim.new(0, 4),
-        PaddingTop = UDim.new(0, 4),
-        PaddingBottom = UDim.new(0, 4),
-        Parent = listContainer
-    })
+    local listLayout = create("UIListLayout", {Padding = UDim.new(0, 2), Parent = list})
+    create("UIPadding", {PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3), PaddingTop = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3), Parent = list})
     
     for _, opt in ipairs(props.options) do
         local optBtn = create("TextButton", {
-            Size = UDim2.new(1, 0, 0, 32),
-            BackgroundColor3 = Color3.fromRGB(25, 25, 35),
-            BackgroundTransparency = 0.6,
+            Size = UDim2.new(1, 0, 0, 24),
+            BackgroundColor3 = Color3.fromRGB(20, 20, 26),
+            BackgroundTransparency = 0.7,
             BorderSizePixel = 0,
             Text = opt,
-            Font = Enum.Font.GothamMedium,
-            TextSize = 13,
-            TextColor3 = Color3.fromRGB(200, 200, 210),
-            Parent = listContainer,
-            ZIndex = 11
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextColor3 = Color3.fromRGB(190, 190, 200),
+            ZIndex = 11,
+            Parent = list
         })
         
-        createCorner(optBtn, 6)
+        create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = optBtn})
         
         optBtn.MouseEnter:Connect(function()
-            tween(optBtn, {BackgroundColor3 = Color3.fromRGB(100, 70, 180), BackgroundTransparency = 0}, RoSense.fastTween)
+            tween(optBtn, {BackgroundColor3 = Color3.fromRGB(70, 50, 110), BackgroundTransparency = 0}, RoSense.fastTween)
         end)
         
         optBtn.MouseLeave:Connect(function()
-            tween(optBtn, {BackgroundColor3 = Color3.fromRGB(25, 25, 35), BackgroundTransparency = 0.6}, RoSense.fastTween)
+            tween(optBtn, {BackgroundColor3 = Color3.fromRGB(20, 20, 26), BackgroundTransparency = 0.7}, RoSense.fastTween)
         end)
         
         optBtn.MouseButton1Click:Connect(function()
             label.Text = opt
-            listContainer.Visible = false
-            tween(listContainer, {Size = UDim2.new(1, 0, 0, 0)})
+            list.Visible = false
+            tween(list, {Size = UDim2.new(1, 0, 0, 0)})
             tween(arrow, {Rotation = 0})
             if props.callback then
                 props.callback(opt)
@@ -586,13 +506,13 @@ function componentLib.Dropdown(props)
     end
     
     dropdown.MouseButton1Click:Connect(function()
-        listContainer.Visible = not listContainer.Visible
-        if listContainer.Visible then
-            local height = math.min(#props.options * 34 + 8, 200)
-            tween(listContainer, {Size = UDim2.new(1, 0, 0, height)})
+        list.Visible = not list.Visible
+        if list.Visible then
+            local height = math.min(#props.options * 26 + 6, 150)
+            tween(list, {Size = UDim2.new(1, 0, 0, height)})
             tween(arrow, {Rotation = 180})
         else
-            tween(listContainer, {Size = UDim2.new(1, 0, 0, 0)})
+            tween(list, {Size = UDim2.new(1, 0, 0, 0)})
             tween(arrow, {Rotation = 0})
         end
     end)
@@ -602,50 +522,40 @@ end
 
 function componentLib.ColorPicker(props)
     local container = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 28),
-        BackgroundTransparency = 0.4,
-        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundTransparency = 1,
         Parent = props.parent
     })
     
-    createCorner(container, 8)
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 14),
-        PaddingRight = UDim.new(0, 14),
-        Parent = container
-    })
-    
     local label = create("TextLabel", {
-        Size = UDim2.new(1, -56, 1, 0),
+        Size = UDim2.new(1, -38, 1, 0),
         BackgroundTransparency = 1,
         Text = props.text or "Color",
-        Font = Enum.Font.GothamMedium,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(220, 220, 230),
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(200, 200, 210),
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = container
     })
     
     local preview = create("TextButton", {
-        Size = UDim2.new(0, 44, 0, 26),
-        Position = UDim2.new(1, -44, 0.5, -13),
-        BackgroundColor3 = props.default or Color3.fromRGB(100, 70, 180),
+        Size = UDim2.new(0, 32, 0, 20),
+        Position = UDim2.new(1, -32, 0.5, -10),
+        BackgroundColor3 = props.default or Color3.fromRGB(70, 50, 110),
         BorderSizePixel = 0,
         Text = "",
         Parent = container
     })
     
-    createCorner(preview, 7)
-    createStroke(preview, Color3.fromRGB(255, 255, 255), 2, 0.4)
+    create("UICorner", {CornerRadius = UDim.new(0, 4), Parent = preview})
+    create("UIStroke", {Color = Color3.fromRGB(200, 200, 210), Thickness = 1, Transparency = 0.5, Parent = preview})
     
     preview.MouseEnter:Connect(function()
-        tween(preview, {Size = UDim2.new(0, 48, 0, 30)}, RoSense.fastTween)
+        tween(preview, {Size = UDim2.new(0, 36, 0, 24)}, RoSense.fastTween)
     end)
     
     preview.MouseLeave:Connect(function()
-        tween(preview, {Size = UDim2.new(0, 44, 0, 26)}, RoSense.fastTween)
+        tween(preview, {Size = UDim2.new(0, 32, 0, 20)}, RoSense.fastTween)
     end)
     
     preview.MouseButton1Click:Connect(function()
@@ -658,78 +568,59 @@ function componentLib.ColorPicker(props)
 end
 
 function RoSense:CreateTab(name, icon)
-    local tab = {
-        name = name,
-        button = nil,
-        container = nil,
-        content = {}
-    }
+    local tab = {name = name, button = nil, container = nil}
     
     local btn = create("TextButton", {
-        Size = UDim2.new(1, 0, 0, 44),
-        BackgroundColor3 = Color3.fromRGB(22, 22, 30),
-        BackgroundTransparency = 0.5,
+        Size = UDim2.new(1, 0, 0, 32),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BackgroundTransparency = 0.6,
         BorderSizePixel = 0,
         Text = "",
-        Parent = tabBar
+        Parent = tabScroll
     })
     
-    createCorner(btn, 10)
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 12),
-        Parent = btn
-    })
+    create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = btn})
+    create("UIPadding", {PaddingLeft = UDim.new(0, 8), Parent = btn})
     
     local iconLabel = create("TextLabel", {
-        Size = UDim2.new(0, 28, 1, 0),
+        Size = UDim2.new(0, 20, 1, 0),
         BackgroundTransparency = 1,
-        Text = icon or "◆",
+        Text = icon or "•",
         Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(140, 110, 220),
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(150, 140, 180),
         Parent = btn
     })
     
     local nameLabel = create("TextLabel", {
-        Size = UDim2.new(1, -40, 1, 0),
-        Position = UDim2.new(0, 40, 0, 0),
+        Size = UDim2.new(1, -28, 1, 0),
+        Position = UDim2.new(0, 28, 0, 0),
         BackgroundTransparency = 1,
         Text = name,
-        Font = Enum.Font.GothamSemibold,
-        TextSize = 14,
-        TextColor3 = Color3.fromRGB(200, 200, 210),
+        Font = Enum.Font.GothamMedium,
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(190, 190, 200),
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = btn
     })
     
-    local content = create("ScrollingFrame", {
+    local scroll = create("ScrollingFrame", {
         Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
-        ScrollBarThickness = 6,
-        ScrollBarImageColor3 = Color3.fromRGB(100, 70, 180),
+        ScrollBarThickness = 4,
+        ScrollBarImageColor3 = Color3.fromRGB(70, 50, 110),
         Visible = false,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
-        Parent = tabContainer
+        Parent = tabContent
     })
     
-    create("UIListLayout", {
-        Padding = UDim.new(0, 8),
-        Parent = content
-    })
-    
-    create("UIPadding", {
-        PaddingLeft = UDim.new(0, 12),
-        PaddingRight = UDim.new(0, 12),
-        PaddingTop = UDim.new(0, 12),
-        PaddingBottom = UDim.new(0, 12),
-        Parent = content
-    })
+    create("UIListLayout", {Padding = UDim.new(0, 6), Parent = scroll})
+    create("UIPadding", {PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), Parent = scroll})
     
     tab.button = btn
-    tab.container = content
+    tab.container = scroll
     
     btn.MouseButton1Click:Connect(function()
         self:SwitchTab(tab)
@@ -737,13 +628,13 @@ function RoSense:CreateTab(name, icon)
     
     btn.MouseEnter:Connect(function()
         if self.currentTab ~= tab then
-            tween(btn, {BackgroundColor3 = Color3.fromRGB(30, 30, 42), BackgroundTransparency = 0.3}, RoSense.fastTween)
+            tween(btn, {BackgroundTransparency = 0.4}, RoSense.fastTween)
         end
     end)
     
     btn.MouseLeave:Connect(function()
         if self.currentTab ~= tab then
-            tween(btn, {BackgroundColor3 = Color3.fromRGB(22, 22, 30), BackgroundTransparency = 0.5}, RoSense.fastTween)
+            tween(btn, {BackgroundTransparency = 0.6}, RoSense.fastTween)
         end
     end)
     
@@ -754,23 +645,22 @@ function RoSense:CreateTab(name, icon)
     end
     
     return {
-        AddToggle = function(_, props) return componentLib.Toggle({parent = content, text = props.text, default = props.default, callback = props.callback}) end,
-        AddButton = function(_, props) return componentLib.Button({parent = content, text = props.text, callback = props.callback}) end,
-        AddSlider = function(_, props) return componentLib.Slider({parent = content, text = props.text, min = props.min, max = props.max, default = props.default, callback = props.callback}) end,
-        AddDropdown = function(_, props) return componentLib.Dropdown({parent = content, options = props.options, callback = props.callback}) end,
-        AddColorPicker = function(_, props) return componentLib.ColorPicker({parent = content, text = props.text, default = props.default, callback = props.callback}) end
+        AddToggle = function(_, p) return componentLib.Toggle({parent = scroll, text = p.text, default = p.default, callback = p.callback}) end,
+        AddButton = function(_, p) return componentLib.Button({parent = scroll, text = p.text, callback = p.callback}) end,
+        AddSlider = function(_, p) return componentLib.Slider({parent = scroll, text = p.text, min = p.min, max = p.max, default = p.default, callback = p.callback}) end,
+        AddDropdown = function(_, p) return componentLib.Dropdown({parent = scroll, options = p.options, callback = p.callback}) end,
+        AddColorPicker = function(_, p) return componentLib.ColorPicker({parent = scroll, text = p.text, default = p.default, callback = p.callback}) end
     }
 end
 
 function RoSense:SwitchTab(tab)
     if self.currentTab then
         self.currentTab.container.Visible = false
-        tween(self.currentTab.button, {BackgroundColor3 = Color3.fromRGB(22, 22, 30), BackgroundTransparency = 0.5})
+        tween(self.currentTab.button, {BackgroundTransparency = 0.6})
     end
-    
     self.currentTab = tab
     tab.container.Visible = true
-    tween(tab.button, {BackgroundColor3 = Color3.fromRGB(100, 70, 180), BackgroundTransparency = 0})
+    tween(tab.button, {BackgroundTransparency = 0, BackgroundColor3 = Color3.fromRGB(70, 50, 110)})
 end
 
 function RoSense:SaveConfig(name)
@@ -810,7 +700,7 @@ function RoSense:CreateConfigUI()
 end
 
 local dragging = false
-local dragInput, dragStart, startPos
+local dragStart, startPos
 
 topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -844,7 +734,7 @@ local frames = 0
 RunService.RenderStepped:Connect(function()
     frames = frames + 1
     if tick() - lastUpdate >= 1 then
-        fpsLabel.Text = frames .. " FPS"
+        fpsLabel.Text = tostring(frames)
         pingLabel.Text = math.floor(player:GetNetworkPing() * 1000) .. "ms"
         frames = 0
         lastUpdate = tick()
