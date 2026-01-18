@@ -13,7 +13,8 @@ local RoSense = {
     minimized = false,
     notifications = {},
     tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-    fastTween = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    fastTween = TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+    toggleKey = Enum.KeyCode.RightControl
 }
 
 local function tween(obj, props, info)
@@ -675,6 +676,65 @@ function componentLib.Divider(props)
     return divider
 end
 
+function componentLib.Keybind(props)
+    local container = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 32),
+        BackgroundTransparency = 1,
+        Parent = props.parent
+    })
+    
+    local label = create("TextLabel", {
+        Size = UDim2.new(1, -80, 1, 0),
+        BackgroundTransparency = 1,
+        Text = props.text or "Keybind",
+        Font = Enum.Font.Gotham,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(210, 210, 220),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = container
+    })
+    
+    local currentKey = props.default or Enum.KeyCode.RightControl
+    local listening = false
+    
+    local keybindBtn = create("TextButton", {
+        Size = UDim2.new(0, 75, 0, 26),
+        Position = UDim2.new(1, -75, 0.5, -13),
+        BackgroundColor3 = Color3.fromRGB(16, 16, 22),
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
+        Text = currentKey.Name,
+        Font = Enum.Font.GothamSemibold,
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(210, 210, 220),
+        Parent = container
+    })
+    
+    create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = keybindBtn})
+    create("UIStroke", {Color = Color3.fromRGB(55, 55, 65), Thickness = 1, Transparency = 0.5, Parent = keybindBtn})
+    
+    keybindBtn.MouseButton1Click:Connect(function()
+        listening = true
+        keybindBtn.Text = "..."
+        tween(keybindBtn, {BackgroundColor3 = Color3.fromRGB(75, 55, 120), BackgroundTransparency = 0}, RoSense.fastTween)
+    end)
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if listening and input.UserInputType == Enum.UserInputType.Keyboard then
+            listening = false
+            currentKey = input.KeyCode
+            keybindBtn.Text = currentKey.Name
+            tween(keybindBtn, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.4}, RoSense.fastTween)
+            
+            if props.callback then
+                props.callback(currentKey)
+            end
+        end
+    end)
+    
+    return container
+end
+
 local iconMap = {
     combat = "rbxassetid://101624956453146",
     visuals = "rbxassetid://83223275262417",
@@ -764,7 +824,8 @@ function RoSense:CreateTab(name, iconKey)
         AddColorPicker = function(props) return componentLib.ColorPicker({parent = container, text = props.text, default = props.default, callback = props.callback}) end,
         AddTextBox = function(props) return componentLib.TextBox({parent = container, placeholder = props.placeholder, callback = props.callback}) end,
         AddLabel = function(props) return componentLib.Label({parent = container, text = props.text}) end,
-        AddDivider = function() return componentLib.Divider({parent = container}) end
+        AddDivider = function() return componentLib.Divider({parent = container}) end,
+        AddKeybind = function(props) return componentLib.Keybind({parent = container, text = props.text, default = props.default, callback = props.callback}) end
     }
 end
 
@@ -901,6 +962,32 @@ function RoSense:Init()
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
             main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    -- Toggle key functionality
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        if input.KeyCode == self.toggleKey then
+            self.minimized = not self.minimized
+            if self.minimized then
+                tween(main, {Size = UDim2.new(0, 0, 0, 0)})
+                tween(statsBar, {Size = UDim2.new(0, 0, 0, 0)})
+                self:Notify({
+                    title = "UI Hidden",
+                    description = "Press " .. self.toggleKey.Name .. " to show again",
+                    duration = 2
+                })
+            else
+                tween(main, {Size = UDim2.new(0, 580, 0, 360)})
+                tween(statsBar, {Size = UDim2.new(0, 160, 0, 32)})
+                self:Notify({
+                    title = "UI Shown",
+                    description = "Welcome back!",
+                    duration = 2
+                })
+            end
         end
     end)
     
