@@ -470,10 +470,15 @@ function componentLib.Slider(props)
 end
 
 function componentLib.Dropdown(props)
-    if not props or not props.options or #props.options == 0 then
-        props = props or {}
-        props.options = {"No Options"}
+    props = props or {}
+    local function normalizeOptions(opts)
+        if type(opts) ~= "table" or #opts == 0 then
+            return {"No Options"}
+        end
+        return opts
     end
+    
+    local options = normalizeOptions(props.options)
     
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 32),
@@ -499,7 +504,7 @@ function componentLib.Dropdown(props)
     local label = create("TextLabel", {
         Size = UDim2.new(1, -20, 1, 0),
         BackgroundTransparency = 1,
-        Text = props.options[1] or "Select",
+        Text = options[1] or "Select",
         Font = Enum.Font.Gotham,
         TextSize = 13,
         TextColor3 = Color3.fromRGB(210, 210, 220),
@@ -536,8 +541,7 @@ function componentLib.Dropdown(props)
     local listLayout = create("UIListLayout", {Padding = UDim.new(0, 2), Parent = list})
     create("UIPadding", {PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), Parent = list})
     
-local options = props.options or {"Option 1"}
-for _, opt in ipairs(options) do
+    local function addOptionButton(opt)
         local optBtn = create("TextButton", {
             Size = UDim2.new(1, 0, 0, 28),
             BackgroundColor3 = Color3.fromRGB(18, 18, 24),
@@ -572,10 +576,33 @@ for _, opt in ipairs(options) do
         end)
     end
     
+    local function buildOptions(newOptions, selectedValue)
+        options = normalizeOptions(newOptions)
+        for _, child in ipairs(list:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
+        end
+        for _, opt in ipairs(options) do
+            addOptionButton(opt)
+        end
+        if selectedValue and selectedValue ~= "" then
+            label.Text = selectedValue
+        else
+            label.Text = options[1] or "Select"
+        end
+        if list.Visible then
+            local height = math.min(#options * 30 + 8, 160)
+            tween(list, {Size = UDim2.new(1, 0, 0, height)})
+        end
+    end
+    
+    buildOptions(options, options[1])
+    
     dropdown.MouseButton1Click:Connect(function()
         list.Visible = not list.Visible
         if list.Visible then
-            local height = math.min(#props.options * 30 + 8, 160)
+            local height = math.min(#options * 30 + 8, 160)
             tween(list, {Size = UDim2.new(1, 0, 0, height)})
             tween(arrow, {Rotation = 180})
         else
@@ -584,7 +611,23 @@ for _, opt in ipairs(options) do
         end
     end)
     
-    return container
+    local api = {}
+    function api:SetOptions(newOptions, selectedValue)
+        buildOptions(newOptions, selectedValue)
+    end
+    function api:GetValue()
+        return label.Text
+    end
+    function api:SetValue(val)
+        if val and val ~= "" then
+            label.Text = val
+        end
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    
+    return api
 end
 
 function componentLib.ColorPicker(props)
