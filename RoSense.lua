@@ -1156,7 +1156,7 @@ function RoSense:Init()
     RunService.RenderStepped:Connect(function()
         fps = fps + 1
         if tick() - lastUpdate >= 1 then
-            fpsLabel.Text = fps .. " FPS"
+            fpsLabel.Text = "FPS: " .. frames
             local color = fps >= 50 and Color3.fromRGB(80, 180, 80) or fps >= 30 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
             fpsLabel.TextColor3 = color
             fps = 0
@@ -1167,7 +1167,7 @@ function RoSense:Init()
     task.spawn(function()
         while task.wait(1) do
             local ping = math.floor(player:GetNetworkPing() * 1000)
-            pingLabel.Text = ping .. "ms"
+            pingLabel.Text = "PING: " .. ping .. "ms"
             local color = ping <= 50 and Color3.fromRGB(80, 180, 80) or ping <= 100 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
             pingLabel.TextColor3 = color
         end
