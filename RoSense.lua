@@ -56,16 +56,22 @@ create("UIListLayout", {
     Parent = notifContainer
 })
 
--- CLEAN HVH STATS BAR
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 260, 0, 28),
+    Size = UDim2.new(0, 240, 0, 26),
     Position = UDim2.new(0.5, 0, 0, 10),
     AnchorPoint = Vector2.new(0.5, 0),
     BackgroundColor3 = Color3.fromRGB(10, 10, 14),
     BackgroundTransparency = 0.1,
     BorderSizePixel = 0,
     Parent = sg
+})
+
+create("Frame", {
+    Size = UDim2.new(0, 3, 1, 0),
+    BackgroundColor3 = Color3.fromRGB(75, 55, 120),
+    BorderSizePixel = 0,
+    Parent = statsBar
 })
 
 create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = statsBar})
@@ -85,10 +91,10 @@ create("UIGradient", {
     Parent = statsBar
 })
 
--- FPS
+
 local fpsLabel = create("TextLabel", {
     Size = UDim2.new(0.45, -6, 1, 0),
-    Position = UDim2.new(0, 8, 0, 0),
+    Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
     Text = "FPS: 0",
     Font = Enum.Font.GothamBold,
@@ -98,18 +104,16 @@ local fpsLabel = create("TextLabel", {
     Parent = statsBar
 })
 
--- Divider
+
 create("Frame", {
-    Size = UDim2.new(0, 1, 0.6, 0),
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    AnchorPoint = Vector2.new(0.5, 0.5),
+    Size = UDim2.new(1, -20, 0, 1),
+    Position = UDim2.new(0, 10, 1, -1),
     BackgroundColor3 = Color3.fromRGB(75, 55, 120),
-    BackgroundTransparency = 0.4,
+    BackgroundTransparency = 0.85,
     BorderSizePixel = 0,
     Parent = statsBar
 })
 
--- Ping
 local pingLabel = create("TextLabel", {
     Size = UDim2.new(0.45, -6, 1, 0),
     Position = UDim2.new(0.55, 0, 0, 0),
