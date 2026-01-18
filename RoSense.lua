@@ -676,12 +676,12 @@ function componentLib.Divider(props)
 end
 
 local iconMap = {
-    combat = "🗡️",
-    visuals = "👁️",
-    movement = "🏃",
-    misc = "⚙️",
-    teleport = "📍",
-    config = "🔧"
+    combat = "rbxassetid://101624956453146",
+    visuals = "rbxassetid://83223275262417",
+    movement = "rbxassetid://102367403102077",
+    misc = "rbxassetid://132133837275144",
+    teleport = "rbxassetid://102367403102077",
+    config = "rbxassetid://86900062844999"
 }
 
 function RoSense:CreateTab(name, iconKey)
@@ -699,13 +699,12 @@ function RoSense:CreateTab(name, iconKey)
     create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = btn})
     create("UIStroke", {Color = Color3.fromRGB(45, 45, 55), Thickness = 1, Transparency = 0.6, Parent = btn})
     
-    local icon = create("TextLabel", {
-        Size = UDim2.new(1, 0, 1, 0),
+    local icon = create("ImageLabel", {
+        Size = UDim2.new(0, 28, 0, 28),
+        Position = UDim2.new(0.5, -14, 0.5, -14),
         BackgroundTransparency = 1,
-        Text = iconMap[iconKey] or "📦",
-        Font = Enum.Font.GothamBold,
-        TextSize = 20,
-        TextColor3 = Color3.fromRGB(180, 160, 200),
+        Image = iconMap[iconKey] or "rbxassetid://132133837275144",
+        ImageColor3 = Color3.fromRGB(180, 160, 200),
         Parent = btn
     })
     
@@ -736,14 +735,14 @@ function RoSense:CreateTab(name, iconKey)
     btn.MouseEnter:Connect(function()
         if RoSense.currentTab ~= tab then
             tween(btn, {BackgroundColor3 = Color3.fromRGB(22, 22, 30), BackgroundTransparency = 0.3}, RoSense.fastTween)
-            tween(icon, {TextColor3 = Color3.fromRGB(200, 180, 220)}, RoSense.fastTween)
+            tween(icon, {ImageColor3 = Color3.fromRGB(200, 180, 220)}, RoSense.fastTween)
         end
     end)
     
     btn.MouseLeave:Connect(function()
         if RoSense.currentTab ~= tab then
             tween(btn, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5}, RoSense.fastTween)
-            tween(icon, {TextColor3 = Color3.fromRGB(180, 160, 200)}, RoSense.fastTween)
+            tween(icon, {ImageColor3 = Color3.fromRGB(180, 160, 200)}, RoSense.fastTween)
         end
     end)
     
@@ -772,13 +771,13 @@ end
 function RoSense:SelectTab(tab)
     if RoSense.currentTab then
         tween(RoSense.currentTab.button, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5})
-        tween(RoSense.currentTab.button:FindFirstChildOfClass("TextLabel"), {TextColor3 = Color3.fromRGB(180, 160, 200)})
+        tween(RoSense.currentTab.button:FindFirstChildOfClass("ImageLabel"), {ImageColor3 = Color3.fromRGB(180, 160, 200)})
         RoSense.currentTab.container.Visible = false
     end
     
     RoSense.currentTab = tab
     tween(tab.button, {BackgroundColor3 = Color3.fromRGB(75, 55, 120), BackgroundTransparency = 0})
-    tween(tab.button:FindFirstChildOfClass("TextLabel"), {TextColor3 = Color3.fromRGB(240, 240, 250)})
+    tween(tab.button:FindFirstChildOfClass("ImageLabel"), {ImageColor3 = Color3.fromRGB(240, 240, 250)})
     tab.container.Visible = true
 end
 
