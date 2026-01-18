@@ -871,7 +871,6 @@ function componentLib.Label(props)
     return label
 end
 
-
 function componentLib.Divider(props)
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 16),
@@ -890,7 +889,6 @@ function componentLib.Divider(props)
 
     return container
 end
-
 
 
 function componentLib.Keybind(props)
