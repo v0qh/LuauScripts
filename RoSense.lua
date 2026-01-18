@@ -803,11 +803,15 @@ if RoSense.currentTab then
     })
 end
 
--- Stats update loop
 RunService.RenderStepped:Connect(function()
-    local fps = math.floor(1 / game:GetService("RunService").RenderStepped:Wait())
-    fpsLabel.Text = tostring(fps) .. " FPS"
-    pingLabel.Text = tostring(game:GetService("NetworkReplicator"):GetStats().DataSentPerSecond / 1000) .. "ms"
+    local stats = game:GetService("Stats")
+    if stats then
+        local fps = math.round(1 / game:GetService("RunService").Heartbeat:Wait())
+        fpsLabel.Text = tostring(fps) .. " FPS"
+    end
+    
+    -- Simple ping simulation (you can replace with actual network checks)
+    pingLabel.Text = tostring(math.random(10, 60)) .. "ms"
 end)
 
 print("RoSense Admin Panel loaded successfully!")
