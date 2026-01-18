@@ -259,6 +259,7 @@ function componentLib.Toggle(props)
         Parent = props.parent
     })
     
+    
     local label = create("TextLabel", {
         Size = UDim2.new(1, -46, 1, 0),
         BackgroundTransparency = 1,
@@ -1003,6 +1004,7 @@ function RoSense:CreateTab(name, iconKey)
         Visible = false,
         Parent = tabContent
     })
+    container:SetAttribute("Order", 0)
     
     create("UIListLayout", {Padding = UDim.new(0, 8), Parent = container})
     create("UIPadding", {
