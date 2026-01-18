@@ -995,7 +995,7 @@ function RoSense:CreateTab(name, iconKey)
         Parent = tabContent
     })
     
-    create("UIListLayout", {Padding = UDim.new(0, 8), Parent = container})
+    create("UIListLayout", {Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.Name, Parent = container})
     create("UIPadding", {
         PaddingLeft = UDim.new(0, 12),
         PaddingRight = UDim.new(0, 12),
