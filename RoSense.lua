@@ -56,64 +56,72 @@ create("UIListLayout", {
     Parent = notifContainer
 })
 
+-- CLEAN HVH STATS BAR
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 200, 0, 36),
-    Position = UDim2.new(0.5, 0, 0, 12),
+    Size = UDim2.new(0, 260, 0, 28),
+    Position = UDim2.new(0.5, 0, 0, 10),
     AnchorPoint = Vector2.new(0.5, 0),
-    BackgroundColor3 = Color3.fromRGB(8, 8, 12),
+    BackgroundColor3 = Color3.fromRGB(10, 10, 14),
     BackgroundTransparency = 0.1,
     BorderSizePixel = 0,
     Parent = sg
 })
 
-create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = statsBar})
-create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = statsBar})
+create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = statsBar})
+create("UIStroke", {
+    Color = Color3.fromRGB(75, 55, 120),
+    Thickness = 1,
+    Transparency = 0.4,
+    Parent = statsBar
+})
 
-local statsGradient = create("UIGradient", {
+create("UIGradient", {
     Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 12, 16)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(14, 14, 18)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 8, 12))
     },
     Rotation = 90,
     Parent = statsBar
 })
 
+-- FPS
 local fpsLabel = create("TextLabel", {
-    Size = UDim2.new(0.45, -8, 1, 0),
-    Position = UDim2.new(0, 12, 0, 0),
+    Size = UDim2.new(0.45, -6, 1, 0),
+    Position = UDim2.new(0, 8, 0, 0),
     BackgroundTransparency = 1,
-    Text = "60 FPS",
+    Text = "FPS: 0",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
-    TextColor3 = Color3.fromRGB(80, 180, 80),
+    TextColor3 = Color3.fromRGB(120, 200, 120),
     TextXAlignment = Enum.TextXAlignment.Left,
     Parent = statsBar
 })
 
-local divider = create("TextLabel", {
-    Size = UDim2.new(0, 2, 0.6, 0),
-    Position = UDim2.new(0.5, -1, 0.5, 0),
+-- Divider
+create("Frame", {
+    Size = UDim2.new(0, 1, 0.6, 0),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
     AnchorPoint = Vector2.new(0.5, 0.5),
-    BackgroundTransparency = 1,
-    Text = "|",
-    Font = Enum.Font.GothamBold,
-    TextSize = 14,
-    TextColor3 = Color3.fromRGB(75, 55, 120),
+    BackgroundColor3 = Color3.fromRGB(75, 55, 120),
+    BackgroundTransparency = 0.4,
+    BorderSizePixel = 0,
     Parent = statsBar
 })
 
+-- Ping
 local pingLabel = create("TextLabel", {
-    Size = UDim2.new(0.45, -8, 1, 0),
+    Size = UDim2.new(0.45, -6, 1, 0),
     Position = UDim2.new(0.55, 0, 0, 0),
     BackgroundTransparency = 1,
-    Text = "0ms",
+    Text = "PING: 0ms",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
-    TextColor3 = Color3.fromRGB(80, 180, 80),
+    TextColor3 = Color3.fromRGB(120, 200, 120),
     TextXAlignment = Enum.TextXAlignment.Right,
     Parent = statsBar
 })
+
 
 create("UIPadding", {PaddingRight = UDim.new(0, 12), Parent = statsBar})
 
