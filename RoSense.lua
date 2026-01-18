@@ -642,13 +642,46 @@ function componentLib.TextBox(props)
     return container
 end
 
+function componentLib.Label(props)
+    local label = create("TextLabel", {
+        Size = UDim2.new(1, 0, 0, 24),
+        BackgroundTransparency = 1,
+        Text = props.text or "Label",
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        TextColor3 = Color3.fromRGB(200, 180, 220),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = props.parent
+    })
+    
+    return label
+end
+
+function componentLib.Divider(props)
+    local divider = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 1),
+        BackgroundColor3 = Color3.fromRGB(50, 50, 60),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        Parent = props.parent
+    })
+    
+    create("Frame", {
+        Size = UDim2.new(1, 0, 0, 8),
+        BackgroundTransparency = 1,
+        Parent = props.parent
+    })
+    
+    return divider
+end
+
 local iconMap = {
-    combat = "https://www.svgrepo.com/show/309858/fight.svg",
-    visuals = "https://www.svgrepo.com/show/532994/eye.svg",
-    movement = "https://www.svgrepo.com/show/474465/run.svg",
-    misc = "https://www.svgrepo.com/show/532960/cog.svg",
-    teleport = "https://www.svgrepo.com/show/533067/map-pin.svg",
-    config = "https://www.svgrepo.com/show/532870/adjustments.svg"
+    combat = "🗡️",
+    visuals = "👁️",
+    movement = "🏃",
+    misc = "⚙️",
+    teleport = "📍",
+    config = "🔧"
 }
 
 function RoSense:CreateTab(name, iconKey)
@@ -664,144 +697,213 @@ function RoSense:CreateTab(name, iconKey)
     })
     
     create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = btn})
+    create("UIStroke", {Color = Color3.fromRGB(45, 45, 55), Thickness = 1, Transparency = 0.6, Parent = btn})
     
-local icon = create("ImageLabel", {
-    Size = UDim2.new(0, 24, 0, 24),
-    Position = UDim2.new(0.5, -12, 0.5, -12),
-    BackgroundTransparency = 1,
-    Image = iconMap[iconKey] or "",
-    ImageColor3 = Color3.fromRGB(160, 140, 200),
-    Parent = btn
-})
-
-btn.MouseEnter:Connect(function()
-    tween(btn, {BackgroundColor3 = Color3.fromRGB(75, 55, 120), BackgroundTransparency = 0.2}, RoSense.fastTween)
-    tween(icon, {ImageColor3 = Color3.fromRGB(240, 240, 250)}, RoSense.fastTween)
-end)
-
-btn.MouseLeave:Connect(function()
-    tween(btn, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5}, RoSense.fastTween)
-    tween(icon, {ImageColor3 = Color3.fromRGB(160, 140, 200)}, RoSense.fastTween)
-end)
-
-btn.MouseButton1Click:Connect(function()
-    RoSense:SelectTab(tab)
-end)
-
-tab.button = btn
-
-local container = create("Frame", {
-    Size = UDim2.new(1, 0, 1, 0),
-    BackgroundTransparency = 1,
-    Visible = false,
-    Parent = tabContent
-})
-
-create("UIListLayout", {Padding = UDim.new(0, 8), Parent = container})
-create("UIPadding", {PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), Parent = container})
-
-tab.container = container
-
-table.insert(RoSense.tabs, tab)
-
-if not RoSense.currentTab then
-    RoSense:SelectTab(tab)
-end
-
-return tab
+    local icon = create("TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = iconMap[iconKey] or "📦",
+        Font = Enum.Font.GothamBold,
+        TextSize = 20,
+        TextColor3 = Color3.fromRGB(180, 160, 200),
+        Parent = btn
+    })
+    
+    local container = create("ScrollingFrame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 4,
+        ScrollBarImageColor3 = Color3.fromRGB(75, 55, 120),
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        Visible = false,
+        Parent = tabContent
+    })
+    
+    create("UIListLayout", {Padding = UDim.new(0, 8), Parent = container})
+    create("UIPadding", {
+        PaddingLeft = UDim.new(0, 12),
+        PaddingRight = UDim.new(0, 12),
+        PaddingTop = UDim.new(0, 12),
+        PaddingBottom = UDim.new(0, 12),
+        Parent = container
+    })
+    
+    tab.button = btn
+    tab.container = container
+    
+    btn.MouseEnter:Connect(function()
+        if RoSense.currentTab ~= tab then
+            tween(btn, {BackgroundColor3 = Color3.fromRGB(22, 22, 30), BackgroundTransparency = 0.3}, RoSense.fastTween)
+            tween(icon, {TextColor3 = Color3.fromRGB(200, 180, 220)}, RoSense.fastTween)
+        end
+    end)
+    
+    btn.MouseLeave:Connect(function()
+        if RoSense.currentTab ~= tab then
+            tween(btn, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5}, RoSense.fastTween)
+            tween(icon, {TextColor3 = Color3.fromRGB(180, 160, 200)}, RoSense.fastTween)
+        end
+    end)
+    
+    btn.MouseButton1Click:Connect(function()
+        RoSense:SelectTab(tab)
+    end)
+    
+    table.insert(RoSense.tabs, tab)
+    
+    if #RoSense.tabs == 1 then
+        RoSense:SelectTab(tab)
+    end
+    
+    return {
+        AddToggle = function(props) return componentLib.Toggle({parent = container, text = props.text, default = props.default, callback = props.callback}) end,
+        AddButton = function(props) return componentLib.Button({parent = container, text = props.text, callback = props.callback}) end,
+        AddSlider = function(props) return componentLib.Slider({parent = container, text = props.text, min = props.min, max = props.max, default = props.default, callback = props.callback}) end,
+        AddDropdown = function(props) return componentLib.Dropdown({parent = container, options = props.options, callback = props.callback}) end,
+        AddColorPicker = function(props) return componentLib.ColorPicker({parent = container, text = props.text, default = props.default, callback = props.callback}) end,
+        AddTextBox = function(props) return componentLib.TextBox({parent = container, placeholder = props.placeholder, callback = props.callback}) end,
+        AddLabel = function(props) return componentLib.Label({parent = container, text = props.text}) end,
+        AddDivider = function() return componentLib.Divider({parent = container}) end
+    }
 end
 
 function RoSense:SelectTab(tab)
     if RoSense.currentTab then
-        tween(RoSense.currentTab.button, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5}, RoSense.fastTween)
+        tween(RoSense.currentTab.button, {BackgroundColor3 = Color3.fromRGB(16, 16, 22), BackgroundTransparency = 0.5})
+        tween(RoSense.currentTab.button:FindFirstChildOfClass("TextLabel"), {TextColor3 = Color3.fromRGB(180, 160, 200)})
         RoSense.currentTab.container.Visible = false
     end
     
     RoSense.currentTab = tab
-    tween(tab.button, {BackgroundColor3 = Color3.fromRGB(75, 55, 120), BackgroundTransparency = 0.1}, RoSense.fastTween)
+    tween(tab.button, {BackgroundColor3 = Color3.fromRGB(75, 55, 120), BackgroundTransparency = 0})
+    tween(tab.button:FindFirstChildOfClass("TextLabel"), {TextColor3 = Color3.fromRGB(240, 240, 250)})
     tab.container.Visible = true
 end
 
-function RoSense:Notify(message, duration)
-    duration = duration or 3
-    
-    local notification = create("Frame", {
-        Size = UDim2.new(0, 260, 0, 60),
-        BackgroundColor3 = Color3.fromRGB(14, 14, 18),
+function RoSense:Notify(options)
+    local notif = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 0),
+        BackgroundColor3 = Color3.fromRGB(12, 12, 16),
         BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
+        ClipsDescendants = true,
         Parent = notifContainer
     })
     
-    create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = notification})
-    create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = notification})
-    create("UIPadding", {PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12), PaddingTop = UDim.new(0, 12), PaddingBottom = UDim.new(0, 12), Parent = notification})
+    create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = notif})
+    create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = notif})
     
-    local text = create("TextLabel", {
-        Size = UDim2.new(1, 0, 1, 0),
+    local gradient = create("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 16, 20)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 16))
+        },
+        Rotation = 90,
+        Parent = notif
+    })
+    
+    local accent = create("Frame", {
+        Size = UDim2.new(0, 3, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(75, 55, 120),
+        BorderSizePixel = 0,
+        Parent = notif
+    })
+    
+    create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = accent})
+    
+    local titleLabel = create("TextLabel", {
+        Size = UDim2.new(1, -16, 0, 18),
+        Position = UDim2.new(0, 12, 0, 8),
         BackgroundTransparency = 1,
-        Text = message,
-        Font = Enum.Font.Gotham,
-        TextSize = 12,
-        TextColor3 = Color3.fromRGB(210, 210, 220),
-        TextWrapped = true,
+        Text = options.title or "Notification",
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextColor3 = Color3.fromRGB(220, 220, 230),
         TextXAlignment = Enum.TextXAlignment.Left,
-        TextYAlignment = Enum.TextYAlignment.Center,
-        Parent = notification
+        Parent = notif
     })
     
-    game:GetService("Debris"):AddItem(notification, duration)
+    local descLabel = create("TextLabel", {
+        Size = UDim2.new(1, -16, 0, 16),
+        Position = UDim2.new(0, 12, 0, 26),
+        BackgroundTransparency = 1,
+        Text = options.description or "",
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextColor3 = Color3.fromRGB(180, 180, 190),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        Parent = notif
+    })
     
-    tween(notification, {Position = notification.Position - UDim2.new(0, 0, 0, 70)}, RoSense.tweenInfo)
+    tween(notif, {Size = UDim2.new(1, 0, 0, 50)})
     
-    wait(duration - 0.3)
-    tween(notification, {BackgroundTransparency = 1}, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In))
+    task.delay(options.duration or 3, function()
+        tween(notif, {Size = UDim2.new(1, 0, 0, 0), BackgroundTransparency = 1})
+        tween(accent, {BackgroundTransparency = 1})
+        tween(titleLabel, {TextTransparency = 1})
+        tween(descLabel, {TextTransparency = 1})
+        task.wait(0.3)
+        notif:Destroy()
+    end)
 end
 
--- Example tab creation
-RoSense:CreateTab("Combat", "combat")
-RoSense:CreateTab("Visuals", "visuals")
-RoSense:CreateTab("Movement", "movement")
-RoSense:CreateTab("Misc", "misc")
-
--- Example component usage in first tab
-if RoSense.currentTab then
-    componentLib.Toggle({
-        parent = RoSense.currentTab.container,
-        text = "Example Toggle",
-        default = false,
-        callback = function(enabled)
-            print("Toggle:", enabled)
-        end
-    })
+function RoSense:Init()
+    tween(main, {Size = UDim2.new(0, 580, 0, 360)})
     
-    componentLib.Slider({
-        parent = RoSense.currentTab.container,
-        text = "Example Slider",
-        min = 0,
-        max = 100,
-        default = 50,
-        callback = function(value)
-            print("Slider:", value)
-        end
-    })
+    local fps = 0
+    local lastUpdate = tick()
     
-    componentLib.Dropdown({
-        parent = RoSense.currentTab.container,
-        options = {"Option 1", "Option 2", "Option 3"},
-        callback = function(selected)
-            print("Selected:", selected)
+    RunService.RenderStepped:Connect(function()
+        fps = fps + 1
+        if tick() - lastUpdate >= 1 then
+            fpsLabel.Text = fps .. " FPS"
+            local color = fps >= 50 and Color3.fromRGB(100, 220, 100) or fps >= 30 and Color3.fromRGB(220, 200, 100) or Color3.fromRGB(220, 100, 100)
+            fpsLabel.TextColor3 = color
+            fps = 0
+            lastUpdate = tick()
         end
-    })
+    end)
     
-    componentLib.Button({
-        parent = RoSense.currentTab.container,
-        text = "Example Button",
-        callback = function()
-            RoSense:Notify("Button clicked!", 2)
+    task.spawn(function()
+        while task.wait(1) do
+            local ping = math.floor(player:GetNetworkPing() * 1000)
+            pingLabel.Text = ping .. "ms"
+            local color = ping <= 50 and Color3.fromRGB(100, 220, 100) or ping <= 100 and Color3.fromRGB(220, 200, 100) or Color3.fromRGB(220, 100, 100)
+            pingLabel.TextColor3 = color
         end
-    })
+    end)
+    
+    local dragging, dragInput, dragStart, startPos
+    
+    topBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = main.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    topBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    
+    return self
 end
-
-
-print("RoSense Admin Panel loaded successfully!")
