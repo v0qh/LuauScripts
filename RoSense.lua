@@ -873,17 +873,13 @@ end
 
 
 function componentLib.Divider(props)
-    local parent = props.parent
-    parent:SetAttribute("Order", (parent:GetAttribute("Order") or 0) + 1)
-
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 16),
         BackgroundTransparency = 1,
-        LayoutOrder = parent:GetAttribute("Order"),
-        Parent = parent
+        Parent = props.parent
     })
-    
-    local divider = create("Frame", {
+
+    create("Frame", {
         Size = UDim2.new(1, 0, 0, 1),
         Position = UDim2.new(0, 0, 0.5, 0),
         BackgroundColor3 = Color3.fromRGB(50, 50, 60),
@@ -891,9 +887,10 @@ function componentLib.Divider(props)
         BorderSizePixel = 0,
         Parent = container
     })
-    
+
     return container
 end
+
 
 
 function componentLib.Keybind(props)
@@ -999,7 +996,6 @@ function RoSense:CreateTab(name, iconKey)
         Visible = false,
         Parent = tabContent
     })
-    container:SetAttribute("Order", 0)
     
     create("UIListLayout", {Padding = UDim.new(0, 8), Parent = container})
     create("UIPadding", {
