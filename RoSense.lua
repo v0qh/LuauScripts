@@ -1150,7 +1150,7 @@ RunService.RenderStepped:Connect(function()
     fps = (fps or 0) + 1
 
     if tick() - lastUpdate >= 1 then
-        fpsLabel.Text = fps .. " FPS"
+        fpsLabel.Text = "FPS: " .. fps
 
         if fps >= 50 then
             fpsLabel.TextColor3 = Color3.fromRGB(80, 180, 80)
@@ -1170,7 +1170,7 @@ end)
 task.spawn(function()
         while task.wait(1) do
             local ping = math.floor(player:GetNetworkPing() * 1000)
-            pingLabel.Text = ping .. "ms"
+            pingLabel.Text = "PING: " .. ping .. "ms"
             local color = ping <= 50 and Color3.fromRGB(80, 180, 80) or ping <= 100 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
             pingLabel.TextColor3 = color
         end
