@@ -857,9 +857,6 @@ function componentLib.TextBox(props)
 end
 
 function componentLib.Label(props)
-    local parent = props.parent
-    parent:SetAttribute("Order", (parent:GetAttribute("Order") or 0) + 1)
-
     local label = create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
@@ -868,13 +865,11 @@ function componentLib.Label(props)
         TextSize = 13,
         TextColor3 = Color3.fromRGB(200, 180, 220),
         TextXAlignment = Enum.TextXAlignment.Left,
-        LayoutOrder = parent:GetAttribute("Order"),
-        Parent = parent
+        Parent = props.parent
     })
-    
+
     return label
 end
-
 
 
 function componentLib.Divider(props)
