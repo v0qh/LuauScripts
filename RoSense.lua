@@ -574,10 +574,12 @@ function componentLib.ColorPicker(props)
         Parent = container
     })
     
+    local currentColor = props.default or Color3.fromRGB(75, 55, 120)
+    
     local preview = create("TextButton", {
         Size = UDim2.new(0, 36, 0, 22),
         Position = UDim2.new(1, -36, 0.5, -11),
-        BackgroundColor3 = props.default or Color3.fromRGB(75, 55, 120),
+        BackgroundColor3 = currentColor,
         BorderSizePixel = 0,
         Text = "",
         Parent = container
@@ -585,6 +587,188 @@ function componentLib.ColorPicker(props)
     
     create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = preview})
     create("UIStroke", {Color = Color3.fromRGB(220, 220, 230), Thickness = 1.5, Transparency = 0.4, Parent = preview})
+    
+    -- Color picker popup
+    local pickerOpen = false
+    local picker = create("Frame", {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0, 0, 1, 4),
+        BackgroundColor3 = Color3.fromRGB(14, 14, 18),
+        BackgroundTransparency = 0.05,
+        BorderSizePixel = 0,
+        Visible = false,
+        ClipsDescendants = true,
+        ZIndex = 20,
+        Parent = container
+    })
+    
+    create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = picker})
+    create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = picker})
+    
+    -- RGB Sliders
+    local rLabel = create("TextLabel", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 10, 0, 10),
+        BackgroundTransparency = 1,
+        Text = "R",
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(255, 100, 100),
+        Parent = picker
+    })
+    
+    local rSlider = create("Frame", {
+        Size = UDim2.new(1, -40, 0, 6),
+        Position = UDim2.new(0, 35, 0, 17),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BorderSizePixel = 0,
+        Parent = picker
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = rSlider})
+    
+    local rFill = create("Frame", {
+        Size = UDim2.new(currentColor.R, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(255, 100, 100),
+        BorderSizePixel = 0,
+        Parent = rSlider
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = rFill})
+    
+    local gLabel = create("TextLabel", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 10, 0, 40),
+        BackgroundTransparency = 1,
+        Text = "G",
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(100, 255, 100),
+        Parent = picker
+    })
+    
+    local gSlider = create("Frame", {
+        Size = UDim2.new(1, -40, 0, 6),
+        Position = UDim2.new(0, 35, 0, 47),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BorderSizePixel = 0,
+        Parent = picker
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = gSlider})
+    
+    local gFill = create("Frame", {
+        Size = UDim2.new(currentColor.G, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(100, 255, 100),
+        BorderSizePixel = 0,
+        Parent = gSlider
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = gFill})
+    
+    local bLabel = create("TextLabel", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(0, 10, 0, 70),
+        BackgroundTransparency = 1,
+        Text = "B",
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextColor3 = Color3.fromRGB(100, 100, 255),
+        Parent = picker
+    })
+    
+    local bSlider = create("Frame", {
+        Size = UDim2.new(1, -40, 0, 6),
+        Position = UDim2.new(0, 35, 0, 77),
+        BackgroundColor3 = Color3.fromRGB(18, 18, 24),
+        BorderSizePixel = 0,
+        Parent = picker
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = bSlider})
+    
+    local bFill = create("Frame", {
+        Size = UDim2.new(currentColor.B, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(100, 100, 255),
+        BorderSizePixel = 0,
+        Parent = bSlider
+    })
+    create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = bFill})
+    
+    local r, g, b = math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255)
+    
+    local function updateColor()
+        currentColor = Color3.fromRGB(r, g, b)
+        preview.BackgroundColor3 = currentColor
+        rFill.Size = UDim2.new(r / 255, 0, 1, 0)
+        gFill.Size = UDim2.new(g / 255, 0, 1, 0)
+        bFill.Size = UDim2.new(b / 255, 0, 1, 0)
+        if props.callback then
+            props.callback(currentColor)
+        end
+    end
+    
+    local draggingR, draggingG, draggingB = false, false, false
+    
+    local function updateR(input)
+        local pos = math.clamp((input.Position.X - rSlider.AbsolutePosition.X) / rSlider.AbsoluteSize.X, 0, 1)
+        r = math.floor(pos * 255)
+        updateColor()
+    end
+    
+    local function updateG(input)
+        local pos = math.clamp((input.Position.X - gSlider.AbsolutePosition.X) / gSlider.AbsoluteSize.X, 0, 1)
+        g = math.floor(pos * 255)
+        updateColor()
+    end
+    
+    local function updateB(input)
+        local pos = math.clamp((input.Position.X - bSlider.AbsolutePosition.X) / bSlider.AbsoluteSize.X, 0, 1)
+        b = math.floor(pos * 255)
+        updateColor()
+    end
+    
+    rSlider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingR = true
+            updateR(input)
+        end
+    end)
+    
+    rSlider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingR = false
+        end
+    end)
+    
+    gSlider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingG = true
+            updateG(input)
+        end
+    end)
+    
+    gSlider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingG = false
+        end
+    end)
+    
+    bSlider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingB = true
+            updateB(input)
+        end
+    end)
+    
+    bSlider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            draggingB = false
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            if draggingR then updateR(input) end
+            if draggingG then updateG(input) end
+            if draggingB then updateB(input) end
+        end
+    end)
     
     preview.MouseEnter:Connect(function()
         tween(preview, {Size = UDim2.new(0, 40, 0, 26)}, RoSense.fastTween)
@@ -595,8 +779,12 @@ function componentLib.ColorPicker(props)
     end)
     
     preview.MouseButton1Click:Connect(function()
-        if props.callback then
-            props.callback(preview.BackgroundColor3)
+        pickerOpen = not pickerOpen
+        picker.Visible = pickerOpen
+        if pickerOpen then
+            tween(picker, {Size = UDim2.new(1, 0, 0, 95)})
+        else
+            tween(picker, {Size = UDim2.new(1, 0, 0, 0)})
         end
     end)
     
