@@ -1147,19 +1147,24 @@ local fps = 0
 local lastUpdate = tick()
 
 RunService.RenderStepped:Connect(function()
-    fps += 1
+    fps = (fps or 0) + 1
+
     if tick() - lastUpdate >= 1 then
         fpsLabel.Text = fps .. " FPS"
-        local color =
-            fps >= 50 and Color3.fromRGB(80, 180, 80)
-            or fps >= 30 and Color3.fromRGB(180, 160, 80)
-            or Color3.fromRGB(180, 80, 80)
 
-        fpsLabel.TextColor3 = color
+        if fps >= 50 then
+            fpsLabel.TextColor3 = Color3.fromRGB(80, 180, 80)
+        elseif fps >= 30 then
+            fpsLabel.TextColor3 = Color3.fromRGB(180, 160, 80)
+        else
+            fpsLabel.TextColor3 = Color3.fromRGB(180, 80, 80)
+        end
+
         fps = 0
         lastUpdate = tick()
     end
 end)
+
 
     
 task.spawn(function()
