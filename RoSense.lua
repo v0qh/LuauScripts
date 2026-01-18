@@ -608,7 +608,6 @@ function componentLib.ColorPicker(props)
     create("UICorner", {CornerRadius = UDim.new(0, 5), Parent = preview})
     create("UIStroke", {Color = Color3.fromRGB(220, 220, 230), Thickness = 1.5, Transparency = 0.4, Parent = preview})
     
-    -- Color picker popup
     local pickerOpen = false
     local picker = create("Frame", {
         Size = UDim2.new(0, 0, 0, 0),
@@ -625,7 +624,6 @@ function componentLib.ColorPicker(props)
     create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = picker})
     create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = picker})
     
-    -- RGB Sliders
     local rLabel = create("TextLabel", {
         Size = UDim2.new(0, 20, 0, 20),
         Position = UDim2.new(0, 10, 0, 10),
@@ -853,11 +851,11 @@ end
 
 function componentLib.Label(props)
     local label = create("TextLabel", {
-        Size = UDim2.new(1, 0, 0, 24),
+        Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
         Text = props.text or "Label",
         Font = Enum.Font.GothamBold,
-        TextSize = 14,
+        TextSize = 13,
         TextColor3 = Color3.fromRGB(200, 180, 220),
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = props.parent
@@ -867,21 +865,22 @@ function componentLib.Label(props)
 end
 
 function componentLib.Divider(props)
-    local divider = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 1),
-        BackgroundColor3 = Color3.fromRGB(50, 50, 60),
-        BackgroundTransparency = 0.5,
-        BorderSizePixel = 0,
-        Parent = props.parent
-    })
-    
-    create("Frame", {
-        Size = UDim2.new(1, 0, 0, 8),
+    local container = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 16),
         BackgroundTransparency = 1,
         Parent = props.parent
     })
     
-    return divider
+    local divider = create("Frame", {
+        Size = UDim2.new(1, 0, 0, 1),
+        Position = UDim2.new(0, 0, 0.5, 0),
+        BackgroundColor3 = Color3.fromRGB(50, 50, 60),
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        Parent = container
+    })
+    
+    return container
 end
 
 function componentLib.Keybind(props)
@@ -1174,7 +1173,6 @@ function RoSense:Init()
         end
     end)
     
-    -- Toggle key functionality
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         
@@ -1199,6 +1197,12 @@ function RoSense:Init()
             end
         end
     end)
+    
+    self:Notify({
+        title = "RoSense Loaded",
+        description = "Press " .. self.toggleKey.Name .. " to toggle UI",
+        duration = 3
+    })
     
     return self
 end
