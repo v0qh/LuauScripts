@@ -1151,7 +1151,7 @@ function RoSense:Init()
     tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
     
     local fps = 0
-        local last = tick()
+    local lastUpdate = tick()
     
         RunService.RenderStepped:Connect(function()
         fps = fps + 1
