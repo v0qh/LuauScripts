@@ -875,6 +875,7 @@ function componentLib.Label(props)
 end
 
 
+
 function componentLib.Divider(props)
     local parent = props.parent
     parent:SetAttribute("Order", (parent:GetAttribute("Order") or 0) + 1)
