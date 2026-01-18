@@ -57,8 +57,9 @@ create("UIListLayout", {
 
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 160, 0, 32),
-    Position = UDim2.new(0.5, -80, 0, 12),
+    Size = UDim2.new(0, 200, 0, 36),
+    Position = UDim2.new(0.5, 0, 0, 12),
+    AnchorPoint = Vector2.new(0.5, 0),
     BackgroundColor3 = Color3.fromRGB(8, 8, 12),
     BackgroundTransparency = 0.1,
     BorderSizePixel = 0,
@@ -66,7 +67,7 @@ local statsBar = create("Frame", {
 })
 
 create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = statsBar})
-create("UIStroke", {Color = Color3.fromRGB(60, 60, 70), Thickness = 1, Transparency = 0.4, Parent = statsBar})
+create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = statsBar})
 
 local statsGradient = create("UIGradient", {
     Color = ColorSequence.new{
@@ -78,25 +79,37 @@ local statsGradient = create("UIGradient", {
 })
 
 local fpsLabel = create("TextLabel", {
-    Size = UDim2.new(0.5, -8, 1, 0),
+    Size = UDim2.new(0.45, -8, 1, 0),
     Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
     Text = "60 FPS",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
-    TextColor3 = Color3.fromRGB(100, 220, 100),
+    TextColor3 = Color3.fromRGB(80, 180, 80),
     TextXAlignment = Enum.TextXAlignment.Left,
     Parent = statsBar
 })
 
+local divider = create("TextLabel", {
+    Size = UDim2.new(0, 2, 0.6, 0),
+    Position = UDim2.new(0.5, -1, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundTransparency = 1,
+    Text = "|",
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextColor3 = Color3.fromRGB(75, 55, 120),
+    Parent = statsBar
+})
+
 local pingLabel = create("TextLabel", {
-    Size = UDim2.new(0.5, -8, 1, 0),
-    Position = UDim2.new(0.5, 0, 0, 0),
+    Size = UDim2.new(0.45, -8, 1, 0),
+    Position = UDim2.new(0.55, 0, 0, 0),
     BackgroundTransparency = 1,
     Text = "0ms",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
-    TextColor3 = Color3.fromRGB(100, 220, 100),
+    TextColor3 = Color3.fromRGB(80, 180, 80),
     TextXAlignment = Enum.TextXAlignment.Right,
     Parent = statsBar
 })
@@ -185,10 +198,17 @@ end)
 minimizeBtn.MouseButton1Click:Connect(function()
     RoSense.minimized = not RoSense.minimized
     if RoSense.minimized then
-        tween(main, {Size = UDim2.new(0, 580, 0, 40)})
+        tween(main, {Size = UDim2.new(0, 0, 0, 0)})
+        tween(statsBar, {Size = UDim2.new(0, 0, 0, 0)})
         minimizeBtn.Text = "+"
+        RoSense:Notify({
+            title = "UI Hidden",
+            description = "Press " .. RoSense.toggleKey.Name .. " to show again",
+            duration = 2
+        })
     else
         tween(main, {Size = UDim2.new(0, 580, 0, 360)})
+        tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
         minimizeBtn.Text = "─"
     end
 end)
@@ -594,7 +614,7 @@ function componentLib.ColorPicker(props)
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0, 0, 1, 4),
         BackgroundColor3 = Color3.fromRGB(14, 14, 18),
-        BackgroundTransparency = 0.05,
+        BackgroundTransparency = 0.1,
         BorderSizePixel = 0,
         Visible = false,
         ClipsDescendants = true,
@@ -1100,6 +1120,7 @@ end
 
 function RoSense:Init()
     tween(main, {Size = UDim2.new(0, 580, 0, 360)})
+    tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
     
     local fps = 0
     local lastUpdate = tick()
@@ -1108,7 +1129,7 @@ function RoSense:Init()
         fps = fps + 1
         if tick() - lastUpdate >= 1 then
             fpsLabel.Text = fps .. " FPS"
-            local color = fps >= 50 and Color3.fromRGB(100, 220, 100) or fps >= 30 and Color3.fromRGB(220, 200, 100) or Color3.fromRGB(220, 100, 100)
+            local color = fps >= 50 and Color3.fromRGB(80, 180, 80) or fps >= 30 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
             fpsLabel.TextColor3 = color
             fps = 0
             lastUpdate = tick()
@@ -1119,7 +1140,7 @@ function RoSense:Init()
         while task.wait(1) do
             local ping = math.floor(player:GetNetworkPing() * 1000)
             pingLabel.Text = ping .. "ms"
-            local color = ping <= 50 and Color3.fromRGB(100, 220, 100) or ping <= 100 and Color3.fromRGB(220, 200, 100) or Color3.fromRGB(220, 100, 100)
+            local color = ping <= 50 and Color3.fromRGB(80, 180, 80) or ping <= 100 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
             pingLabel.TextColor3 = color
         end
     end)
@@ -1169,7 +1190,7 @@ function RoSense:Init()
                 })
             else
                 tween(main, {Size = UDim2.new(0, 580, 0, 360)})
-                tween(statsBar, {Size = UDim2.new(0, 160, 0, 32)})
+                tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
                 self:Notify({
                     title = "UI Shown",
                     description = "Welcome back!",
