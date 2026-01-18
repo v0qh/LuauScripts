@@ -89,14 +89,13 @@ local fpsLabel = create("TextLabel", {
     Size = UDim2.new(0.45, -6, 1, 0),
     Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
-    Text = "FPS: 0",
+    Text = "FPS: --",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
     TextColor3 = Color3.fromRGB(120, 200, 120),
     TextXAlignment = Enum.TextXAlignment.Left,
     Parent = statsBar
 })
-
 
 create("Frame", {
     Size = UDim2.new(1, -20, 0, 1),
@@ -111,14 +110,13 @@ local pingLabel = create("TextLabel", {
     Size = UDim2.new(0.45, -6, 1, 0),
     Position = UDim2.new(0.55, 0, 0, 0),
     BackgroundTransparency = 1,
-    Text = "PING: 0ms",
+    Text = "PING: --",
     Font = Enum.Font.GothamBold,
     TextSize = 12,
     TextColor3 = Color3.fromRGB(120, 200, 120),
     TextXAlignment = Enum.TextXAlignment.Right,
     Parent = statsBar
 })
-
 
 create("UIPadding", {PaddingRight = UDim.new(0, 12), Parent = statsBar})
 
