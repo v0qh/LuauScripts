@@ -58,20 +58,20 @@ create("UIListLayout", {
 
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 391, 0, 24),
-    Position = UDim2.new(0.5, 0, 0, 8),
+    Size = UDim2.new(0, 240, 0, 26),
+    Position = UDim2.new(0.5, 0, 0, 10),
     AnchorPoint = Vector2.new(0.5, 0),
-    BackgroundColor3 = Color3.fromRGB(8, 8, 12),
-    BackgroundTransparency = 0.05,
+    BackgroundColor3 = Color3.fromRGB(10, 10, 14),
+    BackgroundTransparency = 0.1,
     BorderSizePixel = 0,
     Parent = sg
 })
 
 create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = statsBar})
 create("UIStroke", {
-    Color = Color3.fromRGB(85, 65, 130),
+    Color = Color3.fromRGB(75, 55, 120),
     Thickness = 1,
-    Transparency = 0.35,
+    Transparency = 0.4,
     Parent = statsBar
 })
 
@@ -85,15 +85,36 @@ create("UIGradient", {
 })
 
 
-local infoLabel = create("TextLabel", {
-    Size = UDim2.new(1, -20, 1, 0),
-    Position = UDim2.new(0, 10, 0, 0),
+local fpsLabel = create("TextLabel", {
+    Size = UDim2.new(0.45, -6, 1, 0),
+    Position = UDim2.new(0, 12, 0, 0),
     BackgroundTransparency = 1,
-    Text = "FPS: --   •   PING: --ms   •   TIME: --:--",
-    Font = Enum.Font.GothamSemibold,
+    Text = "FPS: --",
+    Font = Enum.Font.GothamBold,
     TextSize = 12,
-    TextColor3 = Color3.fromRGB(200, 190, 220),
-    TextXAlignment = Enum.TextXAlignment.Center,
+    TextColor3 = Color3.fromRGB(120, 200, 120),
+    TextXAlignment = Enum.TextXAlignment.Left,
+    Parent = statsBar
+})
+
+create("Frame", {
+    Size = UDim2.new(1, -20, 0, 1),
+    Position = UDim2.new(0, 10, 1, -1),
+    BackgroundColor3 = Color3.fromRGB(75, 55, 120),
+    BackgroundTransparency = 0.85,
+    BorderSizePixel = 0,
+    Parent = statsBar
+})
+
+local pingLabel = create("TextLabel", {
+    Size = UDim2.new(0.45, -6, 1, 0),
+    Position = UDim2.new(0.55, 0, 0, 0),
+    BackgroundTransparency = 1,
+    Text = "PING: --",
+    Font = Enum.Font.GothamBold,
+    TextSize = 12,
+    TextColor3 = Color3.fromRGB(120, 200, 120),
+    TextXAlignment = Enum.TextXAlignment.Right,
     Parent = statsBar
 })
 
@@ -1124,34 +1145,34 @@ local fps = 0
 local lastUpdate = tick()
 
 RunService.RenderStepped:Connect(function()
-    fps += 1
+    fps = (fps or 0) + 1
+
     if tick() - lastUpdate >= 1 then
-        local color
-        if fps >= 120 then
-            color = Color3.fromRGB(80, 180, 80)
-        elseif fps >= 60 then
-            color = Color3.fromRGB(180, 160, 80)
+        fpsLabel.Text = "FPS: " .. fps
+
+        if fps >= 50 then
+            fpsLabel.TextColor3 = Color3.fromRGB(80, 180, 80)
+        elseif fps >= 30 then
+            fpsLabel.TextColor3 = Color3.fromRGB(180, 160, 80)
         else
-            color = Color3.fromRGB(180, 80, 80)
+            fpsLabel.TextColor3 = Color3.fromRGB(180, 80, 80)
         end
-        
-        local ping = math.floor(player:GetNetworkPing() * 1000)
-        local pingColor = ping <= 50 and Color3.fromRGB(80, 180, 80)
-            or ping <= 100 and Color3.fromRGB(180, 160, 80)
-            or Color3.fromRGB(180, 80, 80)
-            
-        local time = os.date("%H:%M")
-        
-        infoLabel.Text = string.format(
-            "FPS: %d   •   PING: %dms   •   TIME: %s",
-            fps, ping, time
-        )
-        
-        infoLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
-        fps, lastUpdate = 0, tick()
+
+        fps = 0
+        lastUpdate = tick()
     end
 end)
 
+
+    
+task.spawn(function()
+        while task.wait(1) do
+            local ping = math.floor(player:GetNetworkPing() * 1000)
+            pingLabel.Text = "PING: " .. ping .. "ms"
+            local color = ping <= 50 and Color3.fromRGB(80, 180, 80) or ping <= 100 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
+            pingLabel.TextColor3 = color
+        end
+    end)
     
     local dragging, dragInput, dragStart, startPos
     
