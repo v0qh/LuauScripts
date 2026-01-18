@@ -58,7 +58,7 @@ create("UIListLayout", {
 
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 320, 0, 24),
+    Size = UDim2.new(0, 390, 0, 24),
     Position = UDim2.new(0.5, 0, 0, 8),
     AnchorPoint = Vector2.new(0.5, 0),
     BackgroundColor3 = Color3.fromRGB(8, 8, 12),
@@ -1151,15 +1151,7 @@ RunService.RenderStepped:Connect(function()
         fps, lastUpdate = 0, tick()
     end
 end)
-    
-task.spawn(function()
-        while task.wait(1) do
-            local ping = math.floor(player:GetNetworkPing() * 1000)
-            pingLabel.Text = "PING: " .. ping .. "ms"
-            local color = ping <= 50 and Color3.fromRGB(80, 180, 80) or ping <= 100 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
-            pingLabel.TextColor3 = color
-        end
-    end)
+
     
     local dragging, dragInput, dragStart, startPos
     
