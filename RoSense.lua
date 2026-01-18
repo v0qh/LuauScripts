@@ -52,6 +52,7 @@ local notifContainer = create("Frame", {
 create("UIListLayout", {
     Padding = UDim.new(0, 8),
     VerticalAlignment = Enum.VerticalAlignment.Bottom,
+    SortOrder = Enum.SortOrder.Name,
     Parent = notifContainer
 })
 
