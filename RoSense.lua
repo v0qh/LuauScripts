@@ -856,6 +856,9 @@ function componentLib.TextBox(props)
 end
 
 function componentLib.Label(props)
+    local parent = props.parent
+    parent:SetAttribute("Order", (parent:GetAttribute("Order") or 0) + 1)
+
     local label = create("TextLabel", {
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
@@ -864,17 +867,23 @@ function componentLib.Label(props)
         TextSize = 13,
         TextColor3 = Color3.fromRGB(200, 180, 220),
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = props.parent
+        LayoutOrder = parent:GetAttribute("Order"),
+        Parent = parent
     })
     
     return label
 end
 
+
 function componentLib.Divider(props)
+    local parent = props.parent
+    parent:SetAttribute("Order", (parent:GetAttribute("Order") or 0) + 1)
+
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 16),
         BackgroundTransparency = 1,
-        Parent = props.parent
+        LayoutOrder = parent:GetAttribute("Order"),
+        Parent = parent
     })
     
     local divider = create("Frame", {
@@ -888,6 +897,7 @@ function componentLib.Divider(props)
     
     return container
 end
+
 
 function componentLib.Keybind(props)
     local container = create("Frame", {
