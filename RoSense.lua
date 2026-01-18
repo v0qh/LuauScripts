@@ -465,6 +465,11 @@ function componentLib.Slider(props)
 end
 
 function componentLib.Dropdown(props)
+    if not props or not props.options or #props.options == 0 then
+        props = props or {}
+        props.options = {"No Options"}
+    end
+    
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 32),
         BackgroundTransparency = 1,
@@ -526,7 +531,8 @@ function componentLib.Dropdown(props)
     local listLayout = create("UIListLayout", {Padding = UDim.new(0, 2), Parent = list})
     create("UIPadding", {PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4), PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4), Parent = list})
     
-    for _, opt in ipairs(props.options) do
+local options = props.options or {"Option 1"}
+for _, opt in ipairs(options) do
         local optBtn = create("TextButton", {
             Size = UDim2.new(1, 0, 0, 28),
             BackgroundColor3 = Color3.fromRGB(18, 18, 24),
