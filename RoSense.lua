@@ -58,7 +58,7 @@ create("UIListLayout", {
 
 local statsBar = create("Frame", {
     Name = "StatsBar",
-    Size = UDim2.new(0, 390, 0, 24),
+    Size = UDim2.new(0, 391, 0, 24),
     Position = UDim2.new(0.5, 0, 0, 8),
     AnchorPoint = Vector2.new(0.5, 0),
     BackgroundColor3 = Color3.fromRGB(8, 8, 12),
