@@ -67,13 +67,6 @@ local statsBar = create("Frame", {
     Parent = sg
 })
 
-create("Frame", {
-    Size = UDim2.new(0, 3, 1, 0),
-    BackgroundColor3 = Color3.fromRGB(75, 55, 120),
-    BorderSizePixel = 0,
-    Parent = statsBar
-})
-
 create("UICorner", {CornerRadius = UDim.new(0, 6), Parent = statsBar})
 create("UIStroke", {
     Color = Color3.fromRGB(75, 55, 120),
@@ -1150,19 +1143,24 @@ function RoSense:Init()
     tween(main, {Size = UDim2.new(0, 580, 0, 360)})
     tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
     
-    local fps = 0
-    local lastUpdate = tick()
-    
-        RunService.RenderStepped:Connect(function()
-        fps = fps + 1
-        if tick() - lastUpdate >= 1 then
-            fpsLabel.Text = fps .. " FPS"
-            local color = fps >= 50 and Color3.fromRGB(80, 180, 80) or fps >= 30 and Color3.fromRGB(180, 160, 80) or Color3.fromRGB(180, 80, 80)
-            fpsLabel.TextColor3 = color
-            fps = 0
-            lastUpdate = tick()
-        end
-    end)
+local fps = 0
+local lastUpdate = tick()
+
+RunService.RenderStepped:Connect(function()
+    fps += 1
+    if tick() - lastUpdate >= 1 then
+        fpsLabel.Text = fps .. " FPS"
+        local color =
+            fps >= 50 and Color3.fromRGB(80, 180, 80)
+            or fps >= 30 and Color3.fromRGB(180, 160, 80)
+            or Color3.fromRGB(180, 80, 80)
+
+        fpsLabel.TextColor3 = color
+        fps = 0
+        lastUpdate = tick()
+    end
+end)
+
     
 task.spawn(function()
         while task.wait(1) do
