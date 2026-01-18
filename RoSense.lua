@@ -907,3 +907,5 @@ function RoSense:Init()
     
     return self
 end
+
+return RoSense
