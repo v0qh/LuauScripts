@@ -858,19 +858,27 @@ function componentLib.TextBox(props)
 end
 
 function componentLib.Label(props)
-    local label = create("TextLabel", {
+    
+    local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Parent = props.parent
+    })
+
+    local label = create("TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0),
         BackgroundTransparency = 1,
         Text = props.text or "Label",
         Font = Enum.Font.GothamBold,
         TextSize = 13,
         TextColor3 = Color3.fromRGB(200, 180, 220),
         TextXAlignment = Enum.TextXAlignment.Left,
-        Parent = props.parent
+        Parent = container
     })
 
-    return label
+    return container
 end
+
 
 function componentLib.Divider(props)
     local container = create("Frame", {
