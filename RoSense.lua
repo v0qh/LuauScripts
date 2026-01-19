@@ -305,7 +305,7 @@ function componentLib.Toggle(props)
     
     local enabled = props.default or false
     
-    local function update()
+    local function update(skipCallback)
         if enabled then
             tween(toggle, {BackgroundColor3 = Color3.fromRGB(75, 55, 120)})
             tween(knob, {Position = UDim2.new(1, -18, 0.5, -8), BackgroundColor3 = Color3.fromRGB(240, 240, 250)})
@@ -313,7 +313,7 @@ function componentLib.Toggle(props)
             tween(toggle, {BackgroundColor3 = Color3.fromRGB(22, 22, 28)})
             tween(knob, {Position = UDim2.new(0, 2, 0.5, -8), BackgroundColor3 = Color3.fromRGB(180, 180, 190)})
         end
-        if props.callback then
+        if props.callback and not skipCallback then
             props.callback(enabled)
         end
     end
@@ -324,7 +324,28 @@ function componentLib.Toggle(props)
     end)
     
     update()
-    return container
+    local api = {}
+    function api:SetValue(val, silent)
+        enabled = not not val
+        update(silent)
+    end
+    function api:GetValue()
+        return enabled
+    end
+    function api:FindFirstChildOfClass(...)
+        return container:FindFirstChildOfClass(...)
+    end
+    function api:FindFirstChild(...)
+        return container:FindFirstChild(...)
+    end
+    function api:GetChildren()
+        return container:GetChildren()
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    api.Container = container
+    return api
 end
 
 function componentLib.Button(props)
@@ -432,15 +453,30 @@ function componentLib.Slider(props)
     local current = props.default or min
     local dragging = false
     
-    local function update(input)
-        local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
-        current = math.floor(min + (max - min) * pos)
+    local function applyValue(newValue, skipCallback)
+        if max == min then
+            current = min
+            value.Text = tostring(current)
+            fill.Size = UDim2.new(0, 0, 1, 0)
+            knob.Position = UDim2.new(0, -7, 0.5, -7)
+            if props.callback and not skipCallback then
+                props.callback(current)
+            end
+            return
+        end
+        current = math.floor(math.clamp(newValue, min, max))
+        local pos = (current - min) / (max - min)
         value.Text = tostring(current)
         tween(fill, {Size = UDim2.new(pos, 0, 1, 0)}, RoSense.fastTween)
         tween(knob, {Position = UDim2.new(pos, -7, 0.5, -7)}, RoSense.fastTween)
-        if props.callback then
+        if props.callback and not skipCallback then
             props.callback(current)
         end
+    end
+    
+    local function update(input)
+        local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+        applyValue(min + (max - min) * pos, false)
     end
     
     track.InputBegan:Connect(function(input)
@@ -466,7 +502,27 @@ function componentLib.Slider(props)
     fill.Size = UDim2.new(initPos, 0, 1, 0)
     knob.Position = UDim2.new(initPos, -7, 0.5, -7)
     
-    return container
+    local api = {}
+    function api:SetValue(val, silent)
+        applyValue(val, silent)
+    end
+    function api:GetValue()
+        return current
+    end
+    function api:FindFirstChildOfClass(...)
+        return container:FindFirstChildOfClass(...)
+    end
+    function api:FindFirstChild(...)
+        return container:FindFirstChild(...)
+    end
+    function api:GetChildren()
+        return container:GetChildren()
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    api.Container = container
+    return api
 end
 
 function componentLib.Dropdown(props)
@@ -900,7 +956,30 @@ function componentLib.TextBox(props)
         end
     end)
     
-    return container
+    local api = {}
+    function api:SetValue(val, silent)
+        box.Text = tostring(val or "")
+        if props.callback and not silent then
+            props.callback(box.Text)
+        end
+    end
+    function api:GetValue()
+        return box.Text
+    end
+    function api:FindFirstChildOfClass(...)
+        return container:FindFirstChildOfClass(...)
+    end
+    function api:FindFirstChild(...)
+        return container:FindFirstChild(...)
+    end
+    function api:GetChildren()
+        return container:GetChildren()
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    api.Container = container
+    return api
 end
 
 function componentLib.Label(props)
