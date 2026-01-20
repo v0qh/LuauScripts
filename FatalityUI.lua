@@ -179,7 +179,14 @@ rs.th = {
 rs.as = {}
 rs.lu = "https://files.catbox.moe/oxmgnm.png"
 local b64n = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC3ElEQVR42hWT51YiQRCF+0lYGYIIDLhwUBEUEARRgqiMzj6JORDMEgwg5gDGY/YB9+sffWi6qm7de6tG3NzcWBYWFtI7Ozvq5uam9fHx0Xx/f5/++voKr6ysRI+OjrqIm8rlsvP09DTGPVIqlSZub2/Hz87OBgRFg5eXl+7X19f8/Px8hl9bu932HxwcuDc2NhxPT0/e1dVVU61WM1cqlRlObHt7O7e4uJg6OTkJi7W1NZ2g6fz8vPft7S1+fX2tfXx8+C4uLuydTkchcYwm2d3dXdP7+7uTmJl8N8Vx8n2iUCj4QHXc3d256axDP7G8vBxDmg2Kqa2tLRvJfUjUeRunkZMcD8XZ5+dno5QwRZfc/v5+P0kKWud+f39HPj8/J3hzoHWoXq9r39/fCYC6oW8FNA1QmHtaoN+PYVGSfNJEjBrCvMzS0lIeed2SycvLSxIzYzDrg34MoBDFEeT8ExiXfHh4sEBLg3IGFlm6einupUjSNxDXOC7AM8VicRg2Zorje3t704IOw1dXV3Yc9+G41J39+fkJkWTg3dNsNv9Io6vVqobuHEUq7FQkjiDVJKCbImkKehlZvL6+bsXQIMEIBrtarVYeID/e6JIhTMblHgDUT15CgDyIB6Hj42ML5jgB8rIsUek2/jiRqDDOOF1lbBbD8+yIghwVuWOC7g6QrSDrkhbzDwI02Wg0coeHh3aWyEwnP6P28z+A9hRgSXxKEDMK3E+BmJMLQqEdemHYWDGwhw4B3vJ4ovAmc2ZgZgYgQdNp2JkEwQwbpqJ3ADZBtOYBnSXJxsgMHBc5k4wywDb6WbYU9wisJsjvFnTspciI3jSoRj4mD8XyfxCdc4CHADdyl6vcI7eUk4SNSiOLwG0N3SoFMQwaZSoDoEd5C7GJOgsj11xupcq9nymNof8v++GR7KUEBS0BPqIRTFFg4aCbi0Qd4zS6afjgg74NH6aJyxGO8tUmGLHhPw5o+WGwlq84AAAAAElFTkSuQmCC"
+local hexIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAtklEQVR4nO1WsQ3DMAyT+EDPSeeek7GHdMw5mdNzekGCroXliqoNo4g4WjRJSIBskUTi7NDIpW3Zd6t2nZXS1FbG0SDoYc7w0cOcuadRkdv98vw8Wx+viR0HWpnXzmudQC0AY+KtuwNshdRe8RLP6gI8gow5y4cMBjKA/MsIVmPJ/MqHVShtL69oiWdtQ3gEmRBsp1ArWqktk8hboD1fw2/mb7hGwP5ymHtoKRbhqwz+EyYSMhoH/mZYJkIHhGAAAAAASUVORK5CYII="
+local gearIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAkElEQVR4nO2W0Q3AIAhEj5uqM3WgztStbPrRxDRpyqEJH/I+FfFQQIFidSy68Dxae49tu8n+iGRYApCMzUi+kWTk7M0VO0nA4/SO7ivCfs4rgurmHntFBJGMjdxflP4kiWRYApCMRcvw7zn2li6RDD1GandTGpd5HL4de/B2TSoC1FbswRCk/oSzIFYXUCCbCyrHQXXEMToYAAAAAElFTkSuQmCC"
+local listIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAR0lEQVR4nO3RoQ0AIBBD0V6nYiYGYia2Ao/BkFTwn4QTP6kE/K5uB3Osdb61XvXq3wozAWKCMBMgJggzAWKCMBOg3ycAlLYBUksMKk2MPxAAAAAASUVORK5CYII="
+local ent1 = asset("tab_main.png", hexIcon)
+local ent2 = asset("tab_cfg.png", gearIcon)
+local ent3 = asset("tab_list.png", listIcon)
 rs.as.noise = asset("noise.png", b64n)
+rs.as.tabs = { main = ent1, config = ent2, list = ent3 }
 rs.ic = rs.ic or {}
 
 local icm = setmetatable({}, { __mode = "k" })
@@ -840,8 +847,8 @@ function rs.new(o)
 	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = rs.th.b3, BackgroundTransparency = 0.5 })
 	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1), BackgroundColor3 = rs.th.ln })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
-	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 40, 0, 40), Position = UDim2.new(0, 16, 0.5, -20), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
-	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 150, 1, 0), Position = UDim2.new(0, 66, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
+	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 60, 0, 60), Position = UDim2.new(0, 14, 0.5, -25), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
+	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(0, 76, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
 	n("Frame", { Parent = top, Size = UDim2.new(0, 1, 0, 24), Position = UDim2.new(0, 200, 0.5, -12), BackgroundColor3 = rs.th.ln })
 	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -220, 1, 0), Position = UDim2.new(0, 212, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
@@ -915,11 +922,16 @@ function rs.new(o)
 				u = rs.ic[icn]
 			end
 		end
-		if u then
-			local id = asset_url("ic_" .. fn(icn) .. ".png", u)
-			if id then
-				im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = id, ImageColor3 = rs.th.sub, ScaleType = Enum.ScaleType.Fit })
-			end
+		local iconId
+		local key = (type(icn) == "string" and icn:lower()) or nil
+		if key and rs.as.tabs[key] then
+			iconId = rs.as.tabs[key]
+		end
+		if u and not iconId then
+			iconId = asset_url("ic_" .. fn(icn) .. ".png", u)
+		end
+		if iconId then
+			im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = iconId, ImageColor3 = rs.th.sub, ScaleType = Enum.ScaleType.Fit })
 		end
 		if not im then
 			ico = ic(icn, ib, rs.th.sub)
