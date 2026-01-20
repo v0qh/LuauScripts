@@ -122,21 +122,26 @@ local function fn(s)
 	return v:sub(1, 24)
 end
 
-rs.th = {
-	bg = Color3.fromRGB(8, 8, 11),
-	b2 = Color3.fromRGB(13, 11, 16),
-	b3 = Color3.fromRGB(18, 16, 22),
-	b4 = Color3.fromRGB(24, 20, 28),
-	acc = Color3.fromRGB(186, 143, 255),
-	acc2 = Color3.fromRGB(150, 108, 236),
-	txt = Color3.fromRGB(230, 226, 238),
-	sub = Color3.fromRGB(150, 144, 168),
-	st = Color3.fromRGB(70, 64, 86),
-	ln = Color3.fromRGB(28, 24, 34)
-}
+	rs.th = {
+		bg = Color3.fromRGB(7, 7, 11),
+		b2 = Color3.fromRGB(12, 10, 16),
+		b3 = Color3.fromRGB(19, 17, 25),
+		b4 = Color3.fromRGB(26, 22, 33),
+		acc = Color3.fromRGB(197, 140, 255),
+		acc2 = Color3.fromRGB(211, 124, 255),
+		txt = Color3.fromRGB(230, 226, 238),
+		sub = Color3.fromRGB(150, 144, 168),
+		st = Color3.fromRGB(62, 55, 82),
+		ln = Color3.fromRGB(33, 28, 39)
+	}
 
 rs.as = {}
 rs.lu = "https://files.catbox.moe/5vlagq.png"
+rs.iconAssets = {
+	main = "https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG@master/black/png/32/home.png",
+	config = "https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG@master/black/png/32/cogs.png",
+	list = "https://cdn.jsdelivr.net/gh/encharm/Font-Awesome-SVG-PNG@master/black/png/32/list.png"
+}
 rs.ic = rs.ic or {}
 
 local icm = setmetatable({}, { __mode = "k" })
@@ -267,16 +272,18 @@ end
 
 rs.el.btn = function(sc, txt, cb)
 	local r = row(sc.f, 30)
-	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = txt or "Button", TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 13, AutoButtonColor = false })
+	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = txt or "Button", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, AutoButtonColor = false })
 	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 6) })
 	local st = n("UIStroke", { Parent = b, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	local function hov(x)
 		if x then
 			tw(b, 0.12, { BackgroundColor3 = rs.th.b4 })
 			tw(st, 0.12, { Color = rs.th.acc, Transparency = 0.2 })
+			b.TextColor3 = rs.th.acc
 		else
 			tw(b, 0.12, { BackgroundColor3 = rs.th.b3 })
 			tw(st, 0.12, { Color = rs.th.b4, Transparency = 0.6 })
+			b.TextColor3 = rs.th.sub
 		end
 	end
 	hov(false)
@@ -749,7 +756,7 @@ function rs.new(o)
 		syn.protect_gui(sg)
 	end
 	w.sg = sg
-	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), AnchorPoint = Vector2.new(1, 0), BackgroundTransparency = 1, ZIndex = 50 })
+	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), AnchorPoint = Vector2.new(1, 0), BackgroundTransparency = 1, ZIndex = 70 })
 	n("UIListLayout", { Parent = nt, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Top })
 	local ni = 0
 	function w:Notify(tt, bd, tm)
@@ -757,6 +764,14 @@ function rs.new(o)
 		local fr = n("Frame", { Parent = nt, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = rs.th.b2, BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 51, LayoutOrder = ni })
 		n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 6) })
 		local st = n("UIStroke", { Parent = fr, Color = rs.th.ln, Thickness = 1, Transparency = 1 })
+		n("UIGradient", {
+			Parent = fr,
+			Rotation = 90,
+			Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, rs.th.b3),
+				ColorSequenceKeypoint.new(1, rs.th.b2)
+			})
+		})
 		local scn = n("UIScale", { Parent = fr, Scale = 0.96 })
 		n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
 		local tl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 14), BackgroundTransparency = 1, Text = tt or "Notice", TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1 })
@@ -815,12 +830,42 @@ function rs.new(o)
 	})
 	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
-	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1), BackgroundColor3 = rs.th.ln })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
-	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 60, 0, 60), Position = UDim2.new(0, 14, 0.5, -25), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
-	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(0, 76, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
-	n("Frame", { Parent = top, Size = UDim2.new(0, 1, 0, 24), Position = UDim2.new(0, 200, 0.5, -12), BackgroundColor3 = rs.th.ln })
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -220, 1, 0), Position = UDim2.new(0, 212, 0, 0), BackgroundTransparency = 1 })
+	local lgm = n("ImageLabel", {
+		Parent = top,
+		Size = UDim2.new(0, 74, 0, 74),
+		Position = UDim2.new(0, 14, 0.5, -37),
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundTransparency = 1,
+		Image = rs.as.logo or "",
+		ScaleType = Enum.ScaleType.Fit
+	})
+	local ttl = n("TextLabel", {
+		Parent = top,
+		Size = UDim2.new(0, 180, 0, 32),
+		Position = UDim2.new(0, 104, 0.5, -16),
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundTransparency = 1,
+		Text = o.name or "RoSense",
+		TextColor3 = Color3.fromRGB(225, 168, 255),
+		Font = Enum.Font.GothamSemibold,
+		TextSize = 21,
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	local div = n("Frame", {
+		Parent = top,
+		Size = UDim2.new(0, 2, 0, 40),
+		Position = UDim2.new(0, 208, 0.5, -20),
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundColor3 = rs.th.acc
+	})
+	n("UICorner", { Parent = div, CornerRadius = UDim.new(1, 0) })
+	n("UIGradient", {
+		Parent = div,
+		Rotation = 90,
+		Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.acc2), ColorSequenceKeypoint.new(1, rs.th.acc) })
+	})
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -226, 1, 0), Position = UDim2.new(0, 226, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = tlist, PaddingRight = UDim.new(0, 16) })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th), Size = UDim2.new(1, 0, 1, -(th + sh)), BackgroundTransparency = 1 })
