@@ -148,57 +148,59 @@ local icm = setmetatable({}, { __mode = "k" })
 
 local function ic(nm, pr, col)
 	local c = col or rs.th.acc
-	local f = n("Frame", { Parent = pr, Size = UDim2.new(0, 18, 0, 18), BackgroundTransparency = 1 })
+	local f = n("Frame", { Parent = pr, Size = UDim2.new(0, 20, 0, 20), BackgroundTransparency = 1 })
 	local pt = {}
 	local function add(x)
 		pt[#pt + 1] = x
 		return x
 	end
 	local function stroke(x, th)
-		return add(n("UIStroke", { Parent = x, Color = c, Thickness = th or 1 }))
+		return add(n("UIStroke", { Parent = x, Color = c, Thickness = th or 1.5 }))
 	end
+	
 	if nm == "main" or nm == "fatality" then
-		local vert = add(n("Frame", { Parent = f, Size = UDim2.new(0, 4, 1, 0), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = c }))
-		n("UICorner", { Parent = vert, CornerRadius = UDim.new(0, 2) })
-		local top = add(n("Frame", { Parent = f, Size = UDim2.new(0, 10, 0, 4), Position = UDim2.new(0, 4, 0, 0), BackgroundColor3 = c }))
-		n("UICorner", { Parent = top, CornerRadius = UDim.new(0, 2) })
-		local diag = add(n("Frame", { Parent = f, Size = UDim2.new(0, 12, 0, 4), Position = UDim2.new(0.4, 0, 0.45, -2), BackgroundColor3 = c, Rotation = 25 }))
-		local bottom = add(n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 4), Position = UDim2.new(0.45, 0, 0.7, -2), BackgroundColor3 = c }))
-		n("UICorner", { Parent = bottom, CornerRadius = UDim.new(0, 2) })
-		stroke(diag, 1.4)
+		local base = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 10), Position = UDim2.new(0.5, -7, 1, -11), BackgroundColor3 = c }))
+		n("UICorner", { Parent = base, CornerRadius = UDim.new(0, 2) })
+		local roof = add(n("Frame", { Parent = f, Size = UDim2.new(0, 16, 0, 2), Position = UDim2.new(0.5, -8, 0, 5), BackgroundColor3 = c, Rotation = 45 }))
+		local roof2 = add(n("Frame", { Parent = f, Size = UDim2.new(0, 16, 0, 2), Position = UDim2.new(0.5, -8, 0, 5), BackgroundColor3 = c, Rotation = -45 }))
+		
 	elseif nm == "config" or nm == "gear" then
-		local ring = n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(0.5, -7, 0.5, -7), BackgroundTransparency = 1 })
-		stroke(ring, 1.4)
-		n("UICorner", { Parent = ring, CornerRadius = UDim.new(1, 0) })
+		local center = n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 8), Position = UDim2.new(0.5, -4, 0.5, -4), BackgroundTransparency = 1 })
+		stroke(center, 2)
+		n("UICorner", { Parent = center, CornerRadius = UDim.new(1, 0) })
+		
 		for i = 0, 7 do
 			local theta = math.rad(i * 45)
+			local dist = 6
 			local arm = add(n("Frame", {
 				Parent = f,
-				Size = UDim2.new(0, 2, 0, 6),
-				Position = UDim2.new(0.5, math.cos(theta) * 4, 0.5, math.sin(theta) * 4 - 3),
-				BackgroundColor3 = c,
-				Rotation = math.deg(theta)
+				Size = UDim2.new(0, 3, 0, 5),
+				Position = UDim2.new(0.5, math.cos(theta) * dist - 1.5, 0.5, math.sin(theta) * dist - 2.5),
+				BackgroundColor3 = c
 			}))
 			n("UICorner", { Parent = arm, CornerRadius = UDim.new(0, 1) })
 		end
+		
 	elseif nm == "list" or nm == "queue" then
-		local y = 2
-		for _ = 1, 3 do
+		local y = 3
+		for i = 1, 3 do
 			local bar = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 3), Position = UDim2.new(0.5, -7, 0, y), BackgroundColor3 = c }))
-			n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 2) })
-			y = y + 5
+			n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 1.5) })
+			y = y + 6
 		end
-		stroke(f, 1)
+		
 	elseif nm == "user" then
-		local head = add(n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 8), Position = UDim2.new(0.5, -4, 0, 1), BackgroundColor3 = c }))
+		local head = add(n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 8), Position = UDim2.new(0.5, -4, 0, 2), BackgroundColor3 = c }))
 		n("UICorner", { Parent = head, CornerRadius = UDim.new(1, 0) })
-		local body = add(n("Frame", { Parent = f, Size = UDim2.new(0, 12, 0, 6), Position = UDim2.new(0.5, -6, 1, -7), BackgroundColor3 = c }))
+		local body = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 8), Position = UDim2.new(0.5, -7, 1, -9), BackgroundColor3 = c }))
 		n("UICorner", { Parent = body, CornerRadius = UDim.new(1, 0) })
+		
 	else
-		local sq = n("Frame", { Parent = f, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(0.5, -6, 0.5, -6), BackgroundTransparency = 1 })
-		stroke(sq, 1.3)
-		n("UICorner", { Parent = sq, CornerRadius = UDim.new(0, 2) })
+		local sq = n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(0.5, -7, 0.5, -7), BackgroundTransparency = 1 })
+		stroke(sq, 2)
+		n("UICorner", { Parent = sq, CornerRadius = UDim.new(0, 3) })
 	end
+	
 	icm[f] = pt
 	return f
 end
@@ -826,24 +828,25 @@ function rs.new(o)
 			ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 16, 24))
 		})
 	})
-	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
+local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 250, 1, 0), BackgroundTransparency = 1 })
+
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 240, 1, 0), BackgroundTransparency = 1 })
+	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 16) })
+	
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 56, 0, 56),
-		Position = UDim2.new(0, 16, 0.5, -28),
-		AnchorPoint = Vector2.new(0, 0.5),
+		Size = UDim2.new(0, 48, 0, 48),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
+	
 	local ttl = n("TextLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 170, 0, 28),
-		Position = UDim2.new(0, 88, 0.5, -14),
-		AnchorPoint = Vector2.new(0, 0.5),
+		Size = UDim2.new(0, 150, 0, 48),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
@@ -851,11 +854,11 @@ function rs.new(o)
 		TextSize = 21,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
+
 	local div = n("Frame", {
 		Parent = top,
-		Size = UDim2.new(0, 2, 0, 48),
-		Position = UDim2.new(0, 248, 0.5, -24),
-		AnchorPoint = Vector2.new(0, 0.5),
+		Size = UDim2.new(0, 2, 0, 44),
+		Position = UDim2.new(0, 252, 0.5, -22),
 		BackgroundColor3 = rs.th.acc
 	})
 	n("UICorner", { Parent = div, CornerRadius = UDim.new(1, 0) })
@@ -864,9 +867,10 @@ function rs.new(o)
 		Rotation = 90,
 		Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.acc2), ColorSequenceKeypoint.new(1, rs.th.acc) })
 	})
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -270, 1, 0), Position = UDim2.new(0, 270, 0, 0), BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = tlist, PaddingRight = UDim.new(0, 16) })
+	
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -266, 1, 0), Position = UDim2.new(0, 266, 0, 0), BackgroundTransparency = 1 })
+	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 16) })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th), Size = UDim2.new(1, 0, 1, -(th + sh)), BackgroundTransparency = 1 })
 	local pl = n("UIPageLayout", { Parent = pages, TweenTime = 0.2, EasingStyle = Enum.EasingStyle.Quad, EasingDirection = Enum.EasingDirection.Out, SortOrder = Enum.SortOrder.LayoutOrder, FillDirection = Enum.FillDirection.Horizontal })
 	pl.ScrollWheelInputEnabled = false
@@ -918,34 +922,43 @@ function rs.new(o)
 	end)
 	function w:Tab(nm, icon, cols)
 		local t = { w = w }
-		local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 90, 0, 30), BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
-		b.AutomaticSize = Enum.AutomaticSize.X
-		local bg = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 1, -8), Position = UDim2.new(0, 0, 0, 4), BackgroundColor3 = rs.th.b4, BackgroundTransparency = 1 })
-		n("UICorner", { Parent = bg, CornerRadius = UDim.new(0, 6) })
-		local ib = n("Frame", { Parent = b, Size = UDim2.new(0, 18, 0, 18), Position = UDim2.new(0, 4, 0.5, -9), BackgroundTransparency = 1 })
-		local icn = icon or "main"
-		local im = nil
-		local ico = nil
-		local src = nil
-		local key = (type(icn) == "string" and icn:lower()) or nil
-		if type(icn) == "string" then
-			src = (o.iconAssets and o.iconAssets[key]) or (rs.iconAssets and rs.iconAssets[key]) or (o.icons and o.icons[key]) or (rs.icons and rs.icons[key])
+	local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 110, 0, 40), BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
+	b.AutomaticSize = Enum.AutomaticSize.X
+	
+	local bg = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 1, -4), Position = UDim2.new(0, 0, 0, 2), BackgroundColor3 = rs.th.b4, BackgroundTransparency = 1 })
+	n("UICorner", { Parent = bg, CornerRadius = UDim.new(0, 8) })
+	n("UIPadding", { Parent = b, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 14) })
+	
+	local ib = n("Frame", { Parent = b, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(0, 10, 0.5, -10), BackgroundTransparency = 1 })
+	
+	local icn = icon or "main"
+	local im = nil
+	local ico = nil
+	local src = nil
+	local key = (type(icn) == "string" and icn:lower()) or nil
+	
+	if type(icn) == "string" then
+		src = (o.iconAssets and o.iconAssets[key]) or (rs.iconAssets and rs.iconAssets[key]) or (o.icons and o.icons[key]) or (rs.icons and rs.icons[key])
+	end
+	if not src and type(icn) == "string" and icn:match("^https?://") then
+		src = icn
+	end
+	
+	if src then
+		local id = asset_url("tab_" .. fn(icn) .. ".png", src)
+		if id then
+			im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = id, ImageColor3 = rs.th.sub, ScaleType = Enum.ScaleType.Fit })
 		end
-		if not src and type(icn) == "string" and icn:match("^https?://") then
-			src = icn
-		end
-		if src then
-			local id = asset_url("tab_" .. fn(icn) .. ".png", src)
-			if id then
-				im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = id, ImageColor3 = rs.th.sub, ScaleType = Enum.ScaleType.Fit })
-			end
-		end
-		if not im then
-			ico = ic(icn, ib, rs.th.sub)
-		end
-		local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -26, 1, 0), Position = UDim2.new(0, 24, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-		local line = n("Frame", { Parent = b, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0, 4, 1, -2), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
-		n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 2) })
+	end
+	
+	if not im then
+		ico = ic(icn, ib, rs.th.sub)
+	end
+	
+	local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -34, 1, 0), Position = UDim2.new(0, 34, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
+	
+	local line = n("Frame", { Parent = b, Size = UDim2.new(0, 0, 0, 3), Position = UDim2.new(0, 10, 1, -3), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
+	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 2) })
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
