@@ -814,8 +814,6 @@ function rs.new(o)
 	local ms = typeof(sz) == "UDim2" and sz or UDim2.new(0, sx, 0, sy)
 	local main = n("Frame", { Parent = sg, Name = "Main", Size = ms, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = rs.th.bg, ClipsDescendants = true })
 	n("UICorner", { Parent = main, CornerRadius = UDim.new(0, cr) })
-	local ms2 = n("UIStroke", { Parent = main, Color = rs.th.ln, Thickness = 1, Transparency = 0.3 })
-	ms2.LineJoinMode = Enum.LineJoinMode.Round
 	n("UIGradient", { Parent = main, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.bg), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
 	local body = n("Frame", { Parent = main, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
 	n("UICorner", { Parent = body, CornerRadius = UDim.new(0, cr) })
