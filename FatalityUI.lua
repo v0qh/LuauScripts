@@ -24,8 +24,8 @@ local function n(c, p, k)
 	return i
 end
 
-local function tw(o, t, p)
-	local q = s.ts:Create(o, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), p)
+local function tw(o, t, p, e, d)
+	local q = s.ts:Create(o, TweenInfo.new(t, e or Enum.EasingStyle.Sine, d or Enum.EasingDirection.Out), p)
 	q:Play()
 	return q
 end
@@ -109,20 +109,67 @@ local function asset(name, data)
 	return nil
 end
 
+local function httpget(url)
+	local ok, res
+	if g and g.HttpGet then
+		ok, res = pcall(function()
+			return g:HttpGet(url)
+		end)
+		if ok and res and #res > 0 then
+			return res
+		end
+	end
+	local req = (syn and syn.request) or (http and http.request) or http_request or request
+	if req then
+		ok, res = pcall(function()
+			return req({ Url = url, Method = "GET" })
+		end)
+		if ok and res then
+			local body = res.Body or res.body or res
+			if type(body) == "string" then
+				return body
+			end
+		end
+	end
+	return nil
+end
+
+local function asset_url(name, url)
+	if not fsok() or not gca then
+		return nil
+	end
+	mkd()
+	local p = ad .. "/" .. name
+	if not iff(p) then
+		local d = httpget(url)
+		if d then
+			wf(p, d)
+		end
+	end
+	if iff(p) then
+		local ok, r = pcall(gca, p)
+		if ok then
+			return r
+		end
+	end
+	return nil
+end
+
 rs.th = {
-	bg = Color3.fromRGB(10, 8, 12),
-	b2 = Color3.fromRGB(16, 12, 20),
-	b3 = Color3.fromRGB(22, 18, 28),
-	b4 = Color3.fromRGB(30, 24, 38),
-	acc = Color3.fromRGB(130, 85, 220),
-	acc2 = Color3.fromRGB(165, 125, 240),
-	txt = Color3.fromRGB(232, 228, 240),
-	sub = Color3.fromRGB(150, 144, 170),
-	st = Color3.fromRGB(72, 66, 90),
-	ln = Color3.fromRGB(26, 22, 34)
+	bg = Color3.fromRGB(8, 8, 11),
+	b2 = Color3.fromRGB(13, 11, 16),
+	b3 = Color3.fromRGB(18, 16, 22),
+	b4 = Color3.fromRGB(24, 20, 28),
+	acc = Color3.fromRGB(186, 143, 255),
+	acc2 = Color3.fromRGB(150, 108, 236),
+	txt = Color3.fromRGB(230, 226, 238),
+	sub = Color3.fromRGB(150, 144, 168),
+	st = Color3.fromRGB(70, 64, 86),
+	ln = Color3.fromRGB(28, 24, 34)
 }
 
 rs.as = {}
+rs.lu = "https://files.catbox.moe/oxmgnm.png"
 local b64n = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAC3ElEQVR42hWT51YiQRCF+0lYGYIIDLhwUBEUEARRgqiMzj6JORDMEgwg5gDGY/YB9+sffWi6qm7de6tG3NzcWBYWFtI7Ozvq5uam9fHx0Xx/f5/++voKr6ysRI+OjrqIm8rlsvP09DTGPVIqlSZub2/Hz87OBgRFg5eXl+7X19f8/Px8hl9bu932HxwcuDc2NhxPT0/e1dVVU61WM1cqlRlObHt7O7e4uJg6OTkJi7W1NZ2g6fz8vPft7S1+fX2tfXx8+C4uLuydTkchcYwm2d3dXdP7+7uTmJl8N8Vx8n2iUCj4QHXc3d256axDP7G8vBxDmg2Kqa2tLRvJfUjUeRunkZMcD8XZ5+dno5QwRZfc/v5+P0kKWud+f39HPj8/J3hzoHWoXq9r39/fCYC6oW8FNA1QmHtaoN+PYVGSfNJEjBrCvMzS0lIeed2SycvLSxIzYzDrg34MoBDFEeT8ExiXfHh4sEBLg3IGFlm6einupUjSNxDXOC7AM8VicRg2Zorje3t704IOw1dXV3Yc9+G41J39+fkJkWTg3dNsNv9Io6vVqobuHEUq7FQkjiDVJKCbImkKehlZvL6+bsXQIMEIBrtarVYeID/e6JIhTMblHgDUT15CgDyIB6Hj42ML5jgB8rIsUek2/jiRqDDOOF1lbBbD8+yIghwVuWOC7g6QrSDrkhbzDwI02Wg0coeHh3aWyEwnP6P28z+A9hRgSXxKEDMK3E+BmJMLQqEdemHYWDGwhw4B3vJ4ovAmc2ZgZgYgQdNp2JkEwQwbpqJ3ADZBtOYBnSXJxsgMHBc5k4wywDb6WbYU9wisJsjvFnTspciI3jSoRj4mD8XyfxCdc4CHADdyl6vcI7eUk4SNSiOLwG0N3SoFMQwaZSoDoEd5C7GJOgsj11xupcq9nymNof8v++GR7KUEBS0BPqIRTFFg4aCbi0Qd4zS6afjgg74NH6aJyxGO8tUmGLHhPw5o+WGwlq84AAAAAElFTkSuQmCC"
 rs.as.noise = asset("noise.png", b64n)
 
@@ -653,8 +700,10 @@ rs.el.list = function(sc, txt, opt)
 end
 
 local function mkstats(w, p)
-	local bar = n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = rs.th.b2 })
+	local bar = n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 10) })
 	n("UIStroke", { Parent = bar, Color = rs.th.ln, Thickness = 1, Transparency = 0.5 })
+	n("UIGradient", { Parent = bar, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
 	n("UIListLayout", { Parent = bar, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = bar, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) })
 	local function lab()
@@ -719,6 +768,47 @@ function rs.new(o)
 		syn.protect_gui(sg)
 	end
 	w.sg = sg
+	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), BackgroundTransparency = 1, ZIndex = 50 })
+	n("UIListLayout", { Parent = nt, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Top })
+	local ni = 0
+	function w:Notify(tt, bd, tm)
+		ni = ni + 1
+		local fr = n("Frame", { Parent = nt, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = rs.th.b2, BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 51, LayoutOrder = ni })
+		n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 6) })
+		local st = n("UIStroke", { Parent = fr, Color = rs.th.ln, Thickness = 1, Transparency = 1 })
+		local scn = n("UIScale", { Parent = fr, Scale = 0.96 })
+		n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+		local tl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 14), BackgroundTransparency = 1, Text = tt or "Notice", TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1 })
+		local bl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Text = bd or "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, TextTransparency = 1 })
+		local pb = n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(1, 0, 1, -2), AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
+		n("UICorner", { Parent = pb, CornerRadius = UDim.new(0, 2) })
+		tw(scn, 0.2, { Scale = 1 })
+		tw(fr, 0.2, { BackgroundTransparency = 0 })
+		tw(st, 0.2, { Transparency = 0.5 })
+		tw(tl, 0.2, { TextTransparency = 0 })
+		tw(bl, 0.2, { TextTransparency = 0 })
+		tw(pb, 0.2, { BackgroundTransparency = 0.2 })
+		local d = tm or 3
+		tw(pb, d, { Size = UDim2.new(0, 0, 0, 2) }, Enum.EasingStyle.Linear)
+		task.delay(d, function()
+			tw(scn, 0.2, { Scale = 0.96 })
+			tw(fr, 0.2, { BackgroundTransparency = 1 })
+			tw(st, 0.2, { Transparency = 1 })
+			tw(tl, 0.2, { TextTransparency = 1 })
+			tw(bl, 0.2, { TextTransparency = 1 })
+			tw(pb, 0.2, { BackgroundTransparency = 1 })
+			task.delay(0.25, function()
+				if fr then
+					fr:Destroy()
+				end
+			end)
+		end)
+		return fr
+	end
+	local lg = asset_url("logo.png", o.logo or rs.lu)
+	if lg then
+		rs.as.logo = lg
+	end
 	local sz = o.size or Vector2.new(860, 560)
 	local sx = typeof(sz) == "UDim2" and sz.X.Offset or sz.X
 	local sy = typeof(sz) == "UDim2" and sz.Y.Offset or sz.Y
@@ -727,18 +817,22 @@ function rs.new(o)
 	n("UICorner", { Parent = main, CornerRadius = UDim.new(0, 10) })
 	n("UIStroke", { Parent = main, Color = rs.th.ln, Thickness = 1, Transparency = 0.3 })
 	n("UIGradient", { Parent = main, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.bg), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
-	local noise = n("ImageLabel", { Parent = main, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = rs.as.noise or "", ImageTransparency = 0.92, ScaleType = Enum.ScaleType.Tile, TileSize = UDim2.new(0, 96, 0, 96), Active = false, ZIndex = 0 })
+	local body = n("Frame", { Parent = main, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
+	n("UICorner", { Parent = body, CornerRadius = UDim.new(0, 10) })
+	local noise = n("ImageLabel", { Parent = body, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = rs.as.noise or "", ImageTransparency = 0.94, ScaleType = Enum.ScaleType.Tile, TileSize = UDim2.new(0, 96, 0, 96), Active = false, ZIndex = 0 })
 	n("UICorner", { Parent = noise, CornerRadius = UDim.new(0, 10) })
-	local top = n("Frame", { Parent = main, Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = rs.th.b2, Active = true })
+	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 54), BackgroundColor3 = rs.th.b2, Active = true })
 	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1), BackgroundColor3 = rs.th.ln })
-	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 120, 1, 0), Position = UDim2.new(0, 16, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -150, 1, 0), Position = UDim2.new(0, 120, 0, 0), BackgroundTransparency = 1 })
+	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 26, 0, 26), Position = UDim2.new(0, 14, 0.5, -13), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
+	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 120, 1, 0), Position = UDim2.new(0, 46, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
+	n("Frame", { Parent = top, Size = UDim2.new(0, 1, 0, 24), Position = UDim2.new(0, 170, 0.5, -12), BackgroundColor3 = rs.th.ln })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -200, 1, 0), Position = UDim2.new(0, 182, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = tlist, PaddingRight = UDim.new(0, 16) })
-	local pages = n("Frame", { Parent = main, Position = UDim2.new(0, 0, 0, 54), Size = UDim2.new(1, 0, 1, -88), BackgroundTransparency = 1 })
+	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, 54), Size = UDim2.new(1, 0, 1, -88), BackgroundTransparency = 1 })
 	local pl = n("UIPageLayout", { Parent = pages, TweenTime = 0.2, EasingStyle = Enum.EasingStyle.Quad, EasingDirection = Enum.EasingDirection.Out, SortOrder = Enum.SortOrder.LayoutOrder, FillDirection = Enum.FillDirection.Horizontal })
 	pl.ScrollWheelInputEnabled = false
-	mkstats(w, n("Frame", { Parent = main, Position = UDim2.new(0, 0, 1, -34), Size = UDim2.new(1, 0, 0, 34), BackgroundTransparency = 1 }))
+	mkstats(w, n("Frame", { Parent = body, Position = UDim2.new(0, 0, 1, -34), Size = UDim2.new(1, 0, 0, 34), BackgroundTransparency = 1 }))
 	local sc = n("UIScale", { Parent = main, Scale = 1 })
 	local cam = workspace.CurrentCamera
 	local function res()
@@ -759,23 +853,41 @@ function rs.new(o)
 		end)
 	end
 	drag(main, top, w.cx)
+	local vis = true
+	local function setvis(x)
+		vis = x
+		if x then
+			main.Visible = true
+			sc.Scale = 0.98
+			tw(sc, 0.2, { Scale = 1 })
+		else
+			tw(sc, 0.15, { Scale = 0.98 })
+			task.delay(0.16, function()
+				if not vis then
+					main.Visible = false
+				end
+			end)
+		end
+	end
 	cx(w.cx, s.ui.InputBegan, function(i, g2)
 		if g2 then
 			return
 		end
 		local k = o.key or Enum.KeyCode.RightShift
 		if i.KeyCode == k then
-			main.Visible = not main.Visible
+			setvis(not vis)
 		end
 	end)
 	function w:Tab(nm, icon, cols)
 		local t = { w = w }
 		local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 90, 0, 30), BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
 		b.AutomaticSize = Enum.AutomaticSize.X
+		local bg = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 1, -8), Position = UDim2.new(0, 0, 0, 4), BackgroundColor3 = rs.th.b4, BackgroundTransparency = 1 })
+		n("UICorner", { Parent = bg, CornerRadius = UDim.new(0, 6) })
 		local ib = n("Frame", { Parent = b, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 4, 0.5, -8), BackgroundTransparency = 1 })
 		local ico = ic(icon or "box", ib, rs.th.sub)
 		local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -26, 1, 0), Position = UDim2.new(0, 24, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-		local line = n("Frame", { Parent = b, Size = UDim2.new(1, -8, 0, 2), Position = UDim2.new(0, 4, 1, -2), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
+		local line = n("Frame", { Parent = b, Size = UDim2.new(0, 0, 0, 2), Position = UDim2.new(0, 4, 1, -2), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
 		n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 2) })
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -809,23 +921,27 @@ function rs.new(o)
 			if x then
 				tlb.TextColor3 = rs.th.txt
 				icc(ico, rs.th.acc)
-				line.BackgroundTransparency = 0
+				tw(bg, 0.15, { BackgroundTransparency = 0.2 })
+				tw(line, 0.2, { Size = UDim2.new(1, -8, 0, 2), BackgroundTransparency = 0 })
 			else
 				tlb.TextColor3 = rs.th.sub
 				icc(ico, rs.th.sub)
-				line.BackgroundTransparency = 1
+				tw(bg, 0.15, { BackgroundTransparency = 1 })
+				tw(line, 0.2, { Size = UDim2.new(0, 0, 0, 2), BackgroundTransparency = 1 })
 			end
 		end
 		cx(w.cx, b.MouseEnter, function()
 			if not a then
 				tlb.TextColor3 = rs.th.txt
 				icc(ico, rs.th.txt)
+				tw(bg, 0.12, { BackgroundTransparency = 0.6 })
 			end
 		end)
 		cx(w.cx, b.MouseLeave, function()
 			if not a then
 				tlb.TextColor3 = rs.th.sub
 				icc(ico, rs.th.sub)
+				tw(bg, 0.12, { BackgroundTransparency = 1 })
 			end
 		end)
 		cx(w.cx, b.MouseButton1Click, function()
@@ -850,6 +966,7 @@ function rs.new(o)
 			n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
 			if tt and tt ~= "" then
 				n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1, Text = tt, TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+				n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = rs.th.ln })
 			end
 			sc2.f = fr
 			function sc2:Add(k, ...)
