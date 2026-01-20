@@ -303,11 +303,9 @@ rs.el.btn = function(sc, txt, cb)
 		if x then
 			tw(b, 0.12, { BackgroundColor3 = rs.th.b4 })
 			tw(st, 0.12, { Color = rs.th.acc, Transparency = 0.2 })
-			tw(b, 0.12, { TextColor3 = rs.th.acc })
 		else
 			tw(b, 0.12, { BackgroundColor3 = rs.th.b3 })
 			tw(st, 0.12, { Color = rs.th.b4, Transparency = 0.6 })
-			tw(b, 0.12, { TextColor3 = rs.th.txt })
 		end
 	end
 	hov(false)
@@ -780,7 +778,7 @@ function rs.new(o)
 		syn.protect_gui(sg)
 	end
 	w.sg = sg
-	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), BackgroundTransparency = 1, ZIndex = 50 })
+	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), AnchorPoint = Vector2.new(1, 0), BackgroundTransparency = 1, ZIndex = 50 })
 	n("UIListLayout", { Parent = nt, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Top })
 	local ni = 0
 	function w:Notify(tt, bd, tm)
@@ -841,8 +839,9 @@ function rs.new(o)
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = rs.th.b3, BackgroundTransparency = 0.5 })
 	n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1), BackgroundColor3 = rs.th.ln })
-	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(0, 16, 0.5, -15), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
-	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 130, 1, 0), Position = UDim2.new(0, 54, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
+	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
+	local lgm = n("ImageLabel", { Parent = top, Size = UDim2.new(0, 40, 0, 40), Position = UDim2.new(0, 16, 0.5, -20), BackgroundTransparency = 1, Image = rs.as.logo or "", ScaleType = Enum.ScaleType.Fit })
+	local ttl = n("TextLabel", { Parent = top, Size = UDim2.new(0, 150, 1, 0), Position = UDim2.new(0, 66, 0, 0), BackgroundTransparency = 1, Text = o.name or "RoSense", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left })
 	n("Frame", { Parent = top, Size = UDim2.new(0, 1, 0, 24), Position = UDim2.new(0, 200, 0.5, -12), BackgroundColor3 = rs.th.ln })
 	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -220, 1, 0), Position = UDim2.new(0, 212, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
