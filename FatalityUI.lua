@@ -805,7 +805,7 @@ function rs.new(o)
 	if lg then
 		rs.as.logo = lg
 	end
-	local th = o.thh or 56
+	local th = o.thh or 64
 	local sh = 34
 	local cr = o.cr or 12
 	local sz = o.size or Vector2.new(860, 560)
@@ -831,19 +831,20 @@ function rs.new(o)
 	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 250, 1, 0), BackgroundTransparency = 1 })
 	local lgm = n("ImageLabel", {
-		Parent = top,
-		Size = UDim2.new(0, 74, 0, 74),
-		Position = UDim2.new(0, 14, 0.5, -37),
+		Parent = left,
+		Size = UDim2.new(0, 56, 0, 56),
+		Position = UDim2.new(0, 16, 0.5, -28),
 		AnchorPoint = Vector2.new(0, 0.5),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	local ttl = n("TextLabel", {
-		Parent = top,
-		Size = UDim2.new(0, 180, 0, 32),
-		Position = UDim2.new(0, 104, 0.5, -16),
+		Parent = left,
+		Size = UDim2.new(0, 170, 0, 28),
+		Position = UDim2.new(0, 88, 0.5, -14),
 		AnchorPoint = Vector2.new(0, 0.5),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
@@ -854,8 +855,8 @@ function rs.new(o)
 	})
 	local div = n("Frame", {
 		Parent = top,
-		Size = UDim2.new(0, 2, 0, 40),
-		Position = UDim2.new(0, 208, 0.5, -20),
+		Size = UDim2.new(0, 2, 0, 48),
+		Position = UDim2.new(0, 248, 0.5, -24),
 		AnchorPoint = Vector2.new(0, 0.5),
 		BackgroundColor3 = rs.th.acc
 	})
@@ -865,7 +866,7 @@ function rs.new(o)
 		Rotation = 90,
 		Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.acc2), ColorSequenceKeypoint.new(1, rs.th.acc) })
 	})
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -226, 1, 0), Position = UDim2.new(0, 226, 0, 0), BackgroundTransparency = 1 })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -270, 1, 0), Position = UDim2.new(0, 270, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = tlist, PaddingRight = UDim.new(0, 16) })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th), Size = UDim2.new(1, 0, 1, -(th + sh)), BackgroundTransparency = 1 })
