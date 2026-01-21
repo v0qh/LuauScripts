@@ -828,50 +828,39 @@ function rs.new(o)
 			ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 16, 24))
 		})
 	})
-local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
+	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
 
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 240, 1, 0), BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 16) })
-	
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 360, 1, 0), BackgroundTransparency = 1 })
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 48, 0, 48),
+		Size = UDim2.new(0, 140, 0, 64),
+		Position = UDim2.new(0, 16, 0.5, -32),
+		AnchorPoint = Vector2.new(0, 0.5),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
-	
 	local ttl = n("TextLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 150, 0, 48),
+		Size = UDim2.new(0, 200, 0, 32),
+		Position = UDim2.new(0, 172, 0.5, -16),
+		AnchorPoint = Vector2.new(0, 0.5),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
-		Font = Enum.Font.GothamSemibold,
-		TextSize = 21,
+		Font = Enum.Font.GothamBold,
+		TextSize = 24,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
-	local div = n("Frame", {
-		Parent = top,
-		Size = UDim2.new(0, 2, 0, 44),
-		Position = UDim2.new(0, 252, 0.5, -22),
-		BackgroundColor3 = rs.th.acc
-	})
-	n("UICorner", { Parent = div, CornerRadius = UDim.new(1, 0) })
-	n("UIGradient", {
-		Parent = div,
-		Rotation = 90,
-		Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.acc2), ColorSequenceKeypoint.new(1, rs.th.acc) })
-	})
-	
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -266, 1, 0), Position = UDim2.new(0, 266, 0, 0), BackgroundTransparency = 1 })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -360, 1, 0), Position = UDim2.new(0, 360, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 16) })
-	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th), Size = UDim2.new(1, 0, 1, -(th + sh)), BackgroundTransparency = 1 })
+	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 16) })
+
+	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 0, th), BackgroundColor3 = Color3.fromRGB(225, 168, 255), ZIndex = 2 })
+	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th + 2), Size = UDim2.new(1, 0, 1, -(th + 2 + sh)), BackgroundTransparency = 1 })
 	local pl = n("UIPageLayout", { Parent = pages, TweenTime = 0.2, EasingStyle = Enum.EasingStyle.Quad, EasingDirection = Enum.EasingDirection.Out, SortOrder = Enum.SortOrder.LayoutOrder, FillDirection = Enum.FillDirection.Horizontal })
 	pl.ScrollWheelInputEnabled = false
 	mkstats(w, n("Frame", { Parent = body, Position = UDim2.new(0, 0, 1, -sh), Size = UDim2.new(1, 0, 0, sh), BackgroundTransparency = 1 }), cr)
@@ -957,8 +946,8 @@ local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), Backgroun
 	
 	local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -34, 1, 0), Position = UDim2.new(0, 34, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
 	
-	local line = n("Frame", { Parent = b, Size = UDim2.new(0, 0, 0, 3), Position = UDim2.new(0, 10, 1, -3), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
-	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 2) })
+	local line = n("Frame", { Parent = b, Size = UDim2.new(1, -16, 0, 3), Position = UDim2.new(0, 8, 1, -6), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
+	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 1) })
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
@@ -996,7 +985,7 @@ local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), Backgroun
 					icc(ico, rs.th.acc)
 				end
 				tw(bg, 0.15, { BackgroundTransparency = 0.2 })
-				tw(line, 0.2, { Size = UDim2.new(1, -8, 0, 2), BackgroundTransparency = 0 })
+				tw(line, 0.2, { BackgroundTransparency = 0 })
 			else
 				tlb.TextColor3 = rs.th.sub
 				if im then
@@ -1005,7 +994,7 @@ local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), Backgroun
 					icc(ico, rs.th.sub)
 				end
 				tw(bg, 0.15, { BackgroundTransparency = 1 })
-				tw(line, 0.2, { Size = UDim2.new(0, 0, 0, 2), BackgroundTransparency = 1 })
+				tw(line, 0.2, { BackgroundTransparency = 1 })
 			end
 		end
 		cx(w.cx, b.MouseEnter, function()
