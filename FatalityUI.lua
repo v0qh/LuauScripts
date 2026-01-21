@@ -834,7 +834,7 @@ function rs.new(o)
 
 	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 320, 1, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 16) })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 8) })
 
 	local lgm = n("ImageLabel", {
 		Parent = left,
@@ -856,9 +856,9 @@ function rs.new(o)
 
 	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -320, 1, 0), Position = UDim2.new(0, 320, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 16) })
+	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12) })
 
-	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, -32, 0, 1), Position = UDim2.new(0, 16, 0, th), BackgroundColor3 = Color3.fromRGB(225, 168, 255), ZIndex = 2 })
+	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, th), BackgroundColor3 = Color3.fromRGB(225, 168, 255), ZIndex = 2 })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th + 1), Size = UDim2.new(1, 0, 1, -(th + 1 + sh)), BackgroundTransparency = 1 })
 	local pl = n("UIPageLayout", { Parent = pages, TweenTime = 0.2, EasingStyle = Enum.EasingStyle.Quad, EasingDirection = Enum.EasingDirection.Out, SortOrder = Enum.SortOrder.LayoutOrder, FillDirection = Enum.FillDirection.Horizontal })
 	pl.ScrollWheelInputEnabled = false
@@ -945,7 +945,7 @@ function rs.new(o)
 	
 	local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -34, 1, 0), Position = UDim2.new(0, 34, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
 	
-	local line = n("Frame", { Parent = b, Size = UDim2.new(1, -16, 0, 2), Position = UDim2.new(0, 8, 1, -4), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
+	local line = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 1, -4), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
 	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 1) })
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
