@@ -373,7 +373,7 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
 	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(1, -160, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right })
 	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11 })
-	local list = n("Frame", { Parent = r, Position = UDim2.new(0, 0, 0, 32), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 32), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0,0,0,0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
 	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 6) })
 	n("UIStroke", { Parent = list, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	n("UIListLayout", { Parent = list, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
@@ -394,7 +394,7 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 	end
 	local function open(x)
 		o = x
-		local h2 = x and fit() or 0
+		local h2 = x and math.min(fit(), 160) or 0
 		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
 		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 32 + h2) })
 		arr.Text = x and "^" or "v"
