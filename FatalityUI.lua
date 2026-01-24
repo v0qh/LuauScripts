@@ -365,6 +365,57 @@ rs.el.box = function(sc, txt, def, cb)
 	return { b = b, Set = function(_, x) b.Text = x end, Get = function() return b.Text end }
 end
 
+rs.el.sl = function(sc, txt, min, max, def, cb)
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 38), BackgroundTransparency = 1 })
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, -60, 0, 16), Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1, Text = txt or "Slider", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = r, Size = UDim2.new(0, 50, 0, 16), Position = UDim2.new(1, -50, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right })
+	local bar = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 8), Position = UDim2.new(0, 0, 0, 24), BackgroundColor3 = rs.th.b3 })
+	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 4) })
+	n("UIStroke", { Parent = bar, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+	local fill = n("Frame", { Parent = bar, Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = rs.th.acc })
+	n("UICorner", { Parent = fill, CornerRadius = UDim.new(0, 4) })
+	local knob = n("Frame", { Parent = bar, Size = UDim2.new(0, 10, 0, 10), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = rs.th.acc })
+	knob.Position = UDim2.new(0, 0, 0.5, 0)
+	n("UICorner", { Parent = knob, CornerRadius = UDim.new(1, 0) })
+	n("UIStroke", { Parent = knob, Color = rs.th.b4, Thickness = 1, Transparency = 0.4 })
+	local dragging = false
+	local mn = tonumber(min) or 0
+	local mx = tonumber(max) or 100
+	local cur = tonumber(def) or mn
+	local function set(x, skip)
+		cur = cl(x, mn, mx)
+		local pct = (cur - mn) / (mx - mn)
+		fill.Size = UDim2.new(pct, 0, 1, 0)
+		knob.Position = UDim2.new(pct, 0, 0.5, 0)
+		v.Text = string.format("%.2f", cur)
+		if cb and not skip then
+			cb(cur)
+		end
+	end
+	set(cur, true)
+	local function setFromInput(pos)
+		local rel = (pos.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
+		set(mn + (mx - mn) * cl(rel, 0, 1))
+	end
+	cx(sc.w.cx, bar.InputBegan, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			setFromInput(i.Position)
+		end
+	end)
+	cx(sc.w.cx, bar.InputEnded, function(i)
+		if i.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
+	cx(sc.w.cx, s.ui.InputChanged, function(i)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			setFromInput(i.Position)
+		end
+	end)
+	return { b = r, Set = function(_, x) set(x, true) end, Get = function() return cur end }
+end
+
 rs.el.dd = function(sc, txt, opts, def, cb)
 	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1, ClipsDescendants = true })
 	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
@@ -499,9 +550,9 @@ rs.el.cp = function(sc, txt, def, cb)
 	local sat = n("Frame", { Parent = pop, Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 150, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
 	n("UICorner", { Parent = sat, CornerRadius = UDim.new(0, 5) })
 	local sg = n("UIGradient", { Parent = sat, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 0, 1)) })
-	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1 })
+	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.new(0,0,0) })
 	n("UICorner", { Parent = val, CornerRadius = UDim.new(0, 6) })
-	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0,0,0), Color3.new(0,0,0)), Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0), NumberSequenceKeypoint.new(1,1)}) })
+	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0,0,0), Color3.new(0,0,0)), Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(1,0)}) })
 	local sp = n("Frame", { Parent = sat, Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = rs.th.txt })
 	n("UICorner", { Parent = sp, CornerRadius = UDim.new(1, 0) })
 	n("UIStroke", { Parent = sp, Color = rs.th.bg, Thickness = 1 })
@@ -776,6 +827,7 @@ function rs.new(o)
 		})
 		local scn = n("UIScale", { Parent = fr, Scale = 0.96 })
 		n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+		n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 		local tl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 14), BackgroundTransparency = 1, Text = tt or "Notice", TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, TextTransparency = 1 })
 		local bl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Text = bd or "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, TextTransparency = 1 })
 		local pb = n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(1, 0, 1, -2), AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
@@ -832,29 +884,29 @@ function rs.new(o)
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
 
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 200, 1, 0), BackgroundTransparency = 1 })
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 170, 1, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 2) })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 1) })
 
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 80, 0, 42),
+		Size = UDim2.new(0, 72, 0, 40),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	local ttl = n("TextLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 140, 0, 28),
+		Size = UDim2.new(0, 120, 0, 28),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
 		Font = Enum.Font.GothamBold,
-		TextSize = 21,
+		TextSize = 20,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -200, 1, 0), Position = UDim2.new(0, 200, 0, 0), BackgroundTransparency = 1 })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -170, 1, 0), Position = UDim2.new(0, 170, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12) })
 
@@ -949,7 +1001,7 @@ function rs.new(o)
 	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 1) })
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) })
 		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
 		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 		local cc = cols or o.cols or 3
@@ -1064,6 +1116,9 @@ function rs.new(o)
 			end
 			function sc2:Color(a1, b1, c1)
 				return rs.el.cp(sc2, a1, b1, c1)
+			end
+			function sc2:Slider(a1, b1, c1, d1, e1)
+				return rs.el.sl(sc2, a1, b1, c1, d1, e1)
 			end
 			function sc2:List(a1, b1)
 				return rs.el.list(sc2, a1, b1)
