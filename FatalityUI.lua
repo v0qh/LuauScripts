@@ -884,31 +884,31 @@ function rs.new(o)
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
 
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 170, 1, 0), BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 1) })
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 150, 1, 0), BackgroundTransparency = 1 })
+	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 1), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 0) })
 
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 72, 0, 40),
+		Size = UDim2.new(0, 70, 0, 40),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	local ttl = n("TextLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 120, 0, 28),
+		Size = UDim2.new(0, 110, 0, 28),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
 		Font = Enum.Font.GothamBold,
-		TextSize = 20,
+		TextSize = 19,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -170, 1, 0), Position = UDim2.new(0, 170, 0, 0), BackgroundTransparency = 1 })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -150, 1, 0), Position = UDim2.new(0, 150, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12) })
+	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 2), PaddingRight = UDim.new(0, 12) })
 
 	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, th), BackgroundColor3 = Color3.fromRGB(225, 168, 255), ZIndex = 2 })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th + 1), Size = UDim2.new(1, 0, 1, -(th + 1 + sh)), BackgroundTransparency = 1 })
@@ -962,7 +962,7 @@ function rs.new(o)
 	end)
 	function w:Tab(nm, icon, cols)
 		local t = { w = w }
-	local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 110, 0, 40), BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
+	local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 100, 0, 40), BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
 	b.AutomaticSize = Enum.AutomaticSize.X
 	
 	local bg = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 1, -4), Position = UDim2.new(0, 0, 0, 2), BackgroundColor3 = rs.th.b4, BackgroundTransparency = 1 })
@@ -995,7 +995,7 @@ function rs.new(o)
 		ico = ic(icn, ib, rs.th.sub)
 	end
 	
-	local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -34, 1, 0), Position = UDim2.new(0, 34, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
+	local tlb = n("TextLabel", { Parent = b, Size = UDim2.new(1, -30, 1, 0), Position = UDim2.new(0, 30, 0, 0), BackgroundTransparency = 1, Text = nm or "Tab", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
 	
 	local line = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 1, -4), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
 	n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 1) })
