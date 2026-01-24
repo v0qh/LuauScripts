@@ -884,7 +884,7 @@ function rs.new(o)
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
 
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 230, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 280, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
 	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 1), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 0) })
 
@@ -897,7 +897,7 @@ function rs.new(o)
 	})
 	local ttl = n("TextLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 150, 0, 28),
+		Size = UDim2.new(0, 190, 0, 28),
 		BackgroundTransparency = 1,
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
@@ -906,7 +906,7 @@ function rs.new(o)
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -230, 1, 0), Position = UDim2.new(0, 230, 0, 0), BackgroundTransparency = 1 })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -280, 1, 0), Position = UDim2.new(0, 280, 0, 0), BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 2), PaddingRight = UDim.new(0, 12) })
 
