@@ -499,9 +499,9 @@ rs.el.cp = function(sc, txt, def, cb)
 	local sat = n("Frame", { Parent = pop, Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 150, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
 	n("UICorner", { Parent = sat, CornerRadius = UDim.new(0, 5) })
 	local sg = n("UIGradient", { Parent = sat, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 0, 1)) })
-	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.new(0, 0, 0) })
+	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1 })
 	n("UICorner", { Parent = val, CornerRadius = UDim.new(0, 6) })
-	n("UIGradient", { Parent = val, Rotation = 90, Transparency = NumberSequence.new(0, 1) })
+	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0,0,0), Color3.new(0,0,0)), Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0), NumberSequenceKeypoint.new(1,1)}) })
 	local sp = n("Frame", { Parent = sat, Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = rs.th.txt })
 	n("UICorner", { Parent = sp, CornerRadius = UDim.new(1, 0) })
 	n("UIStroke", { Parent = sp, Color = rs.th.bg, Thickness = 1 })
@@ -832,13 +832,13 @@ function rs.new(o)
 	n("UIGradient", { Parent = top, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }), Rotation = 90 })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
 
-	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 240, 1, 0), BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 4) })
+	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 200, 1, 0), BackgroundTransparency = 1 })
+	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 2) })
 
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 90, 0, 48),
+		Size = UDim2.new(0, 80, 0, 42),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
@@ -850,13 +850,13 @@ function rs.new(o)
 		Text = o.name or "RoSense",
 		TextColor3 = Color3.fromRGB(225, 168, 255),
 		Font = Enum.Font.GothamBold,
-		TextSize = 22,
+		TextSize = 21,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
-	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -240, 1, 0), Position = UDim2.new(0, 240, 0, 0), BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 12) })
+	local tlist = n("Frame", { Parent = top, Size = UDim2.new(1, -200, 1, 0), Position = UDim2.new(0, 200, 0, 0), BackgroundTransparency = 1 })
+	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = tlist, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 12) })
 
 	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, th), BackgroundColor3 = Color3.fromRGB(225, 168, 255), ZIndex = 2 })
 	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th + 1), Size = UDim2.new(1, 0, 1, -(th + 1 + sh)), BackgroundTransparency = 1 })
