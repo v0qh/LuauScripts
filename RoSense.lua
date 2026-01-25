@@ -725,7 +725,7 @@ function componentLib.ColorPicker(props)
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0, 0, 1, 4),
         BackgroundColor3 = Color3.fromRGB(14, 14, 18),
-        BackgroundTransparency = 0.1,
+        BackgroundTransparency = 0,
         BorderSizePixel = 0,
         Visible = false,
         ClipsDescendants = true,
@@ -738,9 +738,12 @@ function componentLib.ColorPicker(props)
     
     local blocker = create("TextButton", {
         Size = UDim2.new(1, 0, 1, 0),
-        BackgroundTransparency = 1,
+        BackgroundColor3 = Color3.fromRGB(14, 14, 18),
+        BackgroundTransparency = 0,
+        BorderSizePixel = 0,
         Text = "",
-        ZIndex = 99,
+        ZIndex = 100,
+        AutoButtonColor = false,
         Parent = picker
     })
     
