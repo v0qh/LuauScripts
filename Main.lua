@@ -1,3 +1,4 @@
+
 local rs = {}
 local g = game
 local s = {
@@ -9,25 +10,25 @@ local s = {
 	st = g:GetService("Stats")
 }
 
-local function n(c, p, k)
-	local i = Instance.new(c)
-	if p then
-		for a, b in pairs(p) do
-			i[a] = b
+local function n(class, props, children)
+	local inst = Instance.new(class)
+	if props then
+		for k, v in pairs(props) do
+			inst[k] = v
 		end
 	end
-	if k then
-		for _, v in ipairs(k) do
-			v.Parent = i
+	if children then
+		for _, ch in ipairs(children) do
+			ch.Parent = inst
 		end
 	end
-	return i
+	return inst
 end
 
-local function tw(o, t, p, e, d)
-	local q = s.ts:Create(o, TweenInfo.new(t, e or Enum.EasingStyle.Sine, d or Enum.EasingDirection.Out), p)
-	q:Play()
-	return q
+local function tw(obj, t, props, style, dir)
+	local tween = s.ts:Create(obj, TweenInfo.new(t, style or Enum.EasingStyle.Sine, dir or Enum.EasingDirection.Out), props)
+	tween:Play()
+	return tween
 end
 
 local function cl(v, a, b)
@@ -40,17 +41,17 @@ local function cl(v, a, b)
 	return v
 end
 
-local function cx(t, sgn, f)
-	local c = sgn:Connect(f)
-	if t then
-		t[#t + 1] = c
+local function cx(list, signal, fn)
+	local con = signal:Connect(fn)
+	if list then
+		list[#list + 1] = con
 	end
-	return c
+	return con
 end
 
 local wf, rf, iff, ifo, mf = writefile, readfile, isfile, isfolder, makefolder
 local gca = getcustomasset or getsynasset or GetCustomAsset
-local ad = "RoSense/assets"
+local asset_dir = "RoSense/assets"
 
 local function fsok()
 	return wf and iff and ifo and mf
@@ -63,8 +64,8 @@ local function mkd()
 	if not ifo("RoSense") then
 		mf("RoSense")
 	end
-	if not ifo(ad) then
-		mf(ad)
+	if not ifo(asset_dir) then
+		mf(asset_dir)
 	end
 end
 
@@ -93,8 +94,8 @@ local function httpget(url)
 	return nil
 end
 
-local function fn(s)
-	local v = tostring(s or ""):gsub("[^%w]", "")
+local function sanitize(name)
+	local v = tostring(name or ""):gsub("[^%w]", "")
 	if v == "" then
 		return tostring(math.random(1000, 9999))
 	end
@@ -102,58 +103,53 @@ local function fn(s)
 end
 
 local function asset_url(name, url)
-	if not fsok() or not gca then
+	if not url or url == "" then
 		return nil
 	end
+	if not fsok() or not gca then
+		return url
+	end
 	mkd()
-	local p = ad .. "/" .. name
-	if not iff(p) then
-		local d = httpget(url)
-		if d then
-			wf(p, d)
+	local path = asset_dir .. "/" .. name
+	if not iff(path) then
+		local data = httpget(url)
+		if data then
+			wf(path, data)
 		end
 	end
-	if iff(p) then
-		local ok, r = pcall(gca, p)
+	if iff(path) then
+		local ok, res = pcall(gca, path)
 		if ok then
-			return r
+			return res
 		end
 	end
-	return nil
+	return url
 end
 
 local function icon_asset(key, url)
 	if not url or url == "" then
 		return nil
 	end
-	local san = fn
-	local nm
-	if san then
-		nm = "icon_" .. san(key) .. ".png"
-	else
-		nm = "icon_" .. tostring(key or ""):gsub("[^%w]", ""):sub(1, 24) .. ".png"
-	end
-	if asset_url then
-		return asset_url(nm, url) or url
-	end
-	return url
+	local nm = "icon_" .. sanitize(key) .. ".png"
+	return asset_url(nm, url)
 end
 
 rs.th = {
-	bg = Color3.fromRGB(18, 18, 20),
-	b2 = Color3.fromRGB(22, 22, 24),
-	b3 = Color3.fromRGB(26, 26, 28),
-	b4 = Color3.fromRGB(32, 32, 36),
+	bg = Color3.fromRGB(12, 12, 14),
+	panel = Color3.fromRGB(18, 18, 22),
+	panel2 = Color3.fromRGB(22, 22, 27),
+	panel3 = Color3.fromRGB(28, 28, 34),
+	stroke = Color3.fromRGB(44, 44, 52),
+	stroke2 = Color3.fromRGB(60, 60, 70),
 	acc = Color3.fromRGB(197, 140, 255),
-	acc2 = Color3.fromRGB(211, 124, 255),
-	txt = Color3.fromRGB(228, 228, 232),
-	sub = Color3.fromRGB(158, 158, 168),
-	st = Color3.fromRGB(90, 90, 98),
-	ln = Color3.fromRGB(40, 40, 44)
+	acc2 = Color3.fromRGB(220, 160, 255),
+	txt = Color3.fromRGB(235, 235, 240),
+	sub = Color3.fromRGB(170, 170, 180),
+	muted = Color3.fromRGB(120, 120, 130)
 }
 
-rs.as = {}
-rs.lu = "https://files.catbox.moe/xvikgr.png"
+rs.assets = {}
+rs.logo = "https://files.catbox.moe/xvikgr.png"
 rs.iconAssets = {
 	main = "https://files.catbox.moe/4fymry.png",
 	player = "https://files.catbox.moe/4fymry.png",
@@ -167,82 +163,6 @@ rs.statsIcons = {
 	ping = "https://files.catbox.moe/qiiccl.png",
 	player = "https://files.catbox.moe/4fymry.png"
 }
-rs.ic = rs.ic or {}
-
-local icm = setmetatable({}, { __mode = "k" })
-
-local function ic(nm, pr, col)
-	local c = col or rs.th.acc
-	local f = n("Frame", { Parent = pr, Size = UDim2.new(0, 20, 0, 20), BackgroundTransparency = 1 })
-	local pt = {}
-	local function add(x)
-		pt[#pt + 1] = x
-		return x
-	end
-	local function stroke(x, th)
-		return add(n("UIStroke", { Parent = x, Color = c, Thickness = th or 1.5 }))
-	end
-	
-	if nm == "main" or nm == "fatality" then
-		local base = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 10), Position = UDim2.new(0.5, -7, 1, -11), BackgroundColor3 = c }))
-		n("UICorner", { Parent = base, CornerRadius = UDim.new(0, 2) })
-		local roof = add(n("Frame", { Parent = f, Size = UDim2.new(0, 16, 0, 2), Position = UDim2.new(0.5, -8, 0, 5), BackgroundColor3 = c, Rotation = 45 }))
-		local roof2 = add(n("Frame", { Parent = f, Size = UDim2.new(0, 16, 0, 2), Position = UDim2.new(0.5, -8, 0, 5), BackgroundColor3 = c, Rotation = -45 }))
-		
-	elseif nm == "config" or nm == "gear" then
-		local center = n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 8), Position = UDim2.new(0.5, -4, 0.5, -4), BackgroundTransparency = 1 })
-		stroke(center, 2)
-		n("UICorner", { Parent = center, CornerRadius = UDim.new(1, 0) })
-		
-		for i = 0, 7 do
-			local theta = math.rad(i * 45)
-			local dist = 6
-			local arm = add(n("Frame", {
-				Parent = f,
-				Size = UDim2.new(0, 3, 0, 5),
-				Position = UDim2.new(0.5, math.cos(theta) * dist - 1.5, 0.5, math.sin(theta) * dist - 2.5),
-				BackgroundColor3 = c
-			}))
-			n("UICorner", { Parent = arm, CornerRadius = UDim.new(0, 1) })
-		end
-		
-	elseif nm == "list" or nm == "queue" then
-		local y = 3
-		for i = 1, 3 do
-			local bar = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 3), Position = UDim2.new(0.5, -7, 0, y), BackgroundColor3 = c }))
-			n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 1.5) })
-			y = y + 6
-		end
-		
-	elseif nm == "user" then
-		local head = add(n("Frame", { Parent = f, Size = UDim2.new(0, 8, 0, 8), Position = UDim2.new(0.5, -4, 0, 2), BackgroundColor3 = c }))
-		n("UICorner", { Parent = head, CornerRadius = UDim.new(1, 0) })
-		local body = add(n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 8), Position = UDim2.new(0.5, -7, 1, -9), BackgroundColor3 = c }))
-		n("UICorner", { Parent = body, CornerRadius = UDim.new(1, 0) })
-		
-	else
-		local sq = n("Frame", { Parent = f, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(0.5, -7, 0.5, -7), BackgroundTransparency = 1 })
-		stroke(sq, 2)
-		n("UICorner", { Parent = sq, CornerRadius = UDim.new(0, 3) })
-	end
-	
-	icm[f] = pt
-	return f
-end
-
-local function icc(f, col)
-	local p = icm[f]
-	if not p then
-		return
-	end
-	for _, v in ipairs(p) do
-		if v:IsA("UIStroke") then
-			v.Color = col
-		else
-			v.BackgroundColor3 = col
-		end
-	end
-end
 
 local function tohex(c)
 	return string.format("%02X%02X%02X", math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
@@ -254,62 +174,74 @@ local function fromhex(sx)
 		return nil
 	end
 	local r = tonumber(s2:sub(1, 2), 16)
-	local g = tonumber(s2:sub(3, 4), 16)
-	local b2 = tonumber(s2:sub(5, 6), 16)
-	if not r or not g or not b2 then
+	local g2 = tonumber(s2:sub(3, 4), 16)
+	local b = tonumber(s2:sub(5, 6), 16)
+	if not r or not g2 or not b then
 		return nil
 	end
-	return Color3.fromRGB(r, g, b2)
+	return Color3.fromRGB(r, g2, b)
 end
 
-local function drag(fr, h, t)
-	local d = false
-	local sp = nil
-	local mp = nil
-	cx(t, h.InputBegan, function(i)
+local function drag(frame, handle, list)
+	local dragging = false
+	local startPos
+	local startInput
+	cx(list, handle.InputBegan, function(i)
 		if i.UserInputType == Enum.UserInputType.MouseButton1 then
-			d = true
-			sp = fr.Position
-			mp = i.Position
+			dragging = true
+			startPos = frame.Position
+			startInput = i.Position
 		end
 	end)
-	cx(t, s.ui.InputChanged, function(i)
-		if d and i.UserInputType == Enum.UserInputType.MouseMovement then
-			local dx = i.Position.X - mp.X
-			local dy = i.Position.Y - mp.Y
-			fr.Position = UDim2.new(sp.X.Scale, sp.X.Offset + dx, sp.Y.Scale, sp.Y.Offset + dy)
+	cx(list, s.ui.InputChanged, function(i)
+		if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+			local dx = i.Position.X - startInput.X
+			local dy = i.Position.Y - startInput.Y
+			frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + dx, startPos.Y.Scale, startPos.Y.Offset + dy)
 		end
 	end)
-	cx(t, s.ui.InputEnded, function(i)
+	cx(list, s.ui.InputEnded, function(i)
 		if i.UserInputType == Enum.UserInputType.MouseButton1 then
-			d = false
+			dragging = false
 		end
 	end)
+end
+
+local function fmt_num(v)
+	if math.floor(v) == v then
+		return tostring(v)
+	end
+	return string.format("%.2f", v)
 end
 
 rs.el = {}
 
-function rs.reg(k, f)
-	rs.el[k] = f
+local function row(parent, height)
+	return n("Frame", { Parent = parent, Size = UDim2.new(1, 0, 0, height), BackgroundTransparency = 1 })
 end
 
-local function row(p, h)
-	return n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, h or 28), BackgroundTransparency = 1 })
-end
-
-rs.el.btn = function(sc, txt, cb)
-	local r = row(sc.f, 28)
-	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = txt or "Button", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, AutoButtonColor = false })
+rs.el.btn = function(sc, text, cb)
+	local r = row(sc.f, 26)
+	local b = n("TextButton", {
+		Parent = r,
+		Size = UDim2.new(1, 0, 1, 0),
+		BackgroundColor3 = rs.th.panel3,
+		Text = text or "Button",
+		TextColor3 = rs.th.sub,
+		Font = Enum.Font.GothamSemibold,
+		TextSize = 12,
+		AutoButtonColor = false
+	})
 	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
-	local st = n("UIStroke", { Parent = b, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+	local st = n("UIStroke", { Parent = b, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 	local function hov(x)
 		if x then
-			tw(b, 0.12, { BackgroundColor3 = rs.th.b4 })
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel2 })
 			tw(st, 0.12, { Color = rs.th.acc, Transparency = 0.2 })
 			b.TextColor3 = rs.th.acc
 		else
-			tw(b, 0.12, { BackgroundColor3 = rs.th.b3 })
-			tw(st, 0.12, { Color = rs.th.b4, Transparency = 0.6 })
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel3 })
+			tw(st, 0.12, { Color = rs.th.stroke, Transparency = 0.4 })
 			b.TextColor3 = rs.th.sub
 		end
 	end
@@ -328,27 +260,48 @@ rs.el.btn = function(sc, txt, cb)
 	return { b = b, Set = function(_, t) b.Text = t end }
 end
 
-rs.el.tog = function(sc, txt, def, cb)
-	local r = row(sc.f, 28)
-	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+rs.el.tog = function(sc, text, def, cb)
+	local r = row(sc.f, 26)
+	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.panel3, Text = "", AutoButtonColor = false })
 	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
-	n("UIStroke", { Parent = b, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = b, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Toggle", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-	local box = n("Frame", { Parent = b, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(1, -22, 0.5, -7), BackgroundColor3 = rs.th.b4 })
+	n("UIStroke", { Parent = b, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
+	local l = n("TextLabel", {
+		Parent = b,
+		Size = UDim2.new(1, -40, 1, 0),
+		Position = UDim2.new(0, 10, 0, 0),
+		BackgroundTransparency = 1,
+		Text = text or "Toggle",
+		TextColor3 = rs.th.txt,
+		Font = Enum.Font.Gotham,
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	local box = n("Frame", { Parent = b, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(1, -20, 0.5, -7), BackgroundColor3 = rs.th.panel2 })
 	n("UICorner", { Parent = box, CornerRadius = UDim.new(0, 4) })
-	local bs = n("UIStroke", { Parent = box, Color = rs.th.st, Thickness = 1, Transparency = 0.2 })
-	local chk = n("ImageLabel", { Parent = box, Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, Image = icon_asset("check", rs.iconAssets and rs.iconAssets.check) or "", ImageTransparency = 1, ImageColor3 = rs.th.acc })
+	local bs = n("UIStroke", { Parent = box, Color = rs.th.stroke2, Thickness = 1, Transparency = 0.2 })
+	local chk = n("ImageLabel", {
+		Parent = box,
+		Size = UDim2.new(0, 10, 0, 10),
+		Position = UDim2.new(0.5, 0, 0.5, 0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		Image = icon_asset("check", rs.iconAssets and rs.iconAssets.check) or "",
+		ImageTransparency = 1,
+		ImageColor3 = rs.th.acc
+	})
+
 	local v = def and true or false
 	local function set(x, nb)
 		v = x and true or false
 		if v then
 			tw(chk, 0.12, { ImageTransparency = 0 })
-			tw(box, 0.12, { BackgroundColor3 = rs.th.b4 })
-			tw(bs, 0.12, { Color = rs.th.acc })
+			tw(bs, 0.12, { Color = rs.th.acc, Transparency = 0 })
+			box.BackgroundColor3 = rs.th.panel2
 		else
 			tw(chk, 0.12, { ImageTransparency = 1 })
-			tw(box, 0.12, { BackgroundColor3 = rs.th.b4 })
-			tw(bs, 0.12, { Color = rs.th.st })
+			tw(bs, 0.12, { Color = rs.th.stroke2, Transparency = 0.2 })
+			box.BackgroundColor3 = rs.th.panel2
 		end
 		if not nb and cb then
 			cb(v)
@@ -356,9 +309,9 @@ rs.el.tog = function(sc, txt, def, cb)
 	end
 	local function hov(x)
 		if x then
-			tw(b, 0.12, { BackgroundColor3 = rs.th.b4 })
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel2 })
 		else
-			tw(b, 0.12, { BackgroundColor3 = rs.th.b3 })
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel3 })
 		end
 	end
 	hov(false)
@@ -375,12 +328,32 @@ rs.el.tog = function(sc, txt, def, cb)
 	return { b = b, Set = function(_, x) set(x, true) end, Get = function() return v end }
 end
 
-rs.el.box = function(sc, txt, def, cb)
-	local r = row(sc.f, 28)
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(0.45, -6, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Textbox", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-	local b = n("TextBox", { Parent = r, Size = UDim2.new(0.55, -14, 1, -8), Position = UDim2.new(0.45, 6, 0, 4), BackgroundColor3 = rs.th.b4, TextColor3 = rs.th.txt, Text = def or "", Font = Enum.Font.Gotham, TextSize = 12, ClearTextOnFocus = false })
+rs.el.box = function(sc, text, def, cb)
+	local r = row(sc.f, 26)
+	local l = n("TextLabel", {
+		Parent = r,
+		Size = UDim2.new(0.45, -6, 1, 0),
+		Position = UDim2.new(0, 10, 0, 0),
+		BackgroundTransparency = 1,
+		Text = text or "Textbox",
+		TextColor3 = rs.th.txt,
+		Font = Enum.Font.Gotham,
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	local b = n("TextBox", {
+		Parent = r,
+		Size = UDim2.new(0.55, -12, 1, -8),
+		Position = UDim2.new(0.45, 6, 0, 4),
+		BackgroundColor3 = rs.th.panel2,
+		TextColor3 = rs.th.txt,
+		Text = def or "",
+		Font = Enum.Font.Gotham,
+		TextSize = 12,
+		ClearTextOnFocus = false
+	})
 	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 4) })
-	n("UIStroke", { Parent = b, Color = rs.th.b3, Thickness = 1, Transparency = 0.4 })
+	n("UIStroke", { Parent = b, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 	cx(sc.w.cx, b.FocusLost, function(enter)
 		if cb then
 			cb(b.Text, enter)
@@ -389,19 +362,19 @@ rs.el.box = function(sc, txt, def, cb)
 	return { b = b, Set = function(_, x) b.Text = x end, Get = function() return b.Text end }
 end
 
-rs.el.sl = function(sc, txt, min, max, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1 })
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, -60, 0, 14), Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1, Text = txt or "Slider", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = r, Size = UDim2.new(0, 50, 0, 14), Position = UDim2.new(1, -50, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
-	local bar = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 20), BackgroundColor3 = rs.th.b3 })
-	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 4) })
-	n("UIStroke", { Parent = bar, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+rs.el.sl = function(sc, text, min, max, def, cb)
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 34), BackgroundTransparency = 1 })
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, -60, 0, 14), Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1, Text = text or "Slider", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = r, Size = UDim2.new(0, 60, 0, 14), Position = UDim2.new(1, -60, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local bar = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 22), BackgroundColor3 = rs.th.panel3 })
+	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 3) })
+	n("UIStroke", { Parent = bar, Color = rs.th.stroke, Thickness = 1, Transparency = 0.5 })
 	local fill = n("Frame", { Parent = bar, Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = rs.th.acc })
-	n("UICorner", { Parent = fill, CornerRadius = UDim.new(0, 4) })
-	local knob = n("Frame", { Parent = bar, Size = UDim2.new(0, 8, 0, 8), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = rs.th.acc })
+	n("UICorner", { Parent = fill, CornerRadius = UDim.new(0, 3) })
+	local knob = n("Frame", { Parent = bar, Size = UDim2.new(0, 10, 0, 10), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = rs.th.acc })
 	knob.Position = UDim2.new(0, 0, 0.5, 0)
 	n("UICorner", { Parent = knob, CornerRadius = UDim.new(1, 0) })
-	n("UIStroke", { Parent = knob, Color = rs.th.b4, Thickness = 1, Transparency = 0.4 })
+	n("UIStroke", { Parent = knob, Color = rs.th.panel2, Thickness = 1, Transparency = 0.2 })
 	local dragging = false
 	local mn = tonumber(min) or 0
 	local mx = tonumber(max) or 100
@@ -411,7 +384,7 @@ rs.el.sl = function(sc, txt, min, max, def, cb)
 		local pct = (cur - mn) / (mx - mn)
 		fill.Size = UDim2.new(pct, 0, 1, 0)
 		knob.Position = UDim2.new(pct, 0, 0.5, 0)
-		v.Text = string.format("%.2f", cur)
+		v.Text = fmt_num(cur)
 		if cb and not skip then
 			cb(cur)
 		end
@@ -439,22 +412,70 @@ rs.el.sl = function(sc, txt, min, max, def, cb)
 	end)
 	return { b = r, Set = function(_, x) set(x, true) end, Get = function() return cur end }
 end
+local function make_option_button(conns, list, text, selected, onClick)
+	local b2 = n("TextButton", {
+		Parent = list,
+		Size = UDim2.new(1, 0, 0, 22),
+		BackgroundColor3 = rs.th.panel3,
+		Text = text,
+		TextColor3 = rs.th.txt,
+		Font = Enum.Font.Gotham,
+		TextSize = 11,
+		AutoButtonColor = false
+	})
+	n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 4) })
+	local s2 = n("UIStroke", { Parent = b2, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+	local function setSel(on)
+		if on then
+			tw(s2, 0.12, { Color = rs.th.acc, Transparency = 0.1 })
+			tw(b2, 0.12, { BackgroundColor3 = rs.th.panel2 })
+		else
+			tw(s2, 0.12, { Color = rs.th.stroke, Transparency = 0.4 })
+			tw(b2, 0.12, { BackgroundColor3 = rs.th.panel3 })
+		end
+	end
+	setSel(selected)
+	cx(conns, b2.MouseEnter, function()
+		if not selected then
+			tw(b2, 0.1, { BackgroundColor3 = rs.th.panel2 })
+		end
+	end)
+	cx(conns, b2.MouseLeave, function()
+		if not selected then
+			tw(b2, 0.1, { BackgroundColor3 = rs.th.panel3 })
+		end
+	end)
+	cx(conns, b2.MouseButton1Click, function()
+		onClick()
+	end)
+	return b2, setSel
+end
 
-rs.el.dd = function(sc, txt, opts, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+rs.el.dd = function(sc, text, opts, def, cb)
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = rs.th.panel3, Text = "", AutoButtonColor = false })
 	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
-	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(1, -160, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local hs = n("UIStroke", { Parent = h, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = text or "Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(1, -190, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
 	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 10 })
-	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 28), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0,0,0,0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
+	local list = n("ScrollingFrame", {
+		Parent = r,
+		Position = UDim2.new(0, 0, 0, 26),
+		Size = UDim2.new(1, 0, 0, 0),
+		BackgroundColor3 = rs.th.panel2,
+		ClipsDescendants = true,
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		ScrollBarThickness = 3,
+		ScrollBarImageColor3 = rs.th.sub,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y
+	})
 	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 5) })
-	n("UIStroke", { Parent = list, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+	n("UIStroke", { Parent = list, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 	n("UIListLayout", { Parent = list, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = list, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6), PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6) })
-	local o = false
-	local sel = nil
+	local open = false
+	local sel
 	local function fit()
 		local c = 0
 		for _, ch in ipairs(list:GetChildren()) do
@@ -465,41 +486,33 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		if c == 0 then
 			return 0
 		end
-		return c * 24 + (c - 1) * 4 + 12
+		return c * 22 + (c - 1) * 4 + 12
 	end
-	local function open(x)
-		o = x
-		local h2 = x and math.min(fit(), 140) or 0
+	local function openList(x)
+		open = x
+		local h2 = x and math.min(fit(), 150) or 0
 		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + h2) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 26 + h2) })
 		arr.Text = x and "^" or "v"
 		if x then
-			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
+			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.15 })
 		else
-			tw(hs, 0.15, { Color = rs.th.b4, Transparency = 0.6 })
+			tw(hs, 0.15, { Color = rs.th.stroke, Transparency = 0.4 })
 		end
 	end
 	local function addopt(t2)
-		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, AutoButtonColor = false })
-		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 4) })
-		local s2 = n("UIStroke", { Parent = b2, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-		cx(sc.w.cx, b2.MouseEnter, function()
-			tw(b2, 0.12, { BackgroundColor3 = rs.th.b4 })
-			tw(s2, 0.12, { Color = rs.th.acc, Transparency = 0.2 })
-		end)
-		cx(sc.w.cx, b2.MouseLeave, function()
-			tw(b2, 0.12, { BackgroundColor3 = rs.th.b3 })
-			tw(s2, 0.12, { Color = rs.th.b4, Transparency = 0.6 })
-		end)
-		cx(sc.w.cx, b2.MouseButton1Click, function()
+		local btn, setSel = make_option_button(sc.w.cx, list, t2, sel == t2, function()
 			sel = t2
 			v.Text = t2
 			v.TextColor3 = rs.th.acc
-			open(false)
+			openList(false)
 			if cb then
 				cb(t2)
 			end
 		end)
+		if sel == t2 then
+			setSel(true)
+		end
 	end
 	local function setopts(t3)
 		for _, ch in ipairs(list:GetChildren()) do
@@ -524,10 +537,10 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		v.TextColor3 = rs.th.acc
 	end
 	local function hov(x)
-		if x and not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b4 })
-		elseif not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b3 })
+		if x and not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel2 })
+		elseif not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel3 })
 		end
 	end
 	hov(false)
@@ -538,7 +551,7 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		hov(false)
 	end)
 	cx(sc.w.cx, h.MouseButton1Click, function()
-		open(not o)
+		openList(not open)
 	end)
 	return {
 		b = h,
@@ -552,33 +565,38 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		end,
 		Options = function(_, t5)
 			setopts(t5)
-			if o then
-				open(true)
+			if open then
+				openList(true)
 			end
 		end
 	}
 end
 
-rs.el.mdd = function(sc, txt, opts, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+rs.el.mdd = function(sc, text, opts, def, cb)
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = rs.th.panel3, Text = "", AutoButtonColor = false })
 	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
-	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Multi Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(1, -180, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local hs = n("UIStroke", { Parent = h, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = text or "Multi Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 180, 1, 0), Position = UDim2.new(1, -210, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
 	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 10 })
-	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 28), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
+	local list = n("ScrollingFrame", {
+		Parent = r,
+		Position = UDim2.new(0, 0, 0, 26),
+		Size = UDim2.new(1, 0, 0, 0),
+		BackgroundColor3 = rs.th.panel2,
+		ClipsDescendants = true,
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		ScrollBarThickness = 3,
+		ScrollBarImageColor3 = rs.th.sub,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y
+	})
 	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 5) })
-	n("UIStroke", { Parent = list, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+	n("UIStroke", { Parent = list, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 	n("UIListLayout", { Parent = list, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = list, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6), PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6) })
-	local o = false
+	local open = false
 	local selected = {}
-	if def then
-		for _, v2 in ipairs(def) do
-			selected[v2] = true
-		end
-	end
 	local function fit()
 		local c = 0
 		for _, ch in ipairs(list:GetChildren()) do
@@ -589,80 +607,53 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		if c == 0 then
 			return 0
 		end
-		return c * 24 + (c - 1) * 4 + 12
-	end
-	local function open(x)
-		o = x
-		local h2 = x and math.min(fit(), 140) or 0
-		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + h2) })
-		arr.Text = x and "^" or "v"
-		if x then
-			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
-		else
-			tw(hs, 0.15, { Color = rs.th.b4, Transparency = 0.6 })
-		end
+		return c * 22 + (c - 1) * 4 + 12
 	end
 	local function buildLabel()
-		local out = {}
+		local arr2 = {}
 		for k, v2 in pairs(selected) do
 			if v2 then
-				out[#out + 1] = k
+				arr2[#arr2 + 1] = k
 			end
 		end
-		table.sort(out)
-		if #out == 0 then
+		table.sort(arr2)
+		if #arr2 == 0 then
 			v.Text = ""
 			v.TextColor3 = rs.th.sub
-		elseif #out <= 2 then
-			v.Text = table.concat(out, ", ")
-			v.TextColor3 = rs.th.acc
 		else
-			v.Text = tostring(#out) .. " selected"
+			local joined = table.concat(arr2, ", ")
+			if #joined > 24 then
+				v.Text = #arr2 .. " selected"
+			else
+				v.Text = joined
+			end
 			v.TextColor3 = rs.th.acc
 		end
 		if cb then
-			cb(out)
+			cb(arr2)
 		end
 	end
-	local function applyVisual(btn, on)
-		local stroke = btn:FindFirstChildOfClass("UIStroke")
-		if on then
-			btn.BackgroundColor3 = rs.th.b4
-			if stroke then
-				stroke.Color = rs.th.acc
-				stroke.Transparency = 0.2
-			end
+	local function openList(x)
+		open = x
+		local h2 = x and math.min(fit(), 160) or 0
+		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 26 + h2) })
+		arr.Text = x and "^" or "v"
+		if x then
+			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.15 })
 		else
-			btn.BackgroundColor3 = rs.th.b3
-			if stroke then
-				stroke.Color = rs.th.b4
-				stroke.Transparency = 0.6
-			end
+			tw(hs, 0.15, { Color = rs.th.stroke, Transparency = 0.4 })
 		end
 	end
 	local function addopt(t2)
-		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, AutoButtonColor = false })
-		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 4) })
-		local s2 = n("UIStroke", { Parent = b2, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-		applyVisual(b2, selected[t2])
-		cx(sc.w.cx, b2.MouseEnter, function()
-			if not selected[t2] then
-				tw(b2, 0.12, { BackgroundColor3 = rs.th.b4 })
-				tw(s2, 0.12, { Color = rs.th.acc, Transparency = 0.2 })
-			end
-		end)
-		cx(sc.w.cx, b2.MouseLeave, function()
-			if not selected[t2] then
-				tw(b2, 0.12, { BackgroundColor3 = rs.th.b3 })
-				tw(s2, 0.12, { Color = rs.th.b4, Transparency = 0.6 })
-			end
-		end)
-		cx(sc.w.cx, b2.MouseButton1Click, function()
+		local btn, setSel = make_option_button(sc.w.cx, list, t2, selected[t2], function()
 			selected[t2] = not selected[t2]
-			applyVisual(b2, selected[t2])
+			setSel(selected[t2])
 			buildLabel()
 		end)
+		if selected[t2] then
+			setSel(true)
+		end
 	end
 	local function setopts(t3)
 		for _, ch in ipairs(list:GetChildren()) do
@@ -675,15 +666,17 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		end
 		buildLabel()
 	end
-	setopts(opts or {})
 	if def then
-		buildLabel()
+		for _, v2 in ipairs(def) do
+			selected[v2] = true
+		end
 	end
+	setopts(opts or {})
 	local function hov(x)
-		if x and not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b4 })
-		elseif not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b3 })
+		if x and not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel2 })
+		elseif not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel3 })
 		end
 	end
 	hov(false)
@@ -694,7 +687,7 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		hov(false)
 	end)
 	cx(sc.w.cx, h.MouseButton1Click, function()
-		open(not o)
+		openList(not open)
 	end)
 	return {
 		b = h,
@@ -718,35 +711,37 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		Options = function(_, t5)
 			opts = t5
 			setopts(t5)
-			if o then
-				open(true)
+			if open then
+				openList(true)
 			end
 		end
 	}
 end
-
-rs.el.cp = function(sc, txt, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+rs.el.cp = function(sc, text, def, cb)
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = rs.th.panel3, Text = "", AutoButtonColor = false })
 	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
-	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Color", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local hs = n("UIStroke", { Parent = h, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = text or "Color", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
 	local pv = n("Frame", { Parent = h, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -30, 0.5, -10), BackgroundColor3 = def or rs.th.acc })
 	n("UICorner", { Parent = pv, CornerRadius = UDim.new(0, 4) })
-	n("UIStroke", { Parent = pv, Color = rs.th.b4, Thickness = 1, Transparency = 0.4 })
-	local pop = n("Frame", { Parent = r, Position = UDim2.new(0, 0, 0, 30), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+	n("UIStroke", { Parent = pv, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
+	local pop = n("Frame", { Parent = r, Position = UDim2.new(0, 0, 0, 30), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.panel2, ClipsDescendants = true })
 	n("UICorner", { Parent = pop, CornerRadius = UDim.new(0, 6) })
-	n("UIStroke", { Parent = pop, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local sat = n("Frame", { Parent = pop, Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 150, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
+	n("UIStroke", { Parent = pop, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
+	local sat = n("Frame", { Parent = pop, Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 150, 0, 100), BackgroundColor3 = Color3.new(1, 1, 1) })
 	n("UICorner", { Parent = sat, CornerRadius = UDim.new(0, 4) })
-	local sg = n("UIGradient", { Parent = sat, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 0, 1)) })
-	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.new(0,0,0) })
+	local satGrad = n("UIGradient", { Parent = sat, Rotation = 0, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 0, 0)) })
+	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.new(0, 0, 0) })
 	n("UICorner", { Parent = val, CornerRadius = UDim.new(0, 4) })
-	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0,0,0), Color3.new(0,0,0)), Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(1,0)}) })
+	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0, 0, 0), Color3.new(0, 0, 0)), Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1) }) })
 	local sp = n("Frame", { Parent = sat, Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = rs.th.txt })
 	n("UICorner", { Parent = sp, CornerRadius = UDim.new(1, 0) })
-	n("UIStroke", { Parent = sp, Color = rs.th.bg, Thickness = 1 })
-	local hue = n("Frame", { Parent = pop, Position = UDim2.new(0, 170, 0, 10), Size = UDim2.new(0, 10, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
+	n("UIStroke", { Parent = sp, Color = rs.th.panel, Thickness = 1 })
+
+	local hue = n("Frame", { Parent = pop, Position = UDim2.new(0, 170, 0, 10), Size = UDim2.new(0, 10, 0, 100), BackgroundColor3 = Color3.new(1, 1, 1) })
 	n("UICorner", { Parent = hue, CornerRadius = UDim.new(0, 4) })
 	n("UIGradient", {
 		Parent = hue,
@@ -762,14 +757,15 @@ rs.el.cp = function(sc, txt, def, cb)
 		})
 	})
 	local hp = n("Frame", { Parent = hue, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = rs.th.txt })
-	local hx = n("TextBox", { Parent = pop, Size = UDim2.new(0, 80, 0, 22), Position = UDim2.new(0, 10, 0, 126), BackgroundColor3 = rs.th.b4, Text = "", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, ClearTextOnFocus = false })
+	local hx = n("TextBox", { Parent = pop, Size = UDim2.new(0, 90, 0, 22), Position = UDim2.new(0, 10, 0, 118), BackgroundColor3 = rs.th.panel3, Text = "", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, ClearTextOnFocus = false })
 	n("UICorner", { Parent = hx, CornerRadius = UDim.new(0, 4) })
-	n("UIStroke", { Parent = hx, Color = rs.th.b3, Thickness = 1, Transparency = 0.4 })
-	local o = false
+	n("UIStroke", { Parent = hx, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
+	local open = false
 	local h2, s2, v2 = Color3.toHSV(def or rs.th.acc)
 	local function upd(nb)
 		local col = Color3.fromHSV(h2, s2, v2)
-		sg.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHSV(h2, 1, 1))
+		satGrad.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromHSV(h2, 1, 1))
 		sp.Position = UDim2.new(s2, -4, 1 - v2, -4)
 		hp.Position = UDim2.new(0, 0, h2, -1)
 		pv.BackgroundColor3 = col
@@ -829,22 +825,22 @@ rs.el.cp = function(sc, txt, def, cb)
 		end
 	end)
 	local function hov(x)
-		if x and not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b4 })
-		elseif not o then
-			tw(h, 0.12, { BackgroundColor3 = rs.th.b3 })
+		if x and not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel2 })
+		elseif not open then
+			tw(h, 0.12, { BackgroundColor3 = rs.th.panel3 })
 		end
 	end
 	hov(false)
-	local function open(x)
-		o = x
+	local function openPop(x)
+		open = x
 		local ph = x and 150 or 0
 		tw(pop, 0.2, { Size = UDim2.new(1, 0, 0, ph) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + ph) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 26 + ph) })
 		if x then
-			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
+			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.15 })
 		else
-			tw(hs, 0.15, { Color = rs.th.b4, Transparency = 0.6 })
+			tw(hs, 0.15, { Color = rs.th.stroke, Transparency = 0.4 })
 		end
 	end
 	cx(sc.w.cx, h.MouseEnter, function()
@@ -854,51 +850,43 @@ rs.el.cp = function(sc, txt, def, cb)
 		hov(false)
 	end)
 	cx(sc.w.cx, h.MouseButton1Click, function()
-		open(not o)
+		openPop(not open)
 	end)
-	return { b = h, Set = function(_, c2) h2, s2, v2 = Color3.toHSV(c2); upd() end, Get = function() return Color3.fromHSV(h2, s2, v2) end }
+	return {
+		b = h,
+		Set = function(_, c2)
+			h2, s2, v2 = Color3.toHSV(c2)
+			upd()
+		end,
+		Get = function()
+			return Color3.fromHSV(h2, s2, v2)
+		end
+	}
 end
-
-rs.el.list = function(sc, txt, opt)
+rs.el.list = function(sc, text, opt)
 	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = r, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(txt or "List"):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(text or "List"):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
 	local box = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
-	local ll = n("UIListLayout", { Parent = box, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIListLayout", { Parent = box, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
 	opt = opt or {}
 	local function additem(t2, cb)
-		local it = n("Frame", { Parent = box, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3 })
+		local it = n("Frame", { Parent = box, Size = UDim2.new(1, 0, 0, 22), BackgroundColor3 = rs.th.panel3 })
 		n("UICorner", { Parent = it, CornerRadius = UDim.new(0, 4) })
-		n("UIStroke", { Parent = it, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
+		n("UIStroke", { Parent = it, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 		local tx = n("TextLabel", { Parent = it, Size = UDim2.new(1, -56, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
-		local act = n("TextButton", { Parent = it, Size = UDim2.new(0, 22, 0, 18), Position = UDim2.new(1, -50, 0.5, -9), BackgroundColor3 = rs.th.b4, Text = opt.btn or ">", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
+		local act = n("TextButton", { Parent = it, Size = UDim2.new(0, 22, 0, 18), Position = UDim2.new(1, -50, 0.5, -9), BackgroundColor3 = rs.th.panel2, Text = opt.btn or ">", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
 		n("UICorner", { Parent = act, CornerRadius = UDim.new(0, 4) })
-		local as = n("UIStroke", { Parent = act, Color = rs.th.acc, Thickness = 1, Transparency = 0.2 })
-		local rm = n("TextButton", { Parent = it, Size = UDim2.new(0, 18, 0, 18), Position = UDim2.new(1, -24, 0.5, -9), BackgroundColor3 = rs.th.b4, Text = "x", TextColor3 = rs.th.sub, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
+		n("UIStroke", { Parent = act, Color = rs.th.acc, Thickness = 1, Transparency = 0.2 })
+		local rm = n("TextButton", { Parent = it, Size = UDim2.new(0, 18, 0, 18), Position = UDim2.new(1, -24, 0.5, -9), BackgroundColor3 = rs.th.panel2, Text = "x", TextColor3 = rs.th.sub, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
 		n("UICorner", { Parent = rm, CornerRadius = UDim.new(0, 4) })
-		local rs2 = n("UIStroke", { Parent = rm, Color = rs.th.st, Thickness = 1, Transparency = 0.4 })
-		cx(sc.w.cx, act.MouseEnter, function()
-			tw(act, 0.12, { BackgroundColor3 = rs.th.b3 })
-			tw(as, 0.12, { Transparency = 0 })
-		end)
-		cx(sc.w.cx, act.MouseLeave, function()
-			tw(act, 0.12, { BackgroundColor3 = rs.th.b4 })
-			tw(as, 0.12, { Transparency = 0.2 })
-		end)
-		cx(sc.w.cx, rm.MouseEnter, function()
-			tw(rm, 0.12, { BackgroundColor3 = rs.th.b3 })
-			tw(rs2, 0.12, { Color = rs.th.acc2, Transparency = 0.2 })
-		end)
-		cx(sc.w.cx, rm.MouseLeave, function()
-			tw(rm, 0.12, { BackgroundColor3 = rs.th.b4 })
-			tw(rs2, 0.12, { Color = rs.th.st, Transparency = 0.4 })
-		end)
+		n("UIStroke", { Parent = rm, Color = rs.th.stroke2, Thickness = 1, Transparency = 0.4 })
 		cx(sc.w.cx, act.MouseButton1Click, function()
-			if cb then
-				cb(t2)
-			end
 			if opt.on then
 				opt.on(t2)
+			end
+			if cb then
+				cb(t2)
 			end
 		end)
 		cx(sc.w.cx, rm.MouseButton1Click, function()
@@ -910,8 +898,8 @@ rs.el.list = function(sc, txt, opt)
 		return it
 	end
 	local lo = {}
-	function lo:Add(t2, cb)
-		return additem(t2, cb)
+	function lo:Add(t2, cb2)
+		return additem(t2, cb2)
 	end
 	function lo:Clear()
 		for _, ch in ipairs(box:GetChildren()) do
@@ -929,12 +917,11 @@ rs.el.list = function(sc, txt, opt)
 	return lo
 end
 
-local function mkstats(w, p, cr, icons)
-	local rr = cr and math.max(6, cr - 2) or 10
-	local bar = n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+local function mkstats(w, parent, radius, icons)
+	local rr = radius and math.max(6, radius - 2) or 8
+	local bar = n("Frame", { Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = rs.th.panel, ClipsDescendants = true })
 	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, rr) })
-	n("UIStroke", { Parent = bar, Color = rs.th.ln, Thickness = 1, Transparency = 0.5 })
-	n("UIGradient", { Parent = bar, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
+	n("UIStroke", { Parent = bar, Color = rs.th.stroke, Thickness = 1, Transparency = 0.5 })
 	n("UIListLayout", { Parent = bar, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = bar, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
 
@@ -988,7 +975,6 @@ local function mkstats(w, p, cr, icons)
 	end)
 	return bar
 end
-
 function rs.new(o)
 	o = o or {}
 	local w = { cx = {}, tabs = {} }
@@ -997,12 +983,14 @@ function rs.new(o)
 			rs.th[k] = v
 		end
 	end
+
 	local root = (gethui and gethui()) or s.cg
 	local sg = n("ScreenGui", { Parent = root, Name = "RoSense", IgnoreGuiInset = true, ResetOnSpawn = false, ZIndexBehavior = Enum.ZIndexBehavior.Sibling })
 	if syn and syn.protect_gui then
 		syn.protect_gui(sg)
 	end
 	w.sg = sg
+
 	local nt = n("Frame", { Parent = sg, Name = "Notify", Size = UDim2.new(0, 320, 1, -20), Position = UDim2.new(1, -12, 0, 10), AnchorPoint = Vector2.new(1, 0), BackgroundTransparency = 1, ZIndex = 70 })
 	n("UIListLayout", { Parent = nt, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Top })
 	local ni = 0
@@ -1018,18 +1006,9 @@ function rs.new(o)
 			tint = d.color or tint
 		end
 		ni = ni + 1
-		local fr = n("Frame", { Parent = nt, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = rs.th.b2, BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 51, LayoutOrder = ni })
+		local fr = n("Frame", { Parent = nt, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = rs.th.panel, BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 51, LayoutOrder = ni })
 		n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 6) })
-		local st = n("UIStroke", { Parent = fr, Color = rs.th.ln, Thickness = 1, Transparency = 1 })
-		n("UIGradient", {
-			Parent = fr,
-			Rotation = 90,
-			Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, rs.th.b3),
-				ColorSequenceKeypoint.new(1, rs.th.b2)
-			})
-		})
-		local scn = n("UIScale", { Parent = fr, Scale = 0.96 })
+		local st = n("UIStroke", { Parent = fr, Color = rs.th.stroke, Thickness = 1, Transparency = 1 })
 		n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
 		n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 		local row = n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 14), BackgroundTransparency = 1 })
@@ -1042,7 +1021,6 @@ function rs.new(o)
 		local bl = n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Text = bd or "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextWrapped = true, TextTransparency = 1 })
 		local pb = n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(1, 0, 1, -2), AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = tint, BackgroundTransparency = 1 })
 		n("UICorner", { Parent = pb, CornerRadius = UDim.new(0, 2) })
-		tw(scn, 0.2, { Scale = 1 })
 		tw(fr, 0.2, { BackgroundTransparency = 0 })
 		tw(st, 0.2, { Transparency = 0.5 })
 		tw(tl, 0.2, { TextTransparency = 0 })
@@ -1051,7 +1029,6 @@ function rs.new(o)
 		local d = tm or 3
 		tw(pb, d, { Size = UDim2.new(0, 0, 0, 2) }, Enum.EasingStyle.Linear)
 		task.delay(d, function()
-			tw(scn, 0.2, { Scale = 0.96 })
 			tw(fr, 0.2, { BackgroundTransparency = 1 })
 			tw(st, 0.2, { Transparency = 1 })
 			tw(tl, 0.2, { TextTransparency = 1 })
@@ -1065,38 +1042,44 @@ function rs.new(o)
 		end)
 		return fr
 	end
-	local lg = asset_url("logo.png", o.logo or rs.lu)
+
+	local lg = asset_url("logo.png", o.logo or rs.logo)
 	if lg then
-		rs.as.logo = lg
+		rs.assets.logo = lg
 	end
-	local th = o.thh or 50
-	local sh = (o.stats == false) and 0 or 34
-	local cr = o.cr or 10
-	local sz = o.size or Vector2.new(860, 560)
+
+	local headerH = o.headerHeight or 48
+	local statsH = (o.stats == false) and 0 or 30
+	local cr = o.cr or 8
+	local sz = o.size or Vector2.new(900, 580)
 	local sx = typeof(sz) == "UDim2" and sz.X.Offset or sz.X
 	local sy = typeof(sz) == "UDim2" and sz.Y.Offset or sz.Y
 	local ms = typeof(sz) == "UDim2" and sz or UDim2.new(0, sx, 0, sy)
-	local main = n("Frame", { Parent = sg, Name = "Main", Size = ms, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+
+	local main = n("Frame", { Parent = sg, Name = "Main", Size = ms, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = rs.th.bg, ClipsDescendants = true })
 	n("UICorner", { Parent = main, CornerRadius = UDim.new(0, cr) })
-	n("UIGradient", { Parent = main, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
+	n("UIStroke", { Parent = main, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
 	local body = n("Frame", { Parent = main, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
 	n("UICorner", { Parent = body, CornerRadius = UDim.new(0, cr) })
-	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
+
+	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, headerH), BackgroundColor3 = rs.th.panel, Active = true })
 	n("UICorner", { Parent = top, CornerRadius = UDim.new(0, cr) })
-	n("UIStroke", { Parent = top, Color = rs.th.ln, Thickness = 1, Transparency = 0.5 })
+	n("UIStroke", { Parent = top, Color = rs.th.stroke, Thickness = 1, Transparency = 0.5 })
+	local topLine = n("Frame", { Parent = top, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 1, -1), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 0.7 })
 
 	local left = n("Frame", { Parent = top, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 2) })
+	n("UIListLayout", { Parent = left, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = left, PaddingLeft = UDim.new(0, 8) })
 
-	local lgm = n("ImageLabel", {
+	n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 34, 0, 34),
+		Size = UDim2.new(0, 36, 0, 36),
 		BackgroundTransparency = 1,
-		Image = rs.as.logo or "",
+		Image = rs.assets.logo or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
-	local ttl = n("TextLabel", {
+	n("TextLabel", {
 		Parent = left,
 		AutomaticSize = Enum.AutomaticSize.X,
 		Size = UDim2.new(0, 0, 0, 20),
@@ -1118,12 +1101,12 @@ function rs.new(o)
 	end
 
 	local tlist = n("Frame", { Parent = top, BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
 
 	local function layoutTop()
 		local lw = left.AbsoluteSize.X
 		local rw = right.AbsoluteSize.X
-		local pad = 10
+		local pad = 12
 		tlist.Position = UDim2.new(0, lw + pad, 0, 0)
 		tlist.Size = UDim2.new(1, -(lw + rw + pad * 2), 1, 0)
 	end
@@ -1132,13 +1115,14 @@ function rs.new(o)
 	cx(w.cx, right:GetPropertyChangedSignal("AbsoluteSize"), layoutTop)
 	cx(w.cx, top:GetPropertyChangedSignal("AbsoluteSize"), layoutTop)
 
-	local headerDivider = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, 1), Position = UDim2.new(0, 0, 0, th), BackgroundColor3 = rs.th.ln, ZIndex = 2 })
-	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, th + 1), Size = UDim2.new(1, 0, 1, -(th + 1 + sh)), BackgroundTransparency = 1 })
+	local pages = n("Frame", { Parent = body, Position = UDim2.new(0, 0, 0, headerH), Size = UDim2.new(1, 0, 1, -(headerH + statsH)), BackgroundTransparency = 1 })
 	local pl = n("UIPageLayout", { Parent = pages, TweenTime = 0.2, EasingStyle = Enum.EasingStyle.Quad, EasingDirection = Enum.EasingDirection.Out, SortOrder = Enum.SortOrder.LayoutOrder, FillDirection = Enum.FillDirection.Horizontal })
 	pl.ScrollWheelInputEnabled = false
+
 	if o.stats ~= false then
-		mkstats(w, n("Frame", { Parent = body, Position = UDim2.new(0, 0, 1, -sh), Size = UDim2.new(1, 0, 0, sh), BackgroundTransparency = 1 }), cr, o.statsIcons or rs.statsIcons)
+		mkstats(w, n("Frame", { Parent = body, Position = UDim2.new(0, 0, 1, -statsH), Size = UDim2.new(1, 0, 0, statsH), BackgroundTransparency = 1 }), cr, o.statsIcons or rs.statsIcons)
 	end
+
 	local sc = n("UIScale", { Parent = main, Scale = 1 })
 	local cam = workspace.CurrentCamera
 	local function res()
@@ -1159,6 +1143,7 @@ function rs.new(o)
 		end)
 	end
 	drag(main, top, w.cx)
+
 	local vis = true
 	local function setvis(x)
 		vis = x
@@ -1184,51 +1169,53 @@ function rs.new(o)
 			setvis(not vis)
 		end
 	end)
-	function w:Tab(nm, icon, cols)
+
+	function w:Tab(name, icon, cols)
 		local t = { w = w }
-		local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 0, 0, 26), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
-		local row = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1 })
+		local b = n("TextButton", { Parent = tlist, Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, Text = "", AutoButtonColor = false })
+		local pill = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 0, 28), Position = UDim2.new(0, 0, 0.5, -14), BackgroundColor3 = rs.th.panel2, BackgroundTransparency = 1 })
+		n("UICorner", { Parent = pill, CornerRadius = UDim.new(0, 6) })
+		n("UIPadding", { Parent = pill, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+		local row = n("Frame", { Parent = pill, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1 })
 		n("UIListLayout", { Parent = row, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
 
 		local ib = n("Frame", { Parent = row, Size = UDim2.new(0, 14, 0, 14), BackgroundTransparency = 1 })
-		local icn = icon or "main"
 		local im = nil
-		local ico = nil
 		local src = nil
-		local key = (type(icn) == "string" and icn:lower()) or nil
-		if type(icn) == "string" then
+		local key = (type(icon) == "string" and icon:lower()) or nil
+		if type(icon) == "string" then
 			src = (o.iconAssets and o.iconAssets[key]) or (rs.iconAssets and rs.iconAssets[key]) or (o.icons and o.icons[key]) or (rs.icons and rs.icons[key])
 		end
-		if not src and type(icn) == "string" and icn:match("^https?://") then
-			src = icn
+		if not src and type(icon) == "string" and icon:match("^https?://") then
+			src = icon
 		end
 		if src then
-			local id = asset_url("tab_" .. fn(icn) .. ".png", src)
+			local id = icon_asset("tab_" .. sanitize(icon), src)
 			if id then
 				im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = id, ImageColor3 = rs.th.sub, ScaleType = Enum.ScaleType.Fit })
 			end
 		end
 		if not im then
-			ico = ic(icn, ib, rs.th.sub)
+			im = n("ImageLabel", { Parent = ib, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Image = "", ImageTransparency = 1 })
 		end
 
-		local tlb = n("TextLabel", { Parent = row, AutomaticSize = Enum.AutomaticSize.X, Size = UDim2.new(0, 0, 1, 0), BackgroundTransparency = 1, Text = (nm or "Tab"):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-
+		local tlb = n("TextLabel", { Parent = row, AutomaticSize = Enum.AutomaticSize.X, Size = UDim2.new(0, 0, 1, 0), BackgroundTransparency = 1, Text = (name or "Tab"):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
 		local line = n("Frame", { Parent = b, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 1, -2), BackgroundColor3 = rs.th.acc, BackgroundTransparency = 1 })
 		n("UICorner", { Parent = line, CornerRadius = UDim.new(0, 1) })
+
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 16), PaddingBottom = UDim.new(0, 16), PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16) })
+		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) })
 		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
-		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 16), SortOrder = Enum.SortOrder.LayoutOrder })
+		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 		local cc = cols or o.cols or 3
-		local gap = 16
+		local gap = 12
 		local off = -((cc - 1) * gap) / cc
 		local cols2 = {}
 		for i = 1, cc do
 			local cf = n("Frame", { Parent = wrap, Size = UDim2.new(1 / cc, off, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
-			local cl = n("UIListLayout", { Parent = cf, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
-			cols2[#cols2 + 1] = { f = cf, ll = cl }
+			local cll = n("UIListLayout", { Parent = cf, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder })
+			cols2[#cols2 + 1] = { f = cf, ll = cll }
 		end
 		local function pick()
 			local m = math.huge
@@ -1242,45 +1229,31 @@ function rs.new(o)
 			end
 			return cols2[idx]
 		end
-		local a = false
+		local active = false
 		local function act(x)
-			a = x
+			active = x
 			if x then
 				tlb.TextColor3 = rs.th.acc
-				if im then
-					im.ImageColor3 = rs.th.acc
-				else
-					icc(ico, rs.th.acc)
-				end
+				im.ImageColor3 = rs.th.acc
+				tw(pill, 0.2, { BackgroundTransparency = 0.15 })
 				tw(line, 0.2, { BackgroundTransparency = 0 })
 			else
 				tlb.TextColor3 = rs.th.sub
-				if im then
-					im.ImageColor3 = rs.th.sub
-				else
-					icc(ico, rs.th.sub)
-				end
+				im.ImageColor3 = rs.th.sub
+				tw(pill, 0.2, { BackgroundTransparency = 1 })
 				tw(line, 0.2, { BackgroundTransparency = 1 })
 			end
 		end
 		cx(w.cx, b.MouseEnter, function()
-			if not a then
+			if not active then
 				tlb.TextColor3 = rs.th.txt
-				if im then
-					im.ImageColor3 = rs.th.txt
-				else
-					icc(ico, rs.th.txt)
-				end
+				im.ImageColor3 = rs.th.txt
 			end
 		end)
 		cx(w.cx, b.MouseLeave, function()
-			if not a then
+			if not active then
 				tlb.TextColor3 = rs.th.sub
-				if im then
-					im.ImageColor3 = rs.th.sub
-				else
-					icc(ico, rs.th.sub)
-				end
+				im.ImageColor3 = rs.th.sub
 			end
 		end)
 		cx(w.cx, b.MouseButton1Click, function()
@@ -1295,18 +1268,18 @@ function rs.new(o)
 		t.act = act
 		t.pg = pg
 		t.cols = cols2
-		function t:Sec(tt, ci)
+
+		function t:Sec(title, ci)
 			local sc2 = { w = w, f = nil }
 			local c = cols2[ci] or pick()
-			local fr = n("Frame", { Parent = c.f, Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b3, AutomaticSize = Enum.AutomaticSize.Y })
-			n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 5) })
-			n("UIStroke", { Parent = fr, Color = rs.th.ln, Thickness = 1, Transparency = 0.4 })
-			n("UIGradient", { Parent = fr, Rotation = 90, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b3), ColorSequenceKeypoint.new(1, rs.th.b4) }) })
+			local fr = n("Frame", { Parent = c.f, Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.panel2, AutomaticSize = Enum.AutomaticSize.Y })
+			n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 6) })
+			n("UIStroke", { Parent = fr, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
 			n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) })
 			n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
-			if tt and tt ~= "" then
-				n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(tt):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
-				n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = rs.th.ln })
+			if title and title ~= "" then
+				n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(title):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
+				n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = rs.th.stroke })
 			end
 			sc2.f = fr
 			function sc2:Add(k, ...)
@@ -1351,6 +1324,7 @@ function rs.new(o)
 		end
 		return t
 	end
+
 	function w:Destroy()
 		for _, c in ipairs(w.cx) do
 			pcall(function()
@@ -1361,6 +1335,7 @@ function rs.new(o)
 			w.sg:Destroy()
 		end
 	end
+
 	return w
 end
 
