@@ -9,7 +9,6 @@ local s = {
 	st = g:GetService("Stats")
 }
 
--- Utility Functions
 local function create(class, props, children)
 	local inst = Instance.new(class)
 	if props then
@@ -43,7 +42,6 @@ local function connect(table, signal, func)
 	return conn
 end
 
--- File System
 local wf, rf, iff, ifo, mf = writefile, readfile, isfile, isfolder, makefolder
 local gca = getcustomasset or getsynasset or GetCustomAsset
 
@@ -96,7 +94,6 @@ local function loadAsset(name, url)
 	return nil
 end
 
--- Theme
 RoSense.theme = {
 	bg = Color3.fromRGB(21, 21, 21),
 	header = Color3.fromRGB(29, 29, 29),
@@ -104,7 +101,7 @@ RoSense.theme = {
 	accent = Color3.fromRGB(228, 164, 254),
 	accentDark = Color3.fromRGB(165, 119, 184),
 	text = Color3.fromRGB(255, 255, 255),
-	textDim = Color3.fromRGB(80, 80, 80),
+	textDim = Color3.fromRGB(150, 150, 150),
 	border = Color3.fromRGB(49, 49, 49),
 	toggleBg = Color3.fromRGB(12, 12, 12),
 	inputBg = Color3.fromRGB(12, 12, 12),
@@ -113,7 +110,6 @@ RoSense.theme = {
 	warning = Color3.fromRGB(255, 193, 7)
 }
 
--- Assets
 RoSense.assets = {
 	["fps.png"] = "https://files.catbox.moe/dpbo1s.png",
 	["CheckToggle.png"] = "https://files.catbox.moe/oktka6.png",
@@ -123,20 +119,18 @@ RoSense.assets = {
 	["Ping.png"] = "https://files.catbox.moe/qiiccl.png"
 }
 
--- SVG Icons (white by default)
 local function createIcon(parent, iconType)
 	local icon = create("Frame", {
 		Parent = parent,
-		Size = UDim2.new(0, 20, 0, 20),
+		Size = UDim2.new(0, 16, 0, 16),
 		BackgroundTransparency = 1
 	})
 	
 	if iconType == "Combat" then
-		-- Sword icon
 		local blade = create("Frame", {
 			Parent = icon,
-			Size = UDim2.new(0, 3, 0, 16),
-			Position = UDim2.new(0.5, -1.5, 0, 2),
+			Size = UDim2.new(0, 2, 0, 12),
+			Position = UDim2.new(0.5, -1, 0, 2),
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			Rotation = 45
 		})
@@ -144,40 +138,38 @@ local function createIcon(parent, iconType)
 		
 		local hilt = create("Frame", {
 			Parent = icon,
-			Size = UDim2.new(0, 8, 0, 2),
-			Position = UDim2.new(0.5, -4, 1, -6),
+			Size = UDim2.new(0, 6, 0, 2),
+			Position = UDim2.new(0.5, -3, 1, -4),
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			Rotation = 45
 		})
 		create("UICorner", {Parent = hilt, CornerRadius = UDim.new(0, 1)})
 		
 	elseif iconType == "Visual" then
-		-- Eye icon
 		local eye = create("Frame", {
 			Parent = icon,
-			Size = UDim2.new(0, 16, 0, 10),
-			Position = UDim2.new(0.5, -8, 0.5, -5),
+			Size = UDim2.new(0, 12, 0, 8),
+			Position = UDim2.new(0.5, -6, 0.5, -4),
 			BackgroundTransparency = 1
 		})
-		create("UIStroke", {Parent = eye, Color = Color3.fromRGB(255, 255, 255), Thickness = 2})
+		create("UIStroke", {Parent = eye, Color = Color3.fromRGB(255, 255, 255), Thickness = 1.5})
 		create("UICorner", {Parent = eye, CornerRadius = UDim.new(1, 0)})
 		
 		local pupil = create("Frame", {
 			Parent = eye,
-			Size = UDim2.new(0, 4, 0, 4),
-			Position = UDim2.new(0.5, -2, 0.5, -2),
+			Size = UDim2.new(0, 3, 0, 3),
+			Position = UDim2.new(0.5, -1.5, 0.5, -1.5),
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		})
 		create("UICorner", {Parent = pupil, CornerRadius = UDim.new(1, 0)})
 		
 	elseif iconType == "Settings" then
-		-- Gear icon
 		for i = 0, 7 do
 			local angle = math.rad(i * 45)
 			local tooth = create("Frame", {
 				Parent = icon,
-				Size = UDim2.new(0, 2, 0, 4),
-				Position = UDim2.new(0.5, math.cos(angle) * 6 - 1, 0.5, math.sin(angle) * 6 - 2),
+				Size = UDim2.new(0, 1.5, 0, 3),
+				Position = UDim2.new(0.5, math.cos(angle) * 4.5 - 0.75, 0.5, math.sin(angle) * 4.5 - 1.5),
 				BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			})
 			create("UICorner", {Parent = tooth, CornerRadius = UDim.new(0, 1)})
@@ -185,18 +177,17 @@ local function createIcon(parent, iconType)
 		
 		local center = create("Frame", {
 			Parent = icon,
-			Size = UDim2.new(0, 6, 0, 6),
-			Position = UDim2.new(0.5, -3, 0.5, -3),
+			Size = UDim2.new(0, 4, 0, 4),
+			Position = UDim2.new(0.5, -2, 0.5, -2),
 			BackgroundTransparency = 1
 		})
-		create("UIStroke", {Parent = center, Color = Color3.fromRGB(255, 255, 255), Thickness = 2})
+		create("UIStroke", {Parent = center, Color = Color3.fromRGB(255, 255, 255), Thickness = 1.5})
 		create("UICorner", {Parent = center, CornerRadius = UDim.new(1, 0)})
 	end
 	
 	return icon
 end
 
--- Drag functionality
 local function makeDraggable(frame, handle, connections)
 	local dragging, dragStart, startPos
 	
@@ -225,11 +216,10 @@ local function makeDraggable(frame, handle, connections)
 	end)
 end
 
--- Stats Calculation
 local function createStatsBar(window, parent)
 	local bar = create("Frame", {
 		Parent = parent,
-		Size = UDim2.new(0, 428, 0, 43),
+		Size = UDim2.new(0, 280, 0, 32),
 		BackgroundColor3 = RoSense.theme.bg,
 		BorderSizePixel = 0
 	})
@@ -238,22 +228,21 @@ local function createStatsBar(window, parent)
 	create("UIStroke", {
 		Parent = bar,
 		Color = RoSense.theme.accentDark,
-		Thickness = 2.4
+		Thickness = 1.5
 	})
 	
 	local layout = create("UIListLayout", {
 		Parent = bar,
 		FillDirection = Enum.FillDirection.Horizontal,
-		Padding = UDim.new(0, 10),
+		Padding = UDim.new(0, 8),
 		VerticalAlignment = Enum.VerticalAlignment.Center
 	})
 	
-	create("UIPadding", {Parent = bar, PaddingLeft = UDim.new(0, 6)})
+	create("UIPadding", {Parent = bar, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8)})
 	
-	-- FPS Counter
 	local fpsFrame = create("Frame", {
 		Parent = bar,
-		Size = UDim2.new(0, 93, 0, 27),
+		Size = UDim2.new(0, 70, 0, 22),
 		BackgroundTransparency = 1
 	})
 	
@@ -266,7 +255,7 @@ local function createStatsBar(window, parent)
 	
 	local fpsIcon = create("ImageLabel", {
 		Parent = fpsFrame,
-		Size = UDim2.new(0, 25, 0, 25),
+		Size = UDim2.new(0, 18, 0, 18),
 		BackgroundTransparency = 1,
 		Image = loadAsset("fps.png", RoSense.assets["fps.png"]) or "",
 		ImageColor3 = RoSense.theme.success
@@ -274,19 +263,18 @@ local function createStatsBar(window, parent)
 	
 	local fpsLabel = create("TextLabel", {
 		Parent = fpsFrame,
-		Size = UDim2.new(0, 65, 0, 25),
+		Size = UDim2.new(0, 48, 0, 18),
 		BackgroundTransparency = 1,
 		Text = "60 FPS",
 		TextColor3 = RoSense.theme.success,
 		Font = Enum.Font.GothamBold,
-		TextSize = 14,
-		TextXAlignment = Enum.TextXAlignment.Center
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-	-- Ping Counter
 	local pingFrame = create("Frame", {
 		Parent = bar,
-		Size = UDim2.new(0, 93, 0, 27),
+		Size = UDim2.new(0, 70, 0, 22),
 		BackgroundTransparency = 1
 	})
 	
@@ -299,7 +287,7 @@ local function createStatsBar(window, parent)
 	
 	local pingIcon = create("ImageLabel", {
 		Parent = pingFrame,
-		Size = UDim2.new(0, 25, 0, 25),
+		Size = UDim2.new(0, 18, 0, 18),
 		BackgroundTransparency = 1,
 		Image = loadAsset("Ping.png", RoSense.assets["Ping.png"]) or "",
 		ImageColor3 = RoSense.theme.error
@@ -307,36 +295,27 @@ local function createStatsBar(window, parent)
 	
 	local pingLabel = create("TextLabel", {
 		Parent = pingFrame,
-		Size = UDim2.new(0, 65, 0, 25),
+		Size = UDim2.new(0, 48, 0, 18),
 		BackgroundTransparency = 1,
 		Text = "0 MS",
 		TextColor3 = RoSense.theme.error,
 		Font = Enum.Font.GothamBold,
-		TextSize = 14,
-		TextXAlignment = Enum.TextXAlignment.Center
-	})
-	
-	-- Game Name
-	local gameFrame = create("Frame", {
-		Parent = bar,
-		Size = UDim2.new(0, 127, 1, 0),
-		BackgroundTransparency = 1
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
 	local gameName = create("TextLabel", {
-		Parent = gameFrame,
-		Size = UDim2.new(1, 0, 0, 25),
-		Position = UDim2.new(0, 0, 0.5, -12.5),
+		Parent = bar,
+		Size = UDim2.new(0, 100, 0, 18),
 		BackgroundTransparency = 1,
 		Text = g:GetService("MarketplaceService"):GetProductInfo(g.PlaceId).Name or "Game",
 		TextColor3 = RoSense.theme.text,
 		Font = Enum.Font.GothamBold,
-		TextSize = 12,
+		TextSize = 11,
 		TextScaled = true,
-		TextXAlignment = Enum.TextXAlignment.Center
+		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-	-- Update loop
 	local frameCount = 0
 	local lastUpdate = tick()
 	
@@ -354,10 +333,10 @@ local function createStatsBar(window, parent)
 				local pingItem = ssi and (ssi:FindFirstChild("Data Ping") or ssi:FindFirstChild("Ping"))
 				if pingItem then
 					if pingItem.GetValue then
-						return pingItem:GetValue()
+						return math.floor(pingItem:GetValue())
 					elseif pingItem.GetValueString then
 						local str = pingItem:GetValueString()
-						return tonumber(str:match("%d+"))
+						return tonumber(str:match("%d+")) or 0
 					end
 				end
 				return 0
@@ -373,7 +352,6 @@ local function createStatsBar(window, parent)
 	return bar
 end
 
--- Main Window Creation
 function RoSense:CreateWindow(config)
 	config = config or {}
 	local window = {
@@ -383,12 +361,10 @@ function RoSense:CreateWindow(config)
 		notifications = {}
 	}
 	
-	-- Load assets
 	for name, url in pairs(self.assets) do
 		loadAsset(name, url)
 	end
 	
-	-- Create ScreenGui
 	local screenGui = create("ScreenGui", {
 		Parent = (gethui and gethui()) or s.cg,
 		Name = "RoSenseUI",
@@ -402,7 +378,6 @@ function RoSense:CreateWindow(config)
 	
 	window.gui = screenGui
 	
-	-- Notification Container
 	local notifContainer = create("Frame", {
 		Parent = screenGui,
 		Size = UDim2.new(0, 300, 1, -20),
@@ -420,57 +395,52 @@ function RoSense:CreateWindow(config)
 	
 	window.notifContainer = notifContainer
 	
-	-- Main Frame
 	local main = create("CanvasGroup", {
 		Parent = screenGui,
 		Name = "Main",
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.new(0.5, 0, 0.5, 0),
-		Size = UDim2.new(0, 1186, 0, 817),
+		Size = UDim2.new(0, 700, 0, 500),
 		BackgroundColor3 = self.theme.bg,
 		BorderSizePixel = 0
 	})
 	
-	create("UICorner", {Parent = main, CornerRadius = UDim.new(0, 8)})
+	create("UICorner", {Parent = main, CornerRadius = UDim.new(0, 6)})
 	
-	-- Header
 	local header = create("Frame", {
 		Parent = main,
-		Size = UDim2.new(1, 0, 0, 74),
+		Size = UDim2.new(1, 0, 0, 50),
 		Position = UDim2.new(0, 0, 0, 0),
 		BackgroundColor3 = self.theme.header,
 		BorderColor3 = self.theme.accentDark,
-		BorderSizePixel = 2
+		BorderSizePixel = 1
 	})
 	
-	-- Logo
 	local logo = create("ImageLabel", {
 		Parent = header,
-		Size = UDim2.new(0, 47, 0, 47),
-		Position = UDim2.new(0, 20, 0.5, -23.5),
+		Size = UDim2.new(0, 32, 0, 32),
+		Position = UDim2.new(0, 12, 0.5, -16),
 		BackgroundTransparency = 1,
 		Image = loadAsset("logo.png", self.assets["logo.png"]) or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	
-	-- Title
 	local title = create("TextLabel", {
 		Parent = header,
-		Size = UDim2.new(0, 192, 0, 40),
-		Position = UDim2.new(0, 86, 0, 17),
+		Size = UDim2.new(0, 150, 0, 28),
+		Position = UDim2.new(0, 52, 0, 11),
 		BackgroundTransparency = 1,
 		Text = config.Name or "RoSense",
 		TextColor3 = self.theme.accent,
 		Font = Enum.Font.GothamBold,
-		TextSize = 28,
+		TextSize = 20,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 	
-	-- Tab Container
 	local tabButtons = create("Frame", {
 		Parent = header,
-		Size = UDim2.new(0, 820, 0, 39),
-		Position = UDim2.new(0, 290, 0, 32),
+		Size = UDim2.new(0, 480, 0, 32),
+		Position = UDim2.new(0, 210, 0, 18),
 		BackgroundTransparency = 1
 	})
 	
@@ -483,45 +453,40 @@ function RoSense:CreateWindow(config)
 	
 	window.tabButtons = tabButtons
 	
-	-- Tab Content Container
 	local tabContents = create("Frame", {
 		Parent = main,
-		Size = UDim2.new(0, 1142, 0, 698),
-		Position = UDim2.new(0.5, 0, 0, 106),
+		Size = UDim2.new(0, 680, 0, 420),
+		Position = UDim2.new(0.5, 0, 0, 60),
 		AnchorPoint = Vector2.new(0.5, 0),
 		BackgroundTransparency = 1
 	})
 	
 	create("UIGridLayout", {
 		Parent = tabContents,
-		CellSize = UDim2.new(0, 369, 0, 293),
-		CellPadding = UDim2.new(0, 17, 0, 17),
+		CellSize = UDim2.new(0, 220, 0, 200),
+		CellPadding = UDim2.new(0, 10, 0, 10),
 		HorizontalAlignment = Enum.HorizontalAlignment.Left,
 		VerticalAlignment = Enum.VerticalAlignment.Top
 	})
 	
-	create("UIPadding", {Parent = tabContents, PaddingTop = UDim.new(0, 15)})
+	create("UIPadding", {Parent = tabContents, PaddingTop = UDim.new(0, 8)})
 	
 	window.tabContents = tabContents
 	
-	-- Bottom Bar
 	local bottom = create("Frame", {
 		Parent = main,
-		Size = UDim2.new(1, 0, 0, 42),
-		Position = UDim2.new(0, 0, 1, -42),
+		Size = UDim2.new(1, 0, 0, 30),
+		Position = UDim2.new(0, 0, 1, -30),
 		BackgroundColor3 = self.theme.header,
 		BorderColor3 = self.theme.border,
 		BorderSizePixel = 1
 	})
 	
-	-- Stats Bar (floating)
 	local statsBar = createStatsBar(window, screenGui)
-	statsBar.Position = UDim2.new(0, 20, 0, 20)
+	statsBar.Position = UDim2.new(0, 10, 0, 10)
 	
-	-- Make draggable
 	makeDraggable(main, header, window.connections)
 	
-	-- Toggle visibility
 	local visible = true
 	connect(window.connections, s.ui.InputBegan, function(input, gpe)
 		if gpe then return end
@@ -531,13 +496,12 @@ function RoSense:CreateWindow(config)
 		end
 	end)
 	
-	-- Notification System
 	function window:Notify(options)
 		options = options or {}
 		local title = options.Title or "Notification"
 		local message = options.Message or ""
 		local duration = options.Duration or 3
-		local type = options.Type or "info" -- info, success, error, warning
+		local type = options.Type or "info"
 		
 		local notif = create("Frame", {
 			Parent = notifContainer,
@@ -575,12 +539,12 @@ function RoSense:CreateWindow(config)
 		
 		local titleLabel = create("TextLabel", {
 			Parent = notif,
-			Size = UDim2.new(1, 0, 0, 18),
+			Size = UDim2.new(1, 0, 0, 16),
 			BackgroundTransparency = 1,
 			Text = title,
 			TextColor3 = self.theme.text,
 			Font = Enum.Font.GothamBold,
-			TextSize = 13,
+			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextTransparency = 1
 		})
@@ -593,7 +557,7 @@ function RoSense:CreateWindow(config)
 			Text = message,
 			TextColor3 = self.theme.textDim,
 			Font = Enum.Font.Gotham,
-			TextSize = 11,
+			TextSize = 10,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextYAlignment = Enum.TextYAlignment.Top,
 			TextWrapped = true,
@@ -610,17 +574,14 @@ function RoSense:CreateWindow(config)
 		
 		create("UICorner", {Parent = progressBar, CornerRadius = UDim.new(0, 1)})
 		
-		-- Animate in
 		tween(notif, 0.3, {BackgroundTransparency = 0}, Enum.EasingStyle.Back)
 		tween(stroke, 0.3, {Transparency = 0})
 		tween(titleLabel, 0.3, {TextTransparency = 0})
 		tween(msgLabel, 0.3, {TextTransparency = 0})
 		tween(progressBar, 0.3, {BackgroundTransparency = 0.3})
 		
-		-- Progress animation
 		tween(progressBar, duration, {Size = UDim2.new(0, 0, 0, 2)}, Enum.EasingStyle.Linear)
 		
-		-- Animate out
 		task.delay(duration, function()
 			tween(notif, 0.3, {BackgroundTransparency = 1}, Enum.EasingStyle.Quad)
 			tween(stroke, 0.3, {Transparency = 1})
@@ -644,10 +605,9 @@ function RoSense:CreateWindow(config)
 			page = nil
 		}
 		
-		-- Create tab button
 		local tabBtn = create("Frame", {
 			Parent = tabButtons,
-			Size = UDim2.new(0, 138, 0, 31),
+			Size = UDim2.new(0, 100, 0, 28),
 			BackgroundTransparency = 1
 		})
 		
@@ -656,7 +616,7 @@ function RoSense:CreateWindow(config)
 		create("UIListLayout", {
 			Parent = tabBtn,
 			FillDirection = Enum.FillDirection.Horizontal,
-			Padding = UDim.new(0, 6),
+			Padding = UDim.new(0, 5),
 			VerticalAlignment = Enum.VerticalAlignment.Center
 		})
 		
@@ -664,7 +624,7 @@ function RoSense:CreateWindow(config)
 		if RoSense.assets[icon .. ".png"] then
 			iconImg = create("ImageLabel", {
 				Parent = tabBtn,
-				Size = UDim2.new(0, 29, 0, 25),
+				Size = UDim2.new(0, 20, 0, 20),
 				BackgroundTransparency = 1,
 				Image = loadAsset(icon .. ".png", RoSense.assets[icon .. ".png"]) or "",
 				ImageColor3 = self.theme.textDim
@@ -685,12 +645,12 @@ function RoSense:CreateWindow(config)
 		
 		local tabLabel = create("TextLabel", {
 			Parent = tabBtn,
-			Size = UDim2.new(0, 100, 0, 26),
+			Size = UDim2.new(0, 70, 0, 22),
 			BackgroundTransparency = 1,
 			Text = name:upper(),
 			TextColor3 = self.theme.textDim,
 			Font = Enum.Font.GothamBold,
-			TextSize = 12,
+			TextSize = 11,
 			TextXAlignment = Enum.TextXAlignment.Left
 		})
 		
@@ -706,7 +666,6 @@ function RoSense:CreateWindow(config)
 		tab.label = tabLabel
 		
 		function tab:Select()
-			-- Deselect all
 			for _, t in pairs(window.tabs) do
 				if RoSense.assets[icon .. ".png"] then
 					t.icon.ImageColor3 = RoSense.theme.textDim
@@ -725,7 +684,6 @@ function RoSense:CreateWindow(config)
 				t.label.TextColor3 = RoSense.theme.textDim
 			end
 			
-			-- Select this
 			if RoSense.assets[icon .. ".png"] then
 				iconImg.ImageColor3 = RoSense.theme.accent
 			else
@@ -742,7 +700,6 @@ function RoSense:CreateWindow(config)
 			end
 			tabLabel.TextColor3 = RoSense.theme.text
 			
-			-- Show sections
 			for _, t in pairs(window.tabs) do
 				for _, section in pairs(t.sections) do
 					section.frame.Visible = (t == tab)
@@ -762,37 +719,37 @@ function RoSense:CreateWindow(config)
 			
 			local sectionFrame = create("Frame", {
 				Parent = tabContents,
-				Size = UDim2.new(0, 369, 0, 293),
+				Size = UDim2.new(0, 220, 0, 200),
 				BackgroundColor3 = RoSense.theme.content,
 				Visible = false
 			})
 			
-			create("UICorner", {Parent = sectionFrame, CornerRadius = UDim.new(0, 6)})
+			create("UICorner", {Parent = sectionFrame, CornerRadius = UDim.new(0, 5)})
 			create("UIStroke", {
 				Parent = sectionFrame,
 				Color = RoSense.theme.border,
-				Thickness = 1.2
+				Thickness = 1
 			})
 			
 			local sectionTitle = create("TextLabel", {
 				Parent = sectionFrame,
-				Size = UDim2.new(0, 200, 0, 25),
-				Position = UDim2.new(0, 10, 0, 5),
+				Size = UDim2.new(0, 180, 0, 20),
+				Position = UDim2.new(0, 8, 0, 4),
 				BackgroundTransparency = 1,
 				Text = sectionName:upper(),
 				TextColor3 = RoSense.theme.text,
 				Font = Enum.Font.GothamBold,
-				TextSize = 12,
+				TextSize = 11,
 				TextXAlignment = Enum.TextXAlignment.Left
 			})
 			
 			local elementContainer = create("ScrollingFrame", {
 				Parent = sectionFrame,
-				Size = UDim2.new(1, -10, 1, -40),
-				Position = UDim2.new(0, 5, 0, 35),
+				Size = UDim2.new(1, -8, 1, -30),
+				Position = UDim2.new(0, 4, 0, 26),
 				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
-				ScrollBarThickness = 3,
+				ScrollBarThickness = 2,
 				ScrollBarImageColor3 = RoSense.theme.accentDark,
 				CanvasSize = UDim2.new(0, 0, 0, 0),
 				AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -800,38 +757,37 @@ function RoSense:CreateWindow(config)
 			
 			create("UIListLayout", {
 				Parent = elementContainer,
-				Padding = UDim.new(0, 7),
+				Padding = UDim.new(0, 5),
 				VerticalAlignment = Enum.VerticalAlignment.Top
 			})
 			
 			section.container = elementContainer
 			section.frame = sectionFrame
 			
-			-- Toggle
 			function section:AddToggle(options)
 				options = options or {}
 				local toggle = create("Frame", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 38),
+					Size = UDim2.new(1, -10, 0, 28),
 					BackgroundTransparency = 1
 				})
 				
 				local nameLabel = create("TextLabel", {
 					Parent = toggle,
-					Size = UDim2.new(0, 200, 0, 21),
-					Position = UDim2.new(0, 10, 0.5, -10.5),
+					Size = UDim2.new(0, 140, 0, 18),
+					Position = UDim2.new(0, 6, 0.5, -9),
 					BackgroundTransparency = 1,
 					Text = options.Name or "Toggle",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.GothamBold,
-					TextSize = 13,
+					TextSize = 11,
 					TextXAlignment = Enum.TextXAlignment.Left
 				})
 				
 				local toggleBox = create("ImageButton", {
 					Parent = toggle,
-					Size = UDim2.new(0, 20, 0, 20),
-					Position = UDim2.new(1, -30, 0.5, -10),
+					Size = UDim2.new(0, 16, 0, 16),
+					Position = UDim2.new(1, -20, 0.5, -8),
 					BackgroundColor3 = RoSense.theme.toggleBg,
 					Image = loadAsset("CheckToggle.png", RoSense.assets["CheckToggle.png"]) or "",
 					ImageTransparency = 1
@@ -871,26 +827,25 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			-- Button
 			function section:AddButton(options)
 				options = options or {}
 				local button = create("TextButton", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 38),
+					Size = UDim2.new(1, -10, 0, 28),
 					BackgroundColor3 = RoSense.theme.inputBg,
 					Text = options.Name or "Button",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.GothamBold,
-					TextSize = 13,
+					TextSize = 11,
 					AutoButtonColor = false
 				})
 				
-				create("UICorner", {Parent = button, CornerRadius = UDim.new(0, 6)})
+				create("UICorner", {Parent = button, CornerRadius = UDim.new(0, 5)})
 				
 				local stroke = create("UIStroke", {
 					Parent = button,
 					Color = RoSense.theme.border,
-					Thickness = 1.2
+					Thickness = 1
 				})
 				
 				connect(window.connections, button.MouseEnter, function()
@@ -916,7 +871,6 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			-- Slider
 			function section:AddSlider(options)
 				options = options or {}
 				local min = options.Min or 0
@@ -926,42 +880,42 @@ function RoSense:CreateWindow(config)
 				
 				local sliderFrame = create("Frame", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 50),
+					Size = UDim2.new(1, -10, 0, 38),
 					BackgroundTransparency = 1
 				})
 				
 				local nameLabel = create("TextLabel", {
 					Parent = sliderFrame,
-					Size = UDim2.new(0.7, 0, 0, 18),
-					Position = UDim2.new(0, 10, 0, 0),
+					Size = UDim2.new(0.7, 0, 0, 14),
+					Position = UDim2.new(0, 6, 0, 0),
 					BackgroundTransparency = 1,
 					Text = options.Name or "Slider",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.GothamBold,
-					TextSize = 12,
+					TextSize = 10,
 					TextXAlignment = Enum.TextXAlignment.Left
 				})
 				
 				local valueLabel = create("TextLabel", {
 					Parent = sliderFrame,
-					Size = UDim2.new(0.3, -10, 0, 18),
+					Size = UDim2.new(0.3, -6, 0, 14),
 					Position = UDim2.new(0.7, 0, 0, 0),
 					BackgroundTransparency = 1,
 					Text = tostring(default),
 					TextColor3 = RoSense.theme.textDim,
 					Font = Enum.Font.Gotham,
-					TextSize = 11,
+					TextSize = 9,
 					TextXAlignment = Enum.TextXAlignment.Right
 				})
 				
 				local sliderBack = create("Frame", {
 					Parent = sliderFrame,
-					Size = UDim2.new(1, -20, 0, 8),
-					Position = UDim2.new(0, 10, 0, 28),
+					Size = UDim2.new(1, -12, 0, 6),
+					Position = UDim2.new(0, 6, 0, 20),
 					BackgroundColor3 = RoSense.theme.inputBg
 				})
 				
-				create("UICorner", {Parent = sliderBack, CornerRadius = UDim.new(0, 4)})
+				create("UICorner", {Parent = sliderBack, CornerRadius = UDim.new(0, 3)})
 				create("UIStroke", {
 					Parent = sliderBack,
 					Color = RoSense.theme.border,
@@ -974,12 +928,12 @@ function RoSense:CreateWindow(config)
 					BackgroundColor3 = RoSense.theme.accent
 				})
 				
-				create("UICorner", {Parent = sliderFill, CornerRadius = UDim.new(0, 4)})
+				create("UICorner", {Parent = sliderFill, CornerRadius = UDim.new(0, 3)})
 				
 				local sliderKnob = create("Frame", {
 					Parent = sliderBack,
-					Size = UDim2.new(0, 12, 0, 12),
-					Position = UDim2.new(0, -6, 0.5, -6),
+					Size = UDim2.new(0, 10, 0, 10),
+					Position = UDim2.new(0, -5, 0.5, -5),
 					BackgroundColor3 = RoSense.theme.accent
 				})
 				
@@ -998,7 +952,7 @@ function RoSense:CreateWindow(config)
 					local percent = (value - min) / (max - min)
 					
 					tween(sliderFill, 0.1, {Size = UDim2.new(percent, 0, 1, 0)})
-					tween(sliderKnob, 0.1, {Position = UDim2.new(percent, -6, 0.5, -6)})
+					tween(sliderKnob, 0.1, {Position = UDim2.new(percent, -5, 0.5, -5)})
 					valueLabel.Text = tostring(value)
 					
 					if options.Callback then
@@ -1039,7 +993,6 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			-- Dropdown
 			function section:AddDropdown(options)
 				options = options or {}
 				local items = options.Items or {}
@@ -1048,92 +1001,92 @@ function RoSense:CreateWindow(config)
 				
 				local dropFrame = create("Frame", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 38),
+					Size = UDim2.new(1, -10, 0, 28),
 					BackgroundTransparency = 1,
 					ClipsDescendants = true
 				})
 				
 				local dropHeader = create("TextButton", {
 					Parent = dropFrame,
-					Size = UDim2.new(1, 0, 0, 38),
+					Size = UDim2.new(1, 0, 0, 28),
 					BackgroundColor3 = RoSense.theme.inputBg,
 					Text = "",
 					AutoButtonColor = false
 				})
 				
-				create("UICorner", {Parent = dropHeader, CornerRadius = UDim.new(0, 6)})
+				create("UICorner", {Parent = dropHeader, CornerRadius = UDim.new(0, 5)})
 				create("UIStroke", {
 					Parent = dropHeader,
 					Color = RoSense.theme.border,
-					Thickness = 1.2
+					Thickness = 1
 				})
 				
 				local nameLabel = create("TextLabel", {
 					Parent = dropHeader,
 					Size = UDim2.new(0.4, 0, 1, 0),
-					Position = UDim2.new(0, 10, 0, 0),
+					Position = UDim2.new(0, 6, 0, 0),
 					BackgroundTransparency = 1,
 					Text = options.Name or "Dropdown",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.GothamBold,
-					TextSize = 12,
+					TextSize = 10,
 					TextXAlignment = Enum.TextXAlignment.Left
 				})
 				
 				local valueLabel = create("TextLabel", {
 					Parent = dropHeader,
-					Size = UDim2.new(0.5, -40, 1, 0),
-					Position = UDim2.new(0.4, 10, 0, 0),
+					Size = UDim2.new(0.5, -30, 1, 0),
+					Position = UDim2.new(0.4, 6, 0, 0),
 					BackgroundTransparency = 1,
 					Text = selected or "...",
 					TextColor3 = RoSense.theme.textDim,
 					Font = Enum.Font.Gotham,
-					TextSize = 11,
+					TextSize = 9,
 					TextXAlignment = Enum.TextXAlignment.Right,
 					TextTruncate = Enum.TextTruncate.AtEnd
 				})
 				
 				local arrow = create("TextLabel", {
 					Parent = dropHeader,
-					Size = UDim2.new(0, 20, 1, 0),
-					Position = UDim2.new(1, -30, 0, 0),
+					Size = UDim2.new(0, 16, 1, 0),
+					Position = UDim2.new(1, -20, 0, 0),
 					BackgroundTransparency = 1,
 					Text = "▼",
 					TextColor3 = RoSense.theme.textDim,
 					Font = Enum.Font.GothamBold,
-					TextSize = 10
+					TextSize = 8
 				})
 				
 				local dropList = create("ScrollingFrame", {
 					Parent = dropFrame,
 					Size = UDim2.new(1, 0, 0, 0),
-					Position = UDim2.new(0, 0, 0, 40),
+					Position = UDim2.new(0, 0, 0, 30),
 					BackgroundColor3 = RoSense.theme.inputBg,
-					ScrollBarThickness = 3,
+					ScrollBarThickness = 2,
 					ScrollBarImageColor3 = RoSense.theme.accentDark,
 					CanvasSize = UDim2.new(0, 0, 0, 0),
 					AutomaticCanvasSize = Enum.AutomaticSize.Y,
 					BorderSizePixel = 0
 				})
 				
-				create("UICorner", {Parent = dropList, CornerRadius = UDim.new(0, 6)})
+				create("UICorner", {Parent = dropList, CornerRadius = UDim.new(0, 5)})
 				create("UIStroke", {
 					Parent = dropList,
 					Color = RoSense.theme.border,
-					Thickness = 1.2
+					Thickness = 1
 				})
 				
 				create("UIListLayout", {
 					Parent = dropList,
-					Padding = UDim.new(0, 2)
+					Padding = UDim.new(0, 1)
 				})
 				
 				create("UIPadding", {
 					Parent = dropList,
-					PaddingTop = UDim.new(0, 4),
-					PaddingBottom = UDim.new(0, 4),
-					PaddingLeft = UDim.new(0, 4),
-					PaddingRight = UDim.new(0, 4)
+					PaddingTop = UDim.new(0, 3),
+					PaddingBottom = UDim.new(0, 3),
+					PaddingLeft = UDim.new(0, 3),
+					PaddingRight = UDim.new(0, 3)
 				})
 				
 				local open = false
@@ -1148,16 +1101,16 @@ function RoSense:CreateWindow(config)
 					for _, item in pairs(items) do
 						local itemBtn = create("TextButton", {
 							Parent = dropList,
-							Size = UDim2.new(1, -8, 0, 28),
+							Size = UDim2.new(1, -6, 0, 22),
 							BackgroundColor3 = RoSense.theme.content,
 							Text = item,
 							TextColor3 = RoSense.theme.text,
 							Font = Enum.Font.Gotham,
-							TextSize = 11,
+							TextSize = 9,
 							AutoButtonColor = false
 						})
 						
-						create("UICorner", {Parent = itemBtn, CornerRadius = UDim.new(0, 4)})
+						create("UICorner", {Parent = itemBtn, CornerRadius = UDim.new(0, 3)})
 						
 						connect(window.connections, itemBtn.MouseEnter, function()
 							tween(itemBtn, 0.15, {BackgroundColor3 = RoSense.theme.border})
@@ -1172,7 +1125,7 @@ function RoSense:CreateWindow(config)
 							valueLabel.Text = item
 							valueLabel.TextColor3 = RoSense.theme.accent
 							
-							tween(dropFrame, 0.2, {Size = UDim2.new(1, -15, 0, 38)})
+							tween(dropFrame, 0.2, {Size = UDim2.new(1, -10, 0, 28)})
 							tween(dropList, 0.2, {Size = UDim2.new(1, 0, 0, 0)})
 							tween(arrow, 0.2, {Rotation = 0})
 							open = false
@@ -1189,12 +1142,12 @@ function RoSense:CreateWindow(config)
 					
 					if open then
 						local itemCount = #items
-						local height = math.min(itemCount * 30 + 8, 150)
-						tween(dropFrame, 0.25, {Size = UDim2.new(1, -15, 0, 38 + height)})
+						local height = math.min(itemCount * 23 + 6, 100)
+						tween(dropFrame, 0.25, {Size = UDim2.new(1, -10, 0, 28 + height)})
 						tween(dropList, 0.25, {Size = UDim2.new(1, 0, 0, height)})
 						tween(arrow, 0.2, {Rotation = 180})
 					else
-						tween(dropFrame, 0.2, {Size = UDim2.new(1, -15, 0, 38)})
+						tween(dropFrame, 0.2, {Size = UDim2.new(1, -10, 0, 28)})
 						tween(dropList, 0.2, {Size = UDim2.new(1, 0, 0, 0)})
 						tween(arrow, 0.2, {Rotation = 0})
 					end
@@ -1218,271 +1171,52 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			-- Multi-Select Dropdown
-			function section:AddMultiDropdown(options)
-				options = options or {}
-				local items = options.Items or {}
-				local selectedItems = {}
-				
-				local dropFrame = create("Frame", {
-					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 38),
-					BackgroundTransparency = 1,
-					ClipsDescendants = true
-				})
-				
-				local dropHeader = create("TextButton", {
-					Parent = dropFrame,
-					Size = UDim2.new(1, 0, 0, 38),
-					BackgroundColor3 = RoSense.theme.inputBg,
-					Text = "",
-					AutoButtonColor = false
-				})
-				
-				create("UICorner", {Parent = dropHeader, CornerRadius = UDim.new(0, 6)})
-				create("UIStroke", {
-					Parent = dropHeader,
-					Color = RoSense.theme.border,
-					Thickness = 1.2
-				})
-				
-				local nameLabel = create("TextLabel", {
-					Parent = dropHeader,
-					Size = UDim2.new(0.4, 0, 1, 0),
-					Position = UDim2.new(0, 10, 0, 0),
-					BackgroundTransparency = 1,
-					Text = options.Name or "Multi Select",
-					TextColor3 = RoSense.theme.text,
-					Font = Enum.Font.GothamBold,
-					TextSize = 12,
-					TextXAlignment = Enum.TextXAlignment.Left
-				})
-				
-				local valueLabel = create("TextLabel", {
-					Parent = dropHeader,
-					Size = UDim2.new(0.5, -40, 1, 0),
-					Position = UDim2.new(0.4, 10, 0, 0),
-					BackgroundTransparency = 1,
-					Text = "None",
-					TextColor3 = RoSense.theme.textDim,
-					Font = Enum.Font.Gotham,
-					TextSize = 11,
-					TextXAlignment = Enum.TextXAlignment.Right,
-					TextTruncate = Enum.TextTruncate.AtEnd
-				})
-				
-				local arrow = create("TextLabel", {
-					Parent = dropHeader,
-					Size = UDim2.new(0, 20, 1, 0),
-					Position = UDim2.new(1, -30, 0, 0),
-					BackgroundTransparency = 1,
-					Text = "▼",
-					TextColor3 = RoSense.theme.textDim,
-					Font = Enum.Font.GothamBold,
-					TextSize = 10
-				})
-				
-				local dropList = create("ScrollingFrame", {
-					Parent = dropFrame,
-					Size = UDim2.new(1, 0, 0, 0),
-					Position = UDim2.new(0, 0, 0, 40),
-					BackgroundColor3 = RoSense.theme.inputBg,
-					ScrollBarThickness = 3,
-					ScrollBarImageColor3 = RoSense.theme.accentDark,
-					CanvasSize = UDim2.new(0, 0, 0, 0),
-					AutomaticCanvasSize = Enum.AutomaticSize.Y,
-					BorderSizePixel = 0
-				})
-				
-				create("UICorner", {Parent = dropList, CornerRadius = UDim.new(0, 6)})
-				create("UIStroke", {
-					Parent = dropList,
-					Color = RoSense.theme.border,
-					Thickness = 1.2
-				})
-				
-				create("UIListLayout", {
-					Parent = dropList,
-					Padding = UDim.new(0, 2)
-				})
-				
-				create("UIPadding", {
-					Parent = dropList,
-					PaddingTop = UDim.new(0, 4),
-					PaddingBottom = UDim.new(0, 4),
-					PaddingLeft = UDim.new(0, 4),
-					PaddingRight = UDim.new(0, 4)
-				})
-				
-				local open = false
-				
-				local function updateLabel()
-					if #selectedItems == 0 then
-						valueLabel.Text = "None"
-						valueLabel.TextColor3 = RoSense.theme.textDim
-					else
-						valueLabel.Text = table.concat(selectedItems, ", ")
-						valueLabel.TextColor3 = RoSense.theme.accent
-					end
-				end
-				
-				local function updateItems()
-					for _, child in pairs(dropList:GetChildren()) do
-						if child:IsA("Frame") and child.Name ~= "UIPadding" then
-							child:Destroy()
-						end
-					end
-					
-					for _, item in pairs(items) do
-						local itemFrame = create("Frame", {
-							Parent = dropList,
-							Size = UDim2.new(1, -8, 0, 28),
-							BackgroundColor3 = RoSense.theme.content
-						})
-						
-						create("UICorner", {Parent = itemFrame, CornerRadius = UDim.new(0, 4)})
-						
-						local itemLabel = create("TextLabel", {
-							Parent = itemFrame,
-							Size = UDim2.new(1, -30, 1, 0),
-							Position = UDim2.new(0, 8, 0, 0),
-							BackgroundTransparency = 1,
-							Text = item,
-							TextColor3 = RoSense.theme.text,
-							Font = Enum.Font.Gotham,
-							TextSize = 11,
-							TextXAlignment = Enum.TextXAlignment.Left
-						})
-						
-						local checkBox = create("ImageLabel", {
-							Parent = itemFrame,
-							Size = UDim2.new(0, 16, 0, 16),
-							Position = UDim2.new(1, -22, 0.5, -8),
-							BackgroundColor3 = RoSense.theme.toggleBg,
-							Image = loadAsset("CheckToggle.png", RoSense.assets["CheckToggle.png"]) or "",
-							ImageTransparency = 1
-						})
-						
-						create("UICorner", {Parent = checkBox, CornerRadius = UDim.new(0, 2)})
-						
-						local itemBtn = create("TextButton", {
-							Parent = itemFrame,
-							Size = UDim2.new(1, 0, 1, 0),
-							BackgroundTransparency = 1,
-							Text = ""
-						})
-						
-						local function updateCheck()
-							local isSelected = table.find(selectedItems, item) ~= nil
-							tween(checkBox, 0.2, {ImageTransparency = isSelected and 0 or 1})
-						end
-						
-						connect(window.connections, itemBtn.MouseEnter, function()
-							tween(itemFrame, 0.15, {BackgroundColor3 = RoSense.theme.border})
-						end)
-						
-						connect(window.connections, itemBtn.MouseLeave, function()
-							tween(itemFrame, 0.15, {BackgroundColor3 = RoSense.theme.content})
-						end)
-						
-						connect(window.connections, itemBtn.MouseButton1Click, function()
-							local idx = table.find(selectedItems, item)
-							if idx then
-								table.remove(selectedItems, idx)
-							else
-								table.insert(selectedItems, item)
-							end
-							
-							updateCheck()
-							updateLabel()
-							
-							if options.Callback then
-								pcall(options.Callback, selectedItems)
-							end
-						end)
-						
-						updateCheck()
-					end
-				end
-				
-				connect(window.connections, dropHeader.MouseButton1Click, function()
-					open = not open
-					
-					if open then
-						local itemCount = #items
-						local height = math.min(itemCount * 30 + 8, 150)
-						tween(dropFrame, 0.25, {Size = UDim2.new(1, -15, 0, 38 + height)})
-						tween(dropList, 0.25, {Size = UDim2.new(1, 0, 0, height)})
-						tween(arrow, 0.2, {Rotation = 180})
-					else
-						tween(dropFrame, 0.2, {Size = UDim2.new(1, -15, 0, 38)})
-						tween(dropList, 0.2, {Size = UDim2.new(1, 0, 0, 0)})
-						tween(arrow, 0.2, {Rotation = 0})
-					end
-				end)
-				
-				updateItems()
-				updateLabel()
-				
-				return {
-					Get = function()
-						return selectedItems
-					end,
-					Set = function(_, items)
-						selectedItems = items
-						updateLabel()
-						updateItems()
-					end
-				}
-			end
-			
-			-- Textbox
 			function section:AddTextbox(options)
 				options = options or {}
 				
 				local textFrame = create("Frame", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 38),
+					Size = UDim2.new(1, -10, 0, 28),
 					BackgroundTransparency = 1
 				})
 				
 				local nameLabel = create("TextLabel", {
 					Parent = textFrame,
-					Size = UDim2.new(0.4, 0, 1, 0),
-					Position = UDim2.new(0, 10, 0, 0),
+					Size = UDim2.new(0.35, 0, 1, 0),
+					Position = UDim2.new(0, 6, 0, 0),
 					BackgroundTransparency = 1,
 					Text = options.Name or "Textbox",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.GothamBold,
-					TextSize = 12,
+					TextSize = 10,
 					TextXAlignment = Enum.TextXAlignment.Left
 				})
 				
 				local textBox = create("TextBox", {
 					Parent = textFrame,
-					Size = UDim2.new(0.6, -20, 0, 32),
-					Position = UDim2.new(0.4, 10, 0.5, -16),
+					Size = UDim2.new(0.65, -12, 0, 24),
+					Position = UDim2.new(0.35, 6, 0.5, -12),
 					BackgroundColor3 = RoSense.theme.inputBg,
 					Text = options.Default or "",
 					TextColor3 = RoSense.theme.text,
 					Font = Enum.Font.Gotham,
-					TextSize = 11,
+					TextSize = 9,
 					PlaceholderText = options.Placeholder or "Enter text...",
 					PlaceholderColor3 = RoSense.theme.textDim,
 					ClearTextOnFocus = false
 				})
 				
-				create("UICorner", {Parent = textBox, CornerRadius = UDim.new(0, 6)})
+				create("UICorner", {Parent = textBox, CornerRadius = UDim.new(0, 5)})
 				create("UIStroke", {
 					Parent = textBox,
 					Color = RoSense.theme.border,
-					Thickness = 1.2
+					Thickness = 1
 				})
 				
 				create("UIPadding", {
 					Parent = textBox,
-					PaddingLeft = UDim.new(0, 8),
-					PaddingRight = UDim.new(0, 8)
+					PaddingLeft = UDim.new(0, 6),
+					PaddingRight = UDim.new(0, 6)
 				})
 				
 				connect(window.connections, textBox.FocusLost, function(enterPressed)
@@ -1501,17 +1235,16 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			-- Label
 			function section:AddLabel(text)
 				local label = create("TextLabel", {
 					Parent = elementContainer,
-					Size = UDim2.new(1, -15, 0, 0),
+					Size = UDim2.new(1, -10, 0, 0),
 					AutomaticSize = Enum.AutomaticSize.Y,
 					BackgroundTransparency = 1,
 					Text = text or "Label",
 					TextColor3 = RoSense.theme.textDim,
 					Font = Enum.Font.Gotham,
-					TextSize = 11,
+					TextSize = 9,
 					TextXAlignment = Enum.TextXAlignment.Left,
 					TextYAlignment = Enum.TextYAlignment.Top,
 					TextWrapped = true
@@ -1519,10 +1252,10 @@ function RoSense:CreateWindow(config)
 				
 				create("UIPadding", {
 					Parent = label,
-					PaddingLeft = UDim.new(0, 10),
-					PaddingRight = UDim.new(0, 10),
-					PaddingTop = UDim.new(0, 5),
-					PaddingBottom = UDim.new(0, 5)
+					PaddingLeft = UDim.new(0, 6),
+					PaddingRight = UDim.new(0, 6),
+					PaddingTop = UDim.new(0, 3),
+					PaddingBottom = UDim.new(0, 3)
 				})
 				
 				return {
@@ -1532,14 +1265,13 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-table.insert(tab.sections, section)
+			table.insert(tab.sections, section)
 			
 			return section
 		end
 		
 		table.insert(window.tabs, tab)
 		
-		-- Select first tab by default
 		if #window.tabs == 1 then
 			tab:Select()
 		end
