@@ -736,14 +736,12 @@ function componentLib.ColorPicker(props)
     create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = picker})
     create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = picker})
     
-    local blocker = create("TextButton", {
-        Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(14, 14, 18),
-        BackgroundTransparency = 0,
-        BorderSizePixel = 0,
-        Text = "",
-        ZIndex = 100,
-        AutoButtonColor = false,
+    create("UIGradient", {
+        Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 16, 20)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(14, 14, 18))
+        },
+        Rotation = 90,
         Parent = picker
     })
     
@@ -1399,7 +1397,7 @@ function RoSense:Init()
     end)
     
     self:Notify({
-        title = "RoSense2 Loaded",
+        title = "RoSense Loaded",
         description = "Press " .. self.toggleKey.Name .. " to toggle UI",
         duration = 3
     })
