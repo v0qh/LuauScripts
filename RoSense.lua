@@ -84,7 +84,6 @@ create("UIGradient", {
     Parent = statsBar
 })
 
-
 local fpsLabel = create("TextLabel", {
     Size = UDim2.new(0.45, -6, 1, 0),
     Position = UDim2.new(0, 12, 0, 0),
@@ -204,6 +203,8 @@ minimizeBtn.MouseButton1Click:Connect(function()
     if RoSense.minimized then
         tween(main, {Size = UDim2.new(0, 0, 0, 0)})
         tween(statsBar, {Size = UDim2.new(0, 0, 0, 0)})
+        tween(fpsLabel, {TextTransparency = 1})
+        tween(pingLabel, {TextTransparency = 1})
         minimizeBtn.Text = "+"
         RoSense:Notify({
             title = "UI Hidden",
@@ -212,7 +213,9 @@ minimizeBtn.MouseButton1Click:Connect(function()
         })
     else
         tween(main, {Size = UDim2.new(0, 580, 0, 360)})
-        tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
+        tween(statsBar, {Size = UDim2.new(0, 240, 0, 26)})
+        tween(fpsLabel, {TextTransparency = 0})
+        tween(pingLabel, {TextTransparency = 0})
         minimizeBtn.Text = "─"
     end
 end)
@@ -262,7 +265,6 @@ function componentLib.Toggle(props)
         BackgroundTransparency = 1,
         Parent = props.parent
     })
-    
     
     local label = create("TextLabel", {
         Size = UDim2.new(1, -46, 1, 0),
@@ -323,7 +325,7 @@ function componentLib.Toggle(props)
         update()
     end)
     
-    update()
+    update(true)
     local api = {}
     function api:SetValue(val, silent)
         enabled = not not val
@@ -727,12 +729,20 @@ function componentLib.ColorPicker(props)
         BorderSizePixel = 0,
         Visible = false,
         ClipsDescendants = true,
-        ZIndex = 20,
+        ZIndex = 100,
         Parent = container
     })
     
     create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = picker})
     create("UIStroke", {Color = Color3.fromRGB(75, 55, 120), Thickness = 1.5, Transparency = 0.3, Parent = picker})
+    
+    local blocker = create("TextButton", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = "",
+        ZIndex = 99,
+        Parent = picker
+    })
     
     local rLabel = create("TextLabel", {
         Size = UDim2.new(0, 20, 0, 20),
@@ -742,6 +752,7 @@ function componentLib.ColorPicker(props)
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(255, 100, 100),
+        ZIndex = 101,
         Parent = picker
     })
     
@@ -750,6 +761,7 @@ function componentLib.ColorPicker(props)
         Position = UDim2.new(0, 35, 0, 17),
         BackgroundColor3 = Color3.fromRGB(18, 18, 24),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = picker
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = rSlider})
@@ -758,6 +770,7 @@ function componentLib.ColorPicker(props)
         Size = UDim2.new(currentColor.R, 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(255, 100, 100),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = rSlider
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = rFill})
@@ -770,6 +783,7 @@ function componentLib.ColorPicker(props)
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 255, 100),
+        ZIndex = 101,
         Parent = picker
     })
     
@@ -778,6 +792,7 @@ function componentLib.ColorPicker(props)
         Position = UDim2.new(0, 35, 0, 47),
         BackgroundColor3 = Color3.fromRGB(18, 18, 24),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = picker
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = gSlider})
@@ -786,6 +801,7 @@ function componentLib.ColorPicker(props)
         Size = UDim2.new(currentColor.G, 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(100, 255, 100),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = gSlider
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = gFill})
@@ -798,6 +814,7 @@ function componentLib.ColorPicker(props)
         Font = Enum.Font.GothamBold,
         TextSize = 12,
         TextColor3 = Color3.fromRGB(100, 100, 255),
+        ZIndex = 101,
         Parent = picker
     })
     
@@ -806,6 +823,7 @@ function componentLib.ColorPicker(props)
         Position = UDim2.new(0, 35, 0, 77),
         BackgroundColor3 = Color3.fromRGB(18, 18, 24),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = picker
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = bSlider})
@@ -814,6 +832,7 @@ function componentLib.ColorPicker(props)
         Size = UDim2.new(currentColor.B, 0, 1, 0),
         BackgroundColor3 = Color3.fromRGB(100, 100, 255),
         BorderSizePixel = 0,
+        ZIndex = 101,
         Parent = bSlider
     })
     create("UICorner", {CornerRadius = UDim.new(1, 0), Parent = bFill})
@@ -916,7 +935,22 @@ function componentLib.ColorPicker(props)
         end
     end)
     
-    return container
+    local api = {}
+    function api:SetValue(val)
+        currentColor = val
+        r = math.floor(val.R * 255)
+        g = math.floor(val.G * 255)
+        b = math.floor(val.B * 255)
+        updateColor()
+    end
+    function api:GetValue()
+        return currentColor
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    api.Container = container
+    return api
 end
 
 function componentLib.TextBox(props)
@@ -983,7 +1017,6 @@ function componentLib.TextBox(props)
 end
 
 function componentLib.Label(props)
-    
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
@@ -1004,7 +1037,6 @@ function componentLib.Label(props)
     return container
 end
 
-
 function componentLib.Divider(props)
     local container = create("Frame", {
         Size = UDim2.new(1, 0, 0, 16),
@@ -1023,7 +1055,6 @@ function componentLib.Divider(props)
 
     return container
 end
-
 
 function componentLib.Keybind(props)
     local container = create("Frame", {
@@ -1081,7 +1112,19 @@ function componentLib.Keybind(props)
         end
     end)
     
-    return container
+    local api = {}
+    function api:SetValue(val)
+        currentKey = val
+        keybindBtn.Text = val.Name
+    end
+    function api:GetValue()
+        return currentKey
+    end
+    function api:Destroy()
+        container:Destroy()
+    end
+    api.Container = container
+    return api
 end
 
 local iconMap = {
@@ -1261,33 +1304,31 @@ end
 
 function RoSense:Init()
     tween(main, {Size = UDim2.new(0, 580, 0, 360)})
-    tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
+    tween(statsBar, {Size = UDim2.new(0, 240, 0, 26)})
     
-local fps = 0
-local lastUpdate = tick()
+    local fps = 0
+    local lastUpdate = tick()
 
-RunService.RenderStepped:Connect(function()
-    fps = (fps or 0) + 1
+    RunService.RenderStepped:Connect(function()
+        fps = (fps or 0) + 1
 
-    if tick() - lastUpdate >= 1 then
-        fpsLabel.Text = "FPS: " .. fps
+        if tick() - lastUpdate >= 1 then
+            fpsLabel.Text = "FPS: " .. fps
 
-        if fps >= 50 then
-            fpsLabel.TextColor3 = Color3.fromRGB(80, 180, 80)
-        elseif fps >= 30 then
-            fpsLabel.TextColor3 = Color3.fromRGB(180, 160, 80)
-        else
-            fpsLabel.TextColor3 = Color3.fromRGB(180, 80, 80)
+            if fps >= 50 then
+                fpsLabel.TextColor3 = Color3.fromRGB(80, 180, 80)
+            elseif fps >= 30 then
+                fpsLabel.TextColor3 = Color3.fromRGB(180, 160, 80)
+            else
+                fpsLabel.TextColor3 = Color3.fromRGB(180, 80, 80)
+            end
+
+            fps = 0
+            lastUpdate = tick()
         end
-
-        fps = 0
-        lastUpdate = tick()
-    end
-end)
-
-
+    end)
     
-task.spawn(function()
+    task.spawn(function()
         while task.wait(1) do
             local ping = math.floor(player:GetNetworkPing() * 1000)
             pingLabel.Text = "PING: " .. ping .. "ms"
@@ -1333,6 +1374,8 @@ task.spawn(function()
             if self.minimized then
                 tween(main, {Size = UDim2.new(0, 0, 0, 0)})
                 tween(statsBar, {Size = UDim2.new(0, 0, 0, 0)})
+                tween(fpsLabel, {TextTransparency = 1})
+                tween(pingLabel, {TextTransparency = 1})
                 self:Notify({
                     title = "UI Hidden",
                     description = "Press " .. self.toggleKey.Name .. " to show again",
@@ -1340,7 +1383,9 @@ task.spawn(function()
                 })
             else
                 tween(main, {Size = UDim2.new(0, 580, 0, 360)})
-                tween(statsBar, {Size = UDim2.new(0, 200, 0, 36)})
+                tween(statsBar, {Size = UDim2.new(0, 240, 0, 26)})
+                tween(fpsLabel, {TextTransparency = 0})
+                tween(pingLabel, {TextTransparency = 0})
                 self:Notify({
                     title = "UI Shown",
                     description = "Welcome back!",
