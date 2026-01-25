@@ -93,6 +93,14 @@ local function httpget(url)
 	return nil
 end
 
+local function fn(s)
+	local v = tostring(s or ""):gsub("[^%w]", "")
+	if v == "" then
+		return tostring(math.random(1000, 9999))
+	end
+	return v:sub(1, 24)
+end
+
 local function asset_url(name, url)
 	if not fsok() or not gca then
 		return nil
@@ -120,14 +128,6 @@ local function icon_asset(key, url)
 	end
 	local nm = "icon_" .. fn(key) .. ".png"
 	return asset_url(nm, url) or url
-end
-
-local function fn(s)
-	local v = tostring(s or ""):gsub("[^%w]", "")
-	if v == "" then
-		return tostring(math.random(1000, 9999))
-	end
-	return v:sub(1, 24)
 end
 
 	rs.th = {
