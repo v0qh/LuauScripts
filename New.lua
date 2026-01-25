@@ -402,7 +402,7 @@ function RoSense:CreateWindow(config)
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 		Size = UDim2.new(0, 700, 0, 500),
-		BackgroundColor3 = self.theme.bg,
+		BackgroundColor3 = RoSense.theme.bg,
 		BorderSizePixel = 0
 	})
 	
@@ -412,8 +412,8 @@ function RoSense:CreateWindow(config)
 		Parent = main,
 		Size = UDim2.new(1, 0, 0, 50),
 		Position = UDim2.new(0, 0, 0, 0),
-		BackgroundColor3 = self.theme.header,
-		BorderColor3 = self.theme.accentDark,
+		BackgroundColor3 = RoSense.theme.header,
+		BorderColor3 = RoSense.theme.accentDark,
 		BorderSizePixel = 1
 	})
 	
@@ -422,7 +422,7 @@ function RoSense:CreateWindow(config)
 		Size = UDim2.new(0, 32, 0, 32),
 		Position = UDim2.new(0, 12, 0.5, -16),
 		BackgroundTransparency = 1,
-		Image = loadAsset("logo.png", self.assets["logo.png"]) or "",
+		Image = loadAsset("logo.png", RoSense.assets["logo.png"]) or "",
 		ScaleType = Enum.ScaleType.Fit
 	})
 	
@@ -432,7 +432,7 @@ function RoSense:CreateWindow(config)
 		Position = UDim2.new(0, 52, 0, 11),
 		BackgroundTransparency = 1,
 		Text = config.Name or "RoSense",
-		TextColor3 = self.theme.accent,
+		TextColor3 = RoSense.theme.accent,
 		Font = Enum.Font.GothamBold,
 		TextSize = 20,
 		TextXAlignment = Enum.TextXAlignment.Left
@@ -478,12 +478,12 @@ function RoSense:CreateWindow(config)
 		Parent = main,
 		Size = UDim2.new(1, 0, 0, 30),
 		Position = UDim2.new(0, 0, 1, -30),
-		BackgroundColor3 = self.theme.header,
-		BorderColor3 = self.theme.border,
+		BackgroundColor3 = RoSense.theme.header,
+		BorderColor3 = RoSense.theme.border,
 		BorderSizePixel = 1
 	})
 	
-	local statsBar = createStatsBar(window, screenGui, self.theme)
+	local statsBar = createStatsBar(window, screenGui, RoSense.theme)
 	statsBar.Position = UDim2.new(0, 10, 0, 10)
 	
 	makeDraggable(main, header, window.connections)
