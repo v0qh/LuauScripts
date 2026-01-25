@@ -140,16 +140,16 @@ local function icon_asset(key, url)
 end
 
 rs.th = {
-	bg = Color3.fromRGB(14, 14, 16),
-	b2 = Color3.fromRGB(20, 20, 22),
-	b3 = Color3.fromRGB(24, 24, 26),
-	b4 = Color3.fromRGB(30, 30, 33),
+	bg = Color3.fromRGB(18, 18, 20),
+	b2 = Color3.fromRGB(22, 22, 24),
+	b3 = Color3.fromRGB(26, 26, 28),
+	b4 = Color3.fromRGB(32, 32, 36),
 	acc = Color3.fromRGB(197, 140, 255),
 	acc2 = Color3.fromRGB(211, 124, 255),
 	txt = Color3.fromRGB(228, 228, 232),
-	sub = Color3.fromRGB(150, 150, 160),
-	st = Color3.fromRGB(80, 80, 90),
-	ln = Color3.fromRGB(34, 34, 38)
+	sub = Color3.fromRGB(158, 158, 168),
+	st = Color3.fromRGB(90, 90, 98),
+	ln = Color3.fromRGB(40, 40, 44)
 }
 
 rs.as = {}
@@ -294,13 +294,13 @@ function rs.reg(k, f)
 end
 
 local function row(p, h)
-	return n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, h or 32), BackgroundTransparency = 1 })
+	return n("Frame", { Parent = p, Size = UDim2.new(1, 0, 0, h or 28), BackgroundTransparency = 1 })
 end
 
 rs.el.btn = function(sc, txt, cb)
-	local r = row(sc.f, 30)
-	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = txt or "Button", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 13, AutoButtonColor = false })
-	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 6) })
+	local r = row(sc.f, 28)
+	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = txt or "Button", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 12, AutoButtonColor = false })
+	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
 	local st = n("UIStroke", { Parent = b, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	local function hov(x)
 		if x then
@@ -329,15 +329,15 @@ rs.el.btn = function(sc, txt, cb)
 end
 
 rs.el.tog = function(sc, txt, def, cb)
-	local r = row(sc.f, 30)
+	local r = row(sc.f, 28)
 	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
-	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 6) })
+	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
 	n("UIStroke", { Parent = b, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = b, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Toggle", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
-	local box = n("Frame", { Parent = b, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(1, -24, 0.5, -8), BackgroundColor3 = rs.th.b4 })
+	local l = n("TextLabel", { Parent = b, Size = UDim2.new(1, -50, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Toggle", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local box = n("Frame", { Parent = b, Size = UDim2.new(0, 14, 0, 14), Position = UDim2.new(1, -22, 0.5, -7), BackgroundColor3 = rs.th.b4 })
 	n("UICorner", { Parent = box, CornerRadius = UDim.new(0, 4) })
 	local bs = n("UIStroke", { Parent = box, Color = rs.th.st, Thickness = 1, Transparency = 0.2 })
-	local chk = n("ImageLabel", { Parent = box, Size = UDim2.new(0, 12, 0, 12), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, Image = icon_asset("check", rs.iconAssets and rs.iconAssets.check) or "", ImageTransparency = 1, ImageColor3 = rs.th.acc })
+	local chk = n("ImageLabel", { Parent = box, Size = UDim2.new(0, 10, 0, 10), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, Image = icon_asset("check", rs.iconAssets and rs.iconAssets.check) or "", ImageTransparency = 1, ImageColor3 = rs.th.acc })
 	local v = def and true or false
 	local function set(x, nb)
 		v = x and true or false
@@ -376,10 +376,10 @@ rs.el.tog = function(sc, txt, def, cb)
 end
 
 rs.el.box = function(sc, txt, def, cb)
-	local r = row(sc.f, 30)
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(0.45, -6, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Textbox", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
-	local b = n("TextBox", { Parent = r, Size = UDim2.new(0.55, -14, 1, -6), Position = UDim2.new(0.45, 6, 0, 3), BackgroundColor3 = rs.th.b4, TextColor3 = rs.th.txt, Text = def or "", Font = Enum.Font.Gotham, TextSize = 12, ClearTextOnFocus = false })
-	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
+	local r = row(sc.f, 28)
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(0.45, -6, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Textbox", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local b = n("TextBox", { Parent = r, Size = UDim2.new(0.55, -14, 1, -8), Position = UDim2.new(0.45, 6, 0, 4), BackgroundColor3 = rs.th.b4, TextColor3 = rs.th.txt, Text = def or "", Font = Enum.Font.Gotham, TextSize = 12, ClearTextOnFocus = false })
+	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 4) })
 	n("UIStroke", { Parent = b, Color = rs.th.b3, Thickness = 1, Transparency = 0.4 })
 	cx(sc.w.cx, b.FocusLost, function(enter)
 		if cb then
@@ -390,15 +390,15 @@ rs.el.box = function(sc, txt, def, cb)
 end
 
 rs.el.sl = function(sc, txt, min, max, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 38), BackgroundTransparency = 1 })
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, -60, 0, 16), Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1, Text = txt or "Slider", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = r, Size = UDim2.new(0, 50, 0, 16), Position = UDim2.new(1, -50, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right })
-	local bar = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 8), Position = UDim2.new(0, 0, 0, 24), BackgroundColor3 = rs.th.b3 })
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1 })
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, -60, 0, 14), Position = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1, Text = txt or "Slider", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = r, Size = UDim2.new(0, 50, 0, 14), Position = UDim2.new(1, -50, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local bar = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 6), Position = UDim2.new(0, 0, 0, 20), BackgroundColor3 = rs.th.b3 })
 	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, 4) })
 	n("UIStroke", { Parent = bar, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	local fill = n("Frame", { Parent = bar, Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = rs.th.acc })
 	n("UICorner", { Parent = fill, CornerRadius = UDim.new(0, 4) })
-	local knob = n("Frame", { Parent = bar, Size = UDim2.new(0, 10, 0, 10), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = rs.th.acc })
+	local knob = n("Frame", { Parent = bar, Size = UDim2.new(0, 8, 0, 8), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = rs.th.acc })
 	knob.Position = UDim2.new(0, 0, 0.5, 0)
 	n("UICorner", { Parent = knob, CornerRadius = UDim.new(1, 0) })
 	n("UIStroke", { Parent = knob, Color = rs.th.b4, Thickness = 1, Transparency = 0.4 })
@@ -441,15 +441,15 @@ rs.el.sl = function(sc, txt, min, max, def, cb)
 end
 
 rs.el.dd = function(sc, txt, opts, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
-	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 6) })
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
 	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(1, -160, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right })
-	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11 })
-	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 32), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0,0,0,0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
-	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 6) })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 140, 1, 0), Position = UDim2.new(1, -160, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 10 })
+	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 28), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0,0,0,0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
+	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 5) })
 	n("UIStroke", { Parent = list, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	n("UIListLayout", { Parent = list, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = list, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6), PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6) })
@@ -465,13 +465,13 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		if c == 0 then
 			return 0
 		end
-		return c * 28 + (c - 1) * 4 + 12
+		return c * 24 + (c - 1) * 4 + 12
 	end
 	local function open(x)
 		o = x
-		local h2 = x and math.min(fit(), 160) or 0
+		local h2 = x and math.min(fit(), 140) or 0
 		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 32 + h2) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + h2) })
 		arr.Text = x and "^" or "v"
 		if x then
 			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
@@ -480,8 +480,8 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 		end
 	end
 	local function addopt(t2)
-		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, AutoButtonColor = false })
-		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 5) })
+		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, AutoButtonColor = false })
+		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 4) })
 		local s2 = n("UIStroke", { Parent = b2, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 		cx(sc.w.cx, b2.MouseEnter, function()
 			tw(b2, 0.12, { BackgroundColor3 = rs.th.b4 })
@@ -560,15 +560,15 @@ rs.el.dd = function(sc, txt, opts, def, cb)
 end
 
 rs.el.mdd = function(sc, txt, opts, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
-	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 6) })
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
 	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Multi Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
-	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(1, -180, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Right })
-	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11 })
-	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 32), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
-	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 6) })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Multi Dropdown", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local v = n("TextLabel", { Parent = h, Size = UDim2.new(0, 160, 1, 0), Position = UDim2.new(1, -180, 0, 0), BackgroundTransparency = 1, Text = "", TextColor3 = rs.th.sub, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right })
+	local arr = n("TextLabel", { Parent = h, Size = UDim2.new(0, 20, 1, 0), Position = UDim2.new(1, -24, 0, 0), BackgroundTransparency = 1, Text = "v", TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 10 })
+	local list = n("ScrollingFrame", { Parent = r, Position = UDim2.new(0, 0, 0, 28), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 4, ScrollBarImageColor3 = rs.th.sub, AutomaticCanvasSize = Enum.AutomaticSize.Y })
+	n("UICorner", { Parent = list, CornerRadius = UDim.new(0, 5) })
 	n("UIStroke", { Parent = list, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	n("UIListLayout", { Parent = list, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder })
 	n("UIPadding", { Parent = list, PaddingTop = UDim.new(0, 6), PaddingBottom = UDim.new(0, 6), PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6) })
@@ -589,13 +589,13 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		if c == 0 then
 			return 0
 		end
-		return c * 28 + (c - 1) * 4 + 12
+		return c * 24 + (c - 1) * 4 + 12
 	end
 	local function open(x)
 		o = x
-		local h2 = x and math.min(fit(), 180) or 0
+		local h2 = x and math.min(fit(), 140) or 0
 		tw(list, 0.2, { Size = UDim2.new(1, 0, 0, h2) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 32 + h2) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + h2) })
 		arr.Text = x and "^" or "v"
 		if x then
 			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
@@ -642,8 +642,8 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 		end
 	end
 	local function addopt(t2)
-		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, AutoButtonColor = false })
-		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 5) })
+		local b2 = n("TextButton", { Parent = list, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, AutoButtonColor = false })
+		n("UICorner", { Parent = b2, CornerRadius = UDim.new(0, 4) })
 		local s2 = n("UIStroke", { Parent = b2, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 		applyVisual(b2, selected[t2])
 		cx(sc.w.cx, b2.MouseEnter, function()
@@ -726,28 +726,28 @@ rs.el.mdd = function(sc, txt, opts, def, cb)
 end
 
 rs.el.cp = function(sc, txt, def, cb)
-	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 32), BackgroundTransparency = 1, ClipsDescendants = true })
-	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
-	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 6) })
+	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, ClipsDescendants = true })
+	local h = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3, Text = "", AutoButtonColor = false })
+	n("UICorner", { Parent = h, CornerRadius = UDim.new(0, 5) })
 	local hs = n("UIStroke", { Parent = h, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Color", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left })
+	local l = n("TextLabel", { Parent = h, Size = UDim2.new(1, -40, 1, 0), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = txt or "Color", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
 	local pv = n("Frame", { Parent = h, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -30, 0.5, -10), BackgroundColor3 = def or rs.th.acc })
-	n("UICorner", { Parent = pv, CornerRadius = UDim.new(0, 5) })
+	n("UICorner", { Parent = pv, CornerRadius = UDim.new(0, 4) })
 	n("UIStroke", { Parent = pv, Color = rs.th.b4, Thickness = 1, Transparency = 0.4 })
-	local pop = n("Frame", { Parent = r, Position = UDim2.new(0, 0, 0, 34), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
-	n("UICorner", { Parent = pop, CornerRadius = UDim.new(0, 8) })
+	local pop = n("Frame", { Parent = r, Position = UDim2.new(0, 0, 0, 30), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
+	n("UICorner", { Parent = pop, CornerRadius = UDim.new(0, 6) })
 	n("UIStroke", { Parent = pop, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
 	local sat = n("Frame", { Parent = pop, Position = UDim2.new(0, 10, 0, 10), Size = UDim2.new(0, 150, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
-	n("UICorner", { Parent = sat, CornerRadius = UDim.new(0, 5) })
+	n("UICorner", { Parent = sat, CornerRadius = UDim.new(0, 4) })
 	local sg = n("UIGradient", { Parent = sat, Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.new(1, 0, 1)) })
 	local val = n("Frame", { Parent = sat, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = Color3.new(0,0,0) })
-	n("UICorner", { Parent = val, CornerRadius = UDim.new(0, 6) })
+	n("UICorner", { Parent = val, CornerRadius = UDim.new(0, 4) })
 	n("UIGradient", { Parent = val, Rotation = 90, Color = ColorSequence.new(Color3.new(0,0,0), Color3.new(0,0,0)), Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,1), NumberSequenceKeypoint.new(1,0)}) })
 	local sp = n("Frame", { Parent = sat, Size = UDim2.new(0, 8, 0, 8), BackgroundColor3 = rs.th.txt })
 	n("UICorner", { Parent = sp, CornerRadius = UDim.new(1, 0) })
 	n("UIStroke", { Parent = sp, Color = rs.th.bg, Thickness = 1 })
 	local hue = n("Frame", { Parent = pop, Position = UDim2.new(0, 170, 0, 10), Size = UDim2.new(0, 10, 0, 110), BackgroundColor3 = Color3.new(1, 1, 1) })
-	n("UICorner", { Parent = hue, CornerRadius = UDim.new(0, 5) })
+	n("UICorner", { Parent = hue, CornerRadius = UDim.new(0, 4) })
 	n("UIGradient", {
 		Parent = hue,
 		Rotation = 90,
@@ -763,7 +763,7 @@ rs.el.cp = function(sc, txt, def, cb)
 	})
 	local hp = n("Frame", { Parent = hue, Size = UDim2.new(1, 0, 0, 2), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = rs.th.txt })
 	local hx = n("TextBox", { Parent = pop, Size = UDim2.new(0, 80, 0, 22), Position = UDim2.new(0, 10, 0, 126), BackgroundColor3 = rs.th.b4, Text = "", TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, ClearTextOnFocus = false })
-	n("UICorner", { Parent = hx, CornerRadius = UDim.new(0, 5) })
+	n("UICorner", { Parent = hx, CornerRadius = UDim.new(0, 4) })
 	n("UIStroke", { Parent = hx, Color = rs.th.b3, Thickness = 1, Transparency = 0.4 })
 	local o = false
 	local h2, s2, v2 = Color3.toHSV(def or rs.th.acc)
@@ -838,9 +838,9 @@ rs.el.cp = function(sc, txt, def, cb)
 	hov(false)
 	local function open(x)
 		o = x
-		local ph = x and 160 or 0
+		local ph = x and 150 or 0
 		tw(pop, 0.2, { Size = UDim2.new(1, 0, 0, ph) })
-		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 32 + ph) })
+		tw(r, 0.2, { Size = UDim2.new(1, 0, 0, 28 + ph) })
 		if x then
 			tw(hs, 0.15, { Color = rs.th.acc, Transparency = 0.2 })
 		else
@@ -862,19 +862,19 @@ end
 rs.el.list = function(sc, txt, opt)
 	local r = n("Frame", { Parent = sc.f, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
 	n("UIListLayout", { Parent = r, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
-	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, 0, 0, 20), BackgroundTransparency = 1, Text = txt or "List", TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+	local l = n("TextLabel", { Parent = r, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(txt or "List"):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
 	local box = n("Frame", { Parent = r, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
 	local ll = n("UIListLayout", { Parent = box, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
 	opt = opt or {}
 	local function additem(t2, cb)
-		local it = n("Frame", { Parent = box, Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = rs.th.b3 })
-		n("UICorner", { Parent = it, CornerRadius = UDim.new(0, 5) })
+		local it = n("Frame", { Parent = box, Size = UDim2.new(1, 0, 0, 24), BackgroundColor3 = rs.th.b3 })
+		n("UICorner", { Parent = it, CornerRadius = UDim.new(0, 4) })
 		n("UIStroke", { Parent = it, Color = rs.th.b4, Thickness = 1, Transparency = 0.6 })
-		local tx = n("TextLabel", { Parent = it, Size = UDim2.new(1, -60, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
-		local act = n("TextButton", { Parent = it, Size = UDim2.new(0, 24, 0, 20), Position = UDim2.new(1, -54, 0.5, -10), BackgroundColor3 = rs.th.b4, Text = opt.btn or ">", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 11, AutoButtonColor = false })
+		local tx = n("TextLabel", { Parent = it, Size = UDim2.new(1, -56, 1, 0), Position = UDim2.new(0, 8, 0, 0), BackgroundTransparency = 1, Text = t2, TextColor3 = rs.th.txt, Font = Enum.Font.Gotham, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
+		local act = n("TextButton", { Parent = it, Size = UDim2.new(0, 22, 0, 18), Position = UDim2.new(1, -50, 0.5, -9), BackgroundColor3 = rs.th.b4, Text = opt.btn or ">", TextColor3 = rs.th.txt, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
 		n("UICorner", { Parent = act, CornerRadius = UDim.new(0, 4) })
 		local as = n("UIStroke", { Parent = act, Color = rs.th.acc, Thickness = 1, Transparency = 0.2 })
-		local rm = n("TextButton", { Parent = it, Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -26, 0.5, -10), BackgroundColor3 = rs.th.b4, Text = "x", TextColor3 = rs.th.sub, Font = Enum.Font.GothamBold, TextSize = 11, AutoButtonColor = false })
+		local rm = n("TextButton", { Parent = it, Size = UDim2.new(0, 18, 0, 18), Position = UDim2.new(1, -24, 0.5, -9), BackgroundColor3 = rs.th.b4, Text = "x", TextColor3 = rs.th.sub, Font = Enum.Font.GothamBold, TextSize = 10, AutoButtonColor = false })
 		n("UICorner", { Parent = rm, CornerRadius = UDim.new(0, 4) })
 		local rs2 = n("UIStroke", { Parent = rm, Color = rs.th.st, Thickness = 1, Transparency = 0.4 })
 		cx(sc.w.cx, act.MouseEnter, function()
@@ -1076,9 +1076,9 @@ function rs.new(o)
 	local sx = typeof(sz) == "UDim2" and sz.X.Offset or sz.X
 	local sy = typeof(sz) == "UDim2" and sz.Y.Offset or sz.Y
 	local ms = typeof(sz) == "UDim2" and sz or UDim2.new(0, sx, 0, sy)
-	local main = n("Frame", { Parent = sg, Name = "Main", Size = ms, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = rs.th.bg, ClipsDescendants = true })
+	local main = n("Frame", { Parent = sg, Name = "Main", Size = ms, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundColor3 = rs.th.b2, ClipsDescendants = true })
 	n("UICorner", { Parent = main, CornerRadius = UDim.new(0, cr) })
-	n("UIGradient", { Parent = main, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.bg), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
+	n("UIGradient", { Parent = main, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b2), ColorSequenceKeypoint.new(1, rs.th.b3) }) })
 	local body = n("Frame", { Parent = main, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, ClipsDescendants = true })
 	n("UICorner", { Parent = body, CornerRadius = UDim.new(0, cr) })
 	local top = n("Frame", { Parent = body, Size = UDim2.new(1, 0, 0, th), BackgroundColor3 = rs.th.b2, Active = true })
@@ -1091,7 +1091,7 @@ function rs.new(o)
 
 	local lgm = n("ImageLabel", {
 		Parent = left,
-		Size = UDim2.new(0, 26, 0, 26),
+		Size = UDim2.new(0, 34, 0, 34),
 		BackgroundTransparency = 1,
 		Image = rs.as.logo or "",
 		ScaleType = Enum.ScaleType.Fit
@@ -1104,7 +1104,7 @@ function rs.new(o)
 		Text = o.name or "RoSense",
 		TextColor3 = rs.th.acc,
 		Font = Enum.Font.GothamBold,
-		TextSize = 16,
+		TextSize = 15,
 		TextXAlignment = Enum.TextXAlignment.Left
 	})
 
@@ -1118,12 +1118,12 @@ function rs.new(o)
 	end
 
 	local tlist = n("Frame", { Parent = top, BackgroundTransparency = 1 })
-	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIListLayout", { Parent = tlist, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 
 	local function layoutTop()
 		local lw = left.AbsoluteSize.X
 		local rw = right.AbsoluteSize.X
-		local pad = 12
+		local pad = 10
 		tlist.Position = UDim2.new(0, lw + pad, 0, 0)
 		tlist.Size = UDim2.new(1, -(lw + rw + pad * 2), 1, 0)
 	end
@@ -1299,13 +1299,13 @@ function rs.new(o)
 			local sc2 = { w = w, f = nil }
 			local c = cols2[ci] or pick()
 			local fr = n("Frame", { Parent = c.f, Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = rs.th.b3, AutomaticSize = Enum.AutomaticSize.Y })
-			n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 6) })
+			n("UICorner", { Parent = fr, CornerRadius = UDim.new(0, 5) })
 			n("UIStroke", { Parent = fr, Color = rs.th.ln, Thickness = 1, Transparency = 0.4 })
 			n("UIGradient", { Parent = fr, Rotation = 90, Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, rs.th.b3), ColorSequenceKeypoint.new(1, rs.th.b4) }) })
-			n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 10), PaddingBottom = UDim.new(0, 10), PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
-			n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
+			n("UIPadding", { Parent = fr, PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8), PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) })
+			n("UIListLayout", { Parent = fr, Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder })
 			if tt and tt ~= "" then
-				n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 18), BackgroundTransparency = 1, Text = tt, TextColor3 = rs.th.txt, Font = Enum.Font.GothamSemibold, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left })
+				n("TextLabel", { Parent = fr, Size = UDim2.new(1, 0, 0, 16), BackgroundTransparency = 1, Text = tostring(tt):upper(), TextColor3 = rs.th.sub, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
 				n("Frame", { Parent = fr, Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = rs.th.ln })
 			end
 			sc2.f = fr
