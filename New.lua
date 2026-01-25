@@ -1532,5 +1532,29 @@ function RoSense:CreateWindow(config)
 				}
 			end
 			
-			table.insert(tab.sections, section)
+table.insert(tab.sections, section)
+            
 			return section
+		end
+		
+		table.insert(window.tabs, tab)
+		
+		-- Select first tab by default
+		if #window.tabs == 1 then
+			tab:Select()
+		end
+		
+		return tab
+	end
+	
+	function window:Destroy()
+		for _, conn in pairs(self.connections) do
+			conn:Disconnect()
+		end
+		screenGui:Destroy()
+	end
+	
+	return window
+end
+
+return RoSense
