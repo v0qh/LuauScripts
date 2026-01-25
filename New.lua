@@ -628,17 +628,17 @@ function RoSense:CreateWindow(config)
 				Size = UDim2.new(0, 20, 0, 20),
 				BackgroundTransparency = 1,
 				Image = loadAsset(icon .. ".png", RoSense.assets[icon .. ".png"]) or "",
-				ImageColor3 = self.theme.textDim
+				ImageColor3 = RoSense.theme.textDim
 			})
 		else
 			iconImg = createIcon(tabBtn, icon)
 			for _, child in pairs(iconImg:GetDescendants()) do
 				if child:IsA("Frame") or child:IsA("UIStroke") then
 					if child.BackgroundColor3 then
-						child.BackgroundColor3 = self.theme.textDim
+						child.BackgroundColor3 = RoSense.theme.textDim
 					end
 					if child.ClassName == "UIStroke" then
-						child.Color = self.theme.textDim
+						child.Color = RoSense.theme.textDim
 					end
 				end
 			end
@@ -649,7 +649,7 @@ function RoSense:CreateWindow(config)
 			Size = UDim2.new(0, 70, 0, 22),
 			BackgroundTransparency = 1,
 			Text = name:upper(),
-			TextColor3 = self.theme.textDim,
+			TextColor3 = RoSense.theme.textDim,
 			Font = Enum.Font.GothamBold,
 			TextSize = 11,
 			TextXAlignment = Enum.TextXAlignment.Left
