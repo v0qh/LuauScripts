@@ -1399,7 +1399,7 @@ function RoSense:Init()
     end)
     
     self:Notify({
-        title = "RoSense Loaded",
+        title = "RoSense2 Loaded",
         description = "Press " .. self.toggleKey.Name .. " to toggle UI",
         duration = 3
     })
