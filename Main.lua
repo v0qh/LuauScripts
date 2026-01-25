@@ -126,8 +126,17 @@ local function icon_asset(key, url)
 	if not url or url == "" then
 		return nil
 	end
-	local nm = "icon_" .. fn(key) .. ".png"
-	return asset_url(nm, url) or url
+	local san = fn
+	local nm
+	if san then
+		nm = "icon_" .. san(key) .. ".png"
+	else
+		nm = "icon_" .. tostring(key or ""):gsub("[^%w]", ""):sub(1, 24) .. ".png"
+	end
+	if asset_url then
+		return asset_url(nm, url) or url
+	end
+	return url
 end
 
 	rs.th = {
