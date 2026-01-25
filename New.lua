@@ -1533,7 +1533,7 @@ function RoSense:CreateWindow(config)
 			end
 			
 table.insert(tab.sections, section)
-            
+			
 			return section
 		end
 		
