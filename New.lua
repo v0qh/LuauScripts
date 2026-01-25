@@ -94,7 +94,7 @@ local function loadAsset(name, url)
 	return nil
 end
 
-RoSense.theme = {
+local theme = {
 	bg = Color3.fromRGB(21, 21, 21),
 	header = Color3.fromRGB(29, 29, 29),
 	content = Color3.fromRGB(29, 29, 29),
@@ -109,6 +109,7 @@ RoSense.theme = {
 	error = Color3.fromRGB(255, 101, 104),
 	warning = Color3.fromRGB(255, 193, 7)
 }
+RoSense.theme = theme
 
 RoSense.assets = {
 	["fps.png"] = "https://files.catbox.moe/dpbo1s.png",
@@ -216,18 +217,18 @@ local function makeDraggable(frame, handle, connections)
 	end)
 end
 
-local function createStatsBar(window, parent)
+local function createStatsBar(window, parent, theme)
 	local bar = create("Frame", {
 		Parent = parent,
 		Size = UDim2.new(0, 280, 0, 32),
-		BackgroundColor3 = RoSense.theme.bg,
+		BackgroundColor3 = theme.bg,
 		BorderSizePixel = 0
 	})
 	
 	create("UICorner", {Parent = bar, CornerRadius = UDim.new(0, 4)})
 	create("UIStroke", {
 		Parent = bar,
-		Color = RoSense.theme.accentDark,
+		Color = theme.accentDark,
 		Thickness = 1.5
 	})
 	
@@ -258,7 +259,7 @@ local function createStatsBar(window, parent)
 		Size = UDim2.new(0, 18, 0, 18),
 		BackgroundTransparency = 1,
 		Image = loadAsset("fps.png", RoSense.assets["fps.png"]) or "",
-		ImageColor3 = RoSense.theme.success
+		ImageColor3 = theme.success
 	})
 	
 	local fpsLabel = create("TextLabel", {
@@ -266,7 +267,7 @@ local function createStatsBar(window, parent)
 		Size = UDim2.new(0, 48, 0, 18),
 		BackgroundTransparency = 1,
 		Text = "60 FPS",
-		TextColor3 = RoSense.theme.success,
+		TextColor3 = theme.success,
 		Font = Enum.Font.GothamBold,
 		TextSize = 12,
 		TextXAlignment = Enum.TextXAlignment.Left
@@ -290,7 +291,7 @@ local function createStatsBar(window, parent)
 		Size = UDim2.new(0, 18, 0, 18),
 		BackgroundTransparency = 1,
 		Image = loadAsset("Ping.png", RoSense.assets["Ping.png"]) or "",
-		ImageColor3 = RoSense.theme.error
+		ImageColor3 = theme.error
 	})
 	
 	local pingLabel = create("TextLabel", {
@@ -298,7 +299,7 @@ local function createStatsBar(window, parent)
 		Size = UDim2.new(0, 48, 0, 18),
 		BackgroundTransparency = 1,
 		Text = "0 MS",
-		TextColor3 = RoSense.theme.error,
+		TextColor3 = theme.error,
 		Font = Enum.Font.GothamBold,
 		TextSize = 12,
 		TextXAlignment = Enum.TextXAlignment.Left
@@ -309,7 +310,7 @@ local function createStatsBar(window, parent)
 		Size = UDim2.new(0, 100, 0, 18),
 		BackgroundTransparency = 1,
 		Text = g:GetService("MarketplaceService"):GetProductInfo(g.PlaceId).Name or "Game",
-		TextColor3 = RoSense.theme.text,
+		TextColor3 = theme.text,
 		Font = Enum.Font.GothamBold,
 		TextSize = 11,
 		TextScaled = true,
@@ -482,7 +483,7 @@ function RoSense:CreateWindow(config)
 		BorderSizePixel = 1
 	})
 	
-	local statsBar = createStatsBar(window, screenGui)
+	local statsBar = createStatsBar(window, screenGui, self.theme)
 	statsBar.Position = UDim2.new(0, 10, 0, 10)
 	
 	makeDraggable(main, header, window.connections)
@@ -506,7 +507,7 @@ function RoSense:CreateWindow(config)
 		local notif = create("Frame", {
 			Parent = notifContainer,
 			Size = UDim2.new(1, 0, 0, 0),
-			BackgroundColor3 = self.theme.content,
+			BackgroundColor3 = RoSense.theme.content,
 			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1
 		})
@@ -515,10 +516,10 @@ function RoSense:CreateWindow(config)
 		
 		local stroke = create("UIStroke", {
 			Parent = notif,
-			Color = type == "success" and self.theme.success or 
-			        type == "error" and self.theme.error or
-			        type == "warning" and self.theme.warning or
-			        self.theme.accentDark,
+			Color = type == "success" and RoSense.theme.success or 
+			        type == "error" and RoSense.theme.error or
+			        type == "warning" and RoSense.theme.warning or
+			        RoSense.theme.accentDark,
 			Thickness = 2,
 			Transparency = 1
 		})
@@ -542,7 +543,7 @@ function RoSense:CreateWindow(config)
 			Size = UDim2.new(1, 0, 0, 16),
 			BackgroundTransparency = 1,
 			Text = title,
-			TextColor3 = self.theme.text,
+			TextColor3 = RoSense.theme.text,
 			Font = Enum.Font.GothamBold,
 			TextSize = 12,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -555,7 +556,7 @@ function RoSense:CreateWindow(config)
 			AutomaticSize = Enum.AutomaticSize.Y,
 			BackgroundTransparency = 1,
 			Text = message,
-			TextColor3 = self.theme.textDim,
+			TextColor3 = RoSense.theme.textDim,
 			Font = Enum.Font.Gotham,
 			TextSize = 10,
 			TextXAlignment = Enum.TextXAlignment.Left,
