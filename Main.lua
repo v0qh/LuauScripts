@@ -924,12 +924,14 @@ local function mkstats(w, parent, radius, icons)
 	local bar = n("Frame", { Parent = parent, Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = rs.th.panel, ClipsDescendants = true })
 	n("UICorner", { Parent = bar, CornerRadius = UDim.new(0, rr) })
 	n("UIStroke", { Parent = bar, Color = rs.th.stroke, Thickness = 1, Transparency = 0.5 })
-	n("UIListLayout", { Parent = bar, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 14), SortOrder = Enum.SortOrder.LayoutOrder })
-	n("UIPadding", { Parent = bar, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+	n("UIListLayout", { Parent = bar, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder })
+	n("UIPadding", { Parent = bar, PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) })
 
 	local function statItem(key, label, col)
-		local it = n("Frame", { Parent = bar, Size = UDim2.new(0, 120, 1, 0), BackgroundTransparency = 1 })
-		local icon = icon_asset(key, (icons and icons[key]) or (rs.statsIcons and rs.statsIcons[key]))
+		local it = n("Frame", { Parent = bar, Size = UDim2.new(0, 110, 1, 0), BackgroundTransparency = 1 })
+		local short = key:gsub("^stats_", "")
+		local iconSrc = (icons and (icons[key] or icons[short])) or (rs.statsIcons and (rs.statsIcons[key] or rs.statsIcons[short])) or (rs.iconAssets and (rs.iconAssets[key] or rs.iconAssets[short]))
+		local icon = icon_asset(key, iconSrc)
 		if icon then
 			n("ImageLabel", { Parent = it, Size = UDim2.new(0, 16, 0, 16), Position = UDim2.new(0, 0, 0.5, -8), BackgroundTransparency = 1, Image = icon, ImageColor3 = col, ScaleType = Enum.ScaleType.Fit })
 		end
@@ -1209,6 +1211,7 @@ function rs.new(o)
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) })
 		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
+		n("UIPadding", { Parent = wrap, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4) })
 		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 		local cc = cols or o.cols or 3
 		local gap = 12
