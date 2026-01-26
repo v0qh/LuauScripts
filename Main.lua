@@ -1211,7 +1211,7 @@ function rs.new(o)
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) })
 		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
-		n("UIPadding", { Parent = wrap, PaddingLeft = UDim.new(0, 4), PaddingRight = UDim.new(0, 4) })
+		n("UIPadding", { Parent = wrap, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
 		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 		local cc = cols or o.cols or 3
 		local gap = 12
