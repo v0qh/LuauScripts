@@ -224,19 +224,33 @@ local function fmt_num(v)
 	return string.format("%.2f", v)
 end
 
+local function build_enum_map(enumObj)
+	local m = {}
+	for _, it in ipairs(enumObj:GetEnumItems()) do
+		m[it.Name] = it
+	end
+	return m
+end
+
+local keycode_map = build_enum_map(Enum.KeyCode)
+local inputtype_map = build_enum_map(Enum.UserInputType)
+
 local function norm_bind(v)
 	if typeof(v) == "EnumItem" then
 		return v.Name
 	end
 	if type(v) == "string" then
-		if Enum.KeyCode[v] then
+		if v == "MouseWheelUp" or v == "MouseWheelDown" then
 			return v
 		end
-		if Enum.UserInputType[v] then
+		if keycode_map[v] then
+			return v
+		end
+		if inputtype_map[v] then
 			return v
 		end
 		local up = v:upper()
-		if Enum.KeyCode[up] then
+		if keycode_map[up] then
 			return up
 		end
 	end
@@ -268,10 +282,12 @@ local function bind_matches(input, bind)
 	if bind == "MouseWheelUp" or bind == "MouseWheelDown" then
 		return false
 	end
-	if Enum.KeyCode[bind] and input.KeyCode == Enum.KeyCode[bind] then
+	local kc = keycode_map[bind]
+	if kc and input.KeyCode == kc then
 		return true
 	end
-	if Enum.UserInputType[bind] and input.UserInputType == Enum.UserInputType[bind] then
+	local ut = inputtype_map[bind]
+	if ut and input.UserInputType == ut then
 		return true
 	end
 	return false
