@@ -161,9 +161,9 @@ rs.iconAssets = {
 	check = "https://files.catbox.moe/oktka6.png"
 }
 rs.statsIcons = {
-	fps = "https://files.catbox.moe/dpbo1s.png",
-	ping = "https://files.catbox.moe/qiiccl.png",
-	player = "https://files.catbox.moe/q0v8yr.png"
+	stats_fps = "https://files.catbox.moe/dpbo1s.png",
+	stats_ping = "https://files.catbox.moe/qiiccl.png",
+	stats_player = "https://files.catbox.moe/q0v8yr.png"
 }
 
 local function tohex(c)
@@ -936,9 +936,9 @@ local function mkstats(w, parent, radius, icons)
 		return n("TextLabel", { Parent = it, Size = UDim2.new(1, -22, 1, 0), Position = UDim2.new(0, 22, 0, 0), BackgroundTransparency = 1, Text = label or "", TextColor3 = col, Font = Enum.Font.GothamSemibold, TextSize = 11, TextXAlignment = Enum.TextXAlignment.Left })
 	end
 
-	local lf = statItem("fps", "FPS --", Color3.fromRGB(139, 255, 149))
-	local lp = statItem("ping", "PING --", Color3.fromRGB(255, 101, 104))
-	local lpl = statItem("player", "PLAYERS --", Color3.fromRGB(138, 200, 255))
+	local lf = statItem("stats_fps", "FPS --", Color3.fromRGB(139, 255, 149))
+	local lp = statItem("stats_ping", "PING --", Color3.fromRGB(255, 101, 104))
+	local lpl = statItem("stats_player", "PLAYERS --", Color3.fromRGB(138, 200, 255))
 	local lu = tick()
 	local fc = 0
 	local function gping()
