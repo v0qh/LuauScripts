@@ -156,12 +156,14 @@ rs.iconAssets = {
 	misc = "https://files.catbox.moe/vqtuj6.png",
 	fps = "https://files.catbox.moe/dpbo1s.png",
 	ping = "https://files.catbox.moe/qiiccl.png",
+	aimbot = "https://files.catbox.moe/m49w6o.png",
+	visuals = "https://files.catbox.moe/ip8cim.png",
 	check = "https://files.catbox.moe/oktka6.png"
 }
 rs.statsIcons = {
 	fps = "https://files.catbox.moe/dpbo1s.png",
 	ping = "https://files.catbox.moe/qiiccl.png",
-	player = "https://files.catbox.moe/4fymry.png"
+	player = "https://files.catbox.moe/q0v8yr.png"
 }
 
 local function tohex(c)
