@@ -152,6 +152,7 @@ rs.assets = {}
 rs.logo = "https://files.catbox.moe/xvikgr.png"
 rs.iconAssets = {
 	main = "https://files.catbox.moe/4fymry.png",
+	config = "https://files.catbox.moe/x810qe.png",
 	player = "https://files.catbox.moe/4fymry.png",
 	misc = "https://files.catbox.moe/vqtuj6.png",
 	fps = "https://files.catbox.moe/dpbo1s.png",
