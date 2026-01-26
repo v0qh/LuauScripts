@@ -111,7 +111,14 @@ local function asset_url(name, url)
 	end
 	mkd()
 	local path = asset_dir .. "/" .. name
-	if not iff(path) then
+	local need = not iff(path)
+	if not need then
+		local ok, data = pcall(rf, path)
+		if not ok or type(data) ~= "string" or #data < 16 then
+			need = true
+		end
+	end
+	if need then
 		local data = httpget(url)
 		if data then
 			wf(path, data)
@@ -156,14 +163,14 @@ rs.iconAssets = {
 	player = "https://files.catbox.moe/4fymry.png",
 	misc = "https://files.catbox.moe/vqtuj6.png",
 	fps = "https://files.catbox.moe/dpbo1s.png",
-	ping = "https://files.catbox.moe/qiiccl.png",
+	ping = "https://files.catbox.moe/r4u0xe.png",
 	aimbot = "https://files.catbox.moe/m49w6o.png",
 	visuals = "https://files.catbox.moe/ip8cim.png",
 	check = "https://files.catbox.moe/oktka6.png"
 }
 rs.statsIcons = {
 	stats_fps = "https://files.catbox.moe/dpbo1s.png",
-	stats_ping = "https://files.catbox.moe/qiiccl.png",
+	stats_ping = "https://files.catbox.moe/r4u0xe.png",
 	stats_player = "https://files.catbox.moe/q0v8yr.png"
 }
 
@@ -1210,9 +1217,9 @@ function rs.new(o)
 
 		local pg = n("ScrollingFrame", { Parent = pages, Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), ScrollBarThickness = 2, ScrollBarImageColor3 = rs.th.acc })
 		pg.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 14), PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14) })
-		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
-		n("UIPadding", { Parent = wrap, PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+		n("UIPadding", { Parent = pg, PaddingTop = UDim.new(0, 14), PaddingBottom = UDim.new(0, 14), PaddingLeft = UDim.new(0, 16), PaddingRight = UDim.new(0, 16) })
+		local outerPad = 8
+		local wrap = n("Frame", { Parent = pg, Size = UDim2.new(1, -(outerPad * 2), 0, 0), Position = UDim2.new(0, outerPad, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 })
 		n("UIListLayout", { Parent = wrap, FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 12), SortOrder = Enum.SortOrder.LayoutOrder })
 		local cc = cols or o.cols or 3
 		local gap = 12
