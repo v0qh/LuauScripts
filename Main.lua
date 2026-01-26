@@ -224,6 +224,59 @@ local function fmt_num(v)
 	return string.format("%.2f", v)
 end
 
+local function norm_bind(v)
+	if typeof(v) == "EnumItem" then
+		return v.Name
+	end
+	if type(v) == "string" then
+		if Enum.KeyCode[v] then
+			return v
+		end
+		if Enum.UserInputType[v] then
+			return v
+		end
+		local up = v:upper()
+		if Enum.KeyCode[up] then
+			return up
+		end
+	end
+	return nil
+end
+
+local function bind_from_input(input)
+	if not input then
+		return nil
+	end
+	if input.KeyCode and input.KeyCode ~= Enum.KeyCode.Unknown then
+		return input.KeyCode.Name
+	end
+	local ut = input.UserInputType
+	if ut == Enum.UserInputType.MouseWheel then
+		local z = input.Position and input.Position.Z or 0
+		return (z >= 0) and "MouseWheelUp" or "MouseWheelDown"
+	end
+	if ut and ut ~= Enum.UserInputType.Keyboard then
+		return ut.Name
+	end
+	return nil
+end
+
+local function bind_matches(input, bind)
+	if not bind or not input then
+		return false
+	end
+	if bind == "MouseWheelUp" or bind == "MouseWheelDown" then
+		return false
+	end
+	if Enum.KeyCode[bind] and input.KeyCode == Enum.KeyCode[bind] then
+		return true
+	end
+	if Enum.UserInputType[bind] and input.UserInputType == Enum.UserInputType[bind] then
+		return true
+	end
+	return false
+end
+
 rs.el = {}
 
 local function row(parent, height)
@@ -336,6 +389,120 @@ rs.el.tog = function(sc, text, def, cb)
 		set(not v)
 	end)
 	return { b = b, Set = function(_, x) set(x, true) end, Get = function() return v end }
+end
+
+rs.el.kb = function(sc, text, def, cb)
+	local r = row(sc.f, 26)
+	local b = n("TextButton", { Parent = r, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = rs.th.panel3, Text = "", AutoButtonColor = false })
+	n("UICorner", { Parent = b, CornerRadius = UDim.new(0, 5) })
+	n("UIStroke", { Parent = b, Color = rs.th.stroke, Thickness = 1, Transparency = 0.4 })
+
+	local l = n("TextLabel", {
+		Parent = b,
+		Size = UDim2.new(1, -120, 1, 0),
+		Position = UDim2.new(0, 10, 0, 0),
+		BackgroundTransparency = 1,
+		Text = text or "Keybind",
+		TextColor3 = rs.th.txt,
+		Font = Enum.Font.Gotham,
+		TextSize = 12,
+		TextXAlignment = Enum.TextXAlignment.Left
+	})
+	local v = n("TextLabel", {
+		Parent = b,
+		Size = UDim2.new(0, 110, 1, 0),
+		Position = UDim2.new(1, -120, 0, 0),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextColor3 = rs.th.sub,
+		Font = Enum.Font.GothamSemibold,
+		TextSize = 11,
+		TextXAlignment = Enum.TextXAlignment.Right
+	})
+
+	local cur = norm_bind(def)
+	local listening = false
+	local function set(x, skip)
+		cur = norm_bind(x)
+		if cur then
+			v.Text = cur
+			v.TextColor3 = rs.th.acc
+		else
+			v.Text = "None"
+			v.TextColor3 = rs.th.sub
+		end
+		if cb and not skip then
+			cb(cur)
+		end
+	end
+	set(cur, true)
+
+	local function beginListen()
+		listening = true
+		v.Text = "Press Key"
+		v.TextColor3 = rs.th.acc
+	end
+	local function endListen(newBind, cancel)
+		listening = false
+		if cancel then
+			set(cur, true)
+		else
+			set(newBind)
+		end
+	end
+
+	local function hov(x)
+		if x then
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel2 })
+		else
+			tw(b, 0.12, { BackgroundColor3 = rs.th.panel3 })
+		end
+	end
+	hov(false)
+	cx(sc.w.cx, b.MouseEnter, function()
+		hov(true)
+	end)
+	cx(sc.w.cx, b.MouseLeave, function()
+		hov(false)
+	end)
+	cx(sc.w.cx, b.MouseButton1Click, function()
+		if listening then
+			endListen(nil, true)
+			return
+		end
+		beginListen()
+	end)
+
+	cx(sc.w.cx, s.ui.InputBegan, function(i, g2)
+		if not listening or g2 then
+			return
+		end
+		if i.UserInputType == Enum.UserInputType.Keyboard then
+			if i.KeyCode == Enum.KeyCode.Escape then
+				endListen(nil, true)
+				return
+			end
+			if i.KeyCode == Enum.KeyCode.Backspace or i.KeyCode == Enum.KeyCode.Delete then
+				endListen(nil, false)
+				return
+			end
+		end
+		local name = bind_from_input(i)
+		if name then
+			endListen(name, false)
+		end
+	end)
+	cx(sc.w.cx, s.ui.InputChanged, function(i, g2)
+		if not listening or g2 then
+			return
+		end
+		if i.UserInputType == Enum.UserInputType.MouseWheel then
+			local name = bind_from_input(i)
+			endListen(name, false)
+		end
+	end)
+
+	return { b = b, Set = function(_, x) set(x, true) end, Get = function() return cur end }
 end
 
 rs.el.box = function(sc, text, def, cb)
@@ -1157,6 +1324,7 @@ function rs.new(o)
 	drag(main, top, w.cx)
 
 	local vis = true
+	local menuKey = norm_bind(o.key) or "RightShift"
 	local function setvis(x)
 		vis = x
 		if x then
@@ -1172,13 +1340,32 @@ function rs.new(o)
 			end)
 		end
 	end
+	function w:SetKeybind(k)
+		menuKey = norm_bind(k) or menuKey
+	end
+	function w:GetKeybind()
+		return menuKey
+	end
+
 	cx(w.cx, s.ui.InputBegan, function(i, g2)
 		if g2 then
 			return
 		end
-		local k = o.key or Enum.KeyCode.RightShift
-		if i.KeyCode == k then
+		if bind_matches(i, menuKey) then
 			setvis(not vis)
+		end
+	end)
+	cx(w.cx, s.ui.InputChanged, function(i, g2)
+		if g2 then
+			return
+		end
+		if menuKey == "MouseWheelUp" or menuKey == "MouseWheelDown" then
+			if i.UserInputType == Enum.UserInputType.MouseWheel then
+				local z = i.Position and i.Position.Z or 0
+				if (menuKey == "MouseWheelUp" and z >= 0) or (menuKey == "MouseWheelDown" and z < 0) then
+					setvis(not vis)
+				end
+			end
 		end
 	end)
 
@@ -1306,6 +1493,9 @@ function rs.new(o)
 			end
 			function sc2:Toggle(a1, b1, c1)
 				return rs.el.tog(sc2, a1, b1, c1)
+			end
+			function sc2:Keybind(a1, b1, c1)
+				return rs.el.kb(sc2, a1, b1, c1)
 			end
 			function sc2:Textbox(a1, b1, c1)
 				return rs.el.box(sc2, a1, b1, c1)
