@@ -166,6 +166,7 @@ rs.iconAssets = {
 	ping = "https://files.catbox.moe/r4u0xe.png",
 	aimbot = "https://files.catbox.moe/m49w6o.png",
 	visuals = "https://files.catbox.moe/ip8cim.png",
+	world = "https://files.catbox.moe/tptecj.png",
 	check = "https://files.catbox.moe/oktka6.png"
 }
 rs.statsIcons = {
