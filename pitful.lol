@@ -31,7 +31,7 @@ local White, Black = Rgb(255, 255, 255), Rgb(0, 0, 0)
 
 local Library = {
     Name = "pitful.lol",
-    Version = "4.1.0",
+    Version = "5.0.0",
     Directory = "pitful",
     Subfolders = {"Configs", "Themes"},
     IconSource = "https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua",
@@ -650,6 +650,7 @@ function Library:SetOpen(State)
     self.Open = State
     self:ClosePopup()
     self.Modal.Modal = State
+    Window:UpdatePanels()
 
     if State then
         Window.Root.Visible = true
@@ -1250,42 +1251,58 @@ function GroupMethods:AddToggle(Options)
     Toggle.Value = Options.Default == true
 
     local Row = Create("TextButton", {
-        Size = UD2(1, 0, 0, 24),
+        Size = UD2(1, 0, 0, 22),
         LayoutOrder = self:Next(),
         Parent = self.Body,
     })
 
+    local BoxStroke = Stroke()
+
+    local Box = Create("Frame", {
+        AnchorPoint = Vec2(0, 0.5),
+        Position = UD2(0, 0, 0.5, 0),
+        Size = UD2(0, 16, 0, 16),
+        BackgroundColor3 = Theme.Element,
+        Parent = Row,
+    }, {Corner(R4), BoxStroke})
+
+    local Check = Icon("check", 12, White, {
+        AnchorPoint = Vec2(0.5, 0.5),
+        Position = UD2(0.5, 0, 0.5, 0),
+        ImageTransparency = 1,
+        Parent = Box,
+    })
+
     local Label = Create("TextLabel", {
-        Size = UD2(1, 0, 1, 0),
+        Position = UD2(0, 26, 0, 0),
+        Size = UD2(1, -26, 1, 0),
         Text = Options.Name or "",
         TextTruncate = Enum.TextTruncate.AtEnd,
         Parent = Row,
     })
 
     local Side = CreateRight(Row)
-    FitLabel(Label, Side)
+    FitLabel(Label, Side, 34)
 
-    local Track = Create("Frame", {
-        Size = UD2(0, 34, 0, 18),
-        BackgroundColor3 = Theme.Off,
-        LayoutOrder = 10,
-        Parent = Side,
-    }, {Corner(Full)})
-
-    local Knob = Create("Frame", {
-        AnchorPoint = Vec2(0, 0.5),
-        Position = UD2(0, 2, 0.5, 0),
-        Size = UD2(0, 14, 0, 14),
-        BackgroundColor3 = White,
-        Parent = Track,
-    }, {Corner(Full)})
-
+    -- Off rows are dimmed so what's on stands out at a glance.
     local function Render(Instant)
         local On = Toggle.Value
 
-        Apply(Track, {BackgroundColor3 = On and Theme.Accent or Theme.Off}, Instant)
-        Apply(Knob, {Position = On and UD2(0, 18, 0.5, 0) or UD2(0, 2, 0.5, 0)}, Instant)
+        Apply(Box, {BackgroundColor3 = On and Theme.Accent or Theme.Element}, Instant)
+        Apply(BoxStroke, {Color = On and Theme.Accent or Theme.Outline}, Instant)
+        Apply(Check, {ImageTransparency = On and 0 or 1}, Instant)
+        Apply(Label, {TextColor3 = On and Theme.Text or Theme.SubText}, Instant)
     end
+
+    Row.MouseEnter:Connect(function()
+        if not Toggle.Value then
+            Tween(BoxStroke, {Color = Theme.Off})
+        end
+    end)
+
+    Row.MouseLeave:Connect(function()
+        Render(false)
+    end)
 
     function Toggle:Set(Value, Silent)
         self.Value = Value == true
@@ -1375,7 +1392,7 @@ function GroupMethods:AddSlider(Options)
     local Format = "%." .. Decimals .. "f"
 
     local Row = Create("Frame", {
-        Size = UD2(1, 0, 0, 38),
+        Size = UD2(1, 0, 0, 34),
         BackgroundTransparency = 1,
         LayoutOrder = self:Next(),
         Parent = self.Body,
@@ -1390,23 +1407,21 @@ function GroupMethods:AddSlider(Options)
 
     local Chip = Create("TextLabel", {
         AnchorPoint = Vec2(1, 0),
-        Position = UD2(1, 0, 0, -1),
-        Size = UD2(0, 0, 0, 18),
+        Position = UD2(1, 0, 0, 0),
+        Size = UD2(0, 0, 0, 16),
         AutomaticSize = AutoX,
-        BackgroundTransparency = 0,
-        BackgroundColor3 = Theme.Element,
         TextColor3 = Theme.SubText,
-        TextSize = 11,
-        TextXAlignment = Center,
+        TextSize = 12,
+        TextXAlignment = Right,
         Parent = Row,
-    }, {Corner(R4), Stroke(), Pad(0, 6, 0, 6)})
+    })
 
     FitLabel(Label, Chip, 10)
 
     local Track = Create("Frame", {
-        Position = UD2(0, 0, 0, 27),
+        Position = UD2(0, 0, 0, 25),
         Size = UD2(1, 0, 0, 4),
-        BackgroundColor3 = Theme.Off,
+        BackgroundColor3 = Theme.Element,
         Parent = Row,
     }, {Corner(Full)})
 
@@ -1425,8 +1440,8 @@ function GroupMethods:AddSlider(Options)
     }, {Corner(Full), Create("UIStroke", {Thickness = 2, Theme = {Color = "Accent"}})})
 
     local Hit = Create("TextButton", {
-        Position = UD2(0, 0, 0, 18),
-        Size = UD2(1, 0, 0, 20),
+        Position = UD2(0, 0, 0, 16),
+        Size = UD2(1, 0, 0, 18),
         Parent = Row,
     })
 
@@ -1456,6 +1471,14 @@ function GroupMethods:AddSlider(Options)
             self:Set(Data)
         end
     end
+
+    Hit.MouseEnter:Connect(function()
+        Tween(Chip, {TextColor3 = Theme.Text})
+    end)
+
+    Hit.MouseLeave:Connect(function()
+        Tween(Chip, {TextColor3 = Theme.SubText})
+    end)
 
     Hit.InputBegan:Connect(function(Input)
         if IsPress(Input) then
@@ -2027,7 +2050,7 @@ function Library:CreateWindow(Options)
     if Viewport then
         Dimensions = Vec2(math.min(Dimensions.X, Viewport.ViewportSize.X - 32), math.min(Dimensions.Y, Viewport.ViewportSize.Y - 32))
     end
-    local Window = {Tabs = {}, Order = 0, Query = ""}
+    local Window = {Tabs = {}, Order = 0, Query = "", Panels = {}}
     local Scale = Create("UIScale", {Scale = 0.96})
 
     local Root = Create("CanvasGroup", {
@@ -2046,26 +2069,32 @@ function Library:CreateWindow(Options)
         Scale,
     })
 
-    local Sidebar = Create("Frame", {Size = UD2(0, 184, 1, 0), BackgroundColor3 = Theme.Sidebar, Parent = Root})
+    local Header = Create("Frame", {Size = UD2(1, 0, 0, 60), BackgroundColor3 = Theme.Sidebar, Parent = Root})
 
+    -- The accent fades in and out along the top edge.
     Create("Frame", {
-        AnchorPoint = Vec2(1, 0),
-        Position = UD2(1, 0, 0, 0),
-        Size = UD2(0, 1, 1, 0),
-        BackgroundColor3 = Theme.Outline,
-        Parent = Sidebar,
+        Size = UD2(1, 0, 0, 2),
+        Theme = {BackgroundColor3 = "Accent"},
+        Parent = Header,
+    }, {
+        Create("UIGradient", {
+            Transparency = NumberSequence.new({
+                NumberSequenceKeypoint.new(0, 1),
+                NumberSequenceKeypoint.new(0.35, 0.2),
+                NumberSequenceKeypoint.new(0.65, 0.2),
+                NumberSequenceKeypoint.new(1, 1),
+            }),
+        }),
     })
-
-    local Brand = Create("Frame", {Size = UD2(1, 0, 0, 64), BackgroundTransparency = 1, Parent = Sidebar})
 
     local Badge = Create("Frame", {
         AnchorPoint = Vec2(0, 0.5),
         Position = UD2(0, 16, 0.5, 0),
-        Size = UD2(0, 32, 0, 32),
+        Size = UD2(0, 34, 0, 34),
         BackgroundTransparency = 0.82,
         Theme = {BackgroundColor3 = "Accent"},
-        Parent = Brand,
-    }, {Corner(UD(0, 9)), Create("UIStroke", {Transparency = 0.6, Theme = {Color = "Accent"}})})
+        Parent = Header,
+    }, {Corner(UD(0, 10)), Create("UIStroke", {Transparency = 0.55, Theme = {Color = "Accent"}})})
 
     Icon(Options.Icon or "flame", 18, Theme.Accent, {
         AnchorPoint = Vec2(0.5, 0.5),
@@ -2082,60 +2111,73 @@ function Library:CreateWindow(Options)
     end
 
     local NameRow = Create("Frame", {
-        Position = UD2(0, 58, 0, 0),
-        Size = UD2(1, -66, 1, 0),
+        Position = UD2(0, 62, 0, 11),
+        Size = UD2(0, 0, 0, 20),
+        AutomaticSize = AutoX,
         BackgroundTransparency = 1,
-        Parent = Brand,
+        Parent = Header,
     }, {List(0, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center})})
 
     Create("TextLabel", {
-        Size = UD2(0, 0, 0, 22),
+        Size = UD2(0, 0, 0, 20),
         AutomaticSize = AutoX,
         Text = Base,
         FontFace = Fonts.Bold,
-        TextSize = 18,
+        TextSize = 17,
         LayoutOrder = 1,
         Parent = NameRow,
     })
 
     Create("TextLabel", {
-        Size = UD2(0, 0, 0, 22),
+        Size = UD2(0, 0, 0, 20),
         AutomaticSize = AutoX,
         Text = Suffix,
         FontFace = Fonts.Bold,
-        TextSize = 18,
+        TextSize = 17,
         Theme = {TextColor3 = "Accent"},
         LayoutOrder = 2,
         Parent = NameRow,
     })
 
-    local Nav = Create("ScrollingFrame", {
-        Position = UD2(0, 0, 0, 64),
-        Size = UD2(1, 0, 1, -168),
-        Parent = Sidebar,
-    }, {Pad(4, 10, 4, 10), List(2)})
+    Create("TextLabel", {
+        Position = UD2(0, 62, 0, 32),
+        Size = UD2(0, 280, 0, 14),
+        Text = Options.Subtitle or ("v" .. self.Version),
+        TextColor3 = Theme.SubText,
+        TextSize = 11,
+        Parent = Header,
+    })
 
-    local SearchHolder = Create("Frame", {
-        AnchorPoint = Vec2(0, 1),
-        Position = UD2(0, 0, 1, -52),
-        Size = UD2(1, 0, 0, 52),
+    -- Right side of the header: search, then who's playing.
+    local Tools = Create("Frame", {
+        AnchorPoint = Vec2(1, 0.5),
+        Position = UD2(1, -14, 0.5, 0),
+        Size = UD2(0, 0, 0, 32),
+        AutomaticSize = AutoX,
         BackgroundTransparency = 1,
-        Parent = Sidebar,
-    }, {Pad(10, 10, 10, 10)})
+        Parent = Header,
+    }, {
+        List(10, {
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalAlignment = Enum.HorizontalAlignment.Right,
+            VerticalAlignment = Enum.VerticalAlignment.Center,
+        }),
+    })
 
     local SearchStroke = Stroke()
 
     local SearchBox = Create("Frame", {
-        Size = UD2(1, 0, 1, 0),
+        Size = UD2(0, 176, 0, 30),
         BackgroundColor3 = Theme.Element,
-        Parent = SearchHolder,
-    }, {Corner(R6), SearchStroke})
+        LayoutOrder = 1,
+        Parent = Tools,
+    }, {Corner(Full), SearchStroke})
 
-    Icon("search", 14, Theme.SubText, {AnchorPoint = Vec2(0, 0.5), Position = UD2(0, 10, 0.5, 0), Parent = SearchBox})
+    Icon("search", 14, Theme.SubText, {AnchorPoint = Vec2(0, 0.5), Position = UD2(0, 11, 0.5, 0), Parent = SearchBox})
 
     local SearchInput = Create("TextBox", {
         Position = UD2(0, 32, 0, 0),
-        Size = UD2(1, -40, 1, 0),
+        Size = UD2(1, -42, 1, 0),
         PlaceholderText = "Search...",
         Parent = SearchBox,
     })
@@ -2148,132 +2190,104 @@ function Library:CreateWindow(Options)
         Tween(SearchStroke, {Color = Theme.Outline})
     end)
 
-    local UserCard = Create("Frame", {
-        AnchorPoint = Vec2(0, 1),
-        Position = UD2(0, 0, 1, 0),
-        Size = UD2(1, 0, 0, 52),
-        BackgroundTransparency = 1,
-        Parent = Sidebar,
-    })
-
-    Create("Frame", {
-        Position = UD2(0, 10, 0, 0),
-        Size = UD2(1, -20, 0, 1),
-        BackgroundColor3 = Theme.Outline,
-        BackgroundTransparency = 0.4,
-        Parent = UserCard,
+    local Account = Create("Frame", {
+        Size = UD2(0, 0, 0, 30),
+        AutomaticSize = AutoX,
+        BackgroundColor3 = Theme.Element,
+        LayoutOrder = 2,
+        Parent = Tools,
+    }, {
+        Corner(Full),
+        Stroke(),
+        Pad(0, 12, 0, 3),
+        List(8, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
     })
 
     Create("ImageLabel", {
-        AnchorPoint = Vec2(0, 0.5),
-        Position = UD2(0, 14, 0.5, 1),
-        Size = UD2(0, 30, 0, 30),
+        Size = UD2(0, 24, 0, 24),
         BackgroundTransparency = 0,
-        BackgroundColor3 = Theme.Element,
+        BackgroundColor3 = Theme.Panel,
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=150&h=150",
-        Parent = UserCard,
+        LayoutOrder = 1,
+        Parent = Account,
     }, {Corner(Full)})
 
     Create("TextLabel", {
-        Position = UD2(0, 54, 0, 11),
-        Size = UD2(1, -62, 0, 16),
+        Size = UD2(0, 0, 0, 16),
+        AutomaticSize = AutoX,
         Text = LocalPlayer.DisplayName,
         FontFace = Fonts.SemiBold,
         TextSize = 12,
-        TextTruncate = Enum.TextTruncate.AtEnd,
-        Parent = UserCard,
+        LayoutOrder = 2,
+        Parent = Account,
     })
 
-    Create("TextLabel", {
-        Position = UD2(0, 54, 0, 27),
-        Size = UD2(1, -62, 0, 14),
-        Text = "@" .. LocalPlayer.Name,
-        TextColor3 = Theme.SubText,
-        TextSize = 11,
-        TextTruncate = Enum.TextTruncate.AtEnd,
-        Parent = UserCard,
+    Create("Frame", {
+        AnchorPoint = Vec2(0, 1),
+        Position = UD2(0, 0, 1, 0),
+        Size = UD2(1, 0, 0, 1),
+        BackgroundColor3 = Theme.Outline,
+        Parent = Header,
     })
 
-    local Content = Create("Frame", {
-        Position = UD2(0, 184, 0, 0),
-        Size = UD2(1, -184, 1, 0),
+    -- Tabs run along the top as pills; categories become thin dividers between them.
+    local Strip = Create("ScrollingFrame", {
+        Position = UD2(0, 0, 0, 60),
+        Size = UD2(1, 0, 0, 44),
+        ScrollingDirection = Enum.ScrollingDirection.X,
+        AutomaticCanvasSize = AutoX,
+        ScrollBarThickness = 0,
+        Parent = Root,
+    }, {
+        Pad(7, 14, 7, 14),
+        List(6, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
+    })
+
+    Create("Frame", {
+        Position = UD2(0, 0, 0, 104),
+        Size = UD2(1, 0, 0, 1),
+        BackgroundColor3 = Theme.Outline,
+        BackgroundTransparency = 0.5,
+        Parent = Root,
+    })
+
+    local Pages = Create("Frame", {
+        Position = UD2(0, 0, 0, 105),
+        Size = UD2(1, 0, 1, -105),
         BackgroundTransparency = 1,
         Parent = Root,
     })
 
-    local Topbar = Create("Frame", {Size = UD2(1, 0, 0, 52), BackgroundTransparency = 1, Parent = Content})
+    Header.InputBegan:Connect(function(Input)
+        if not IsPress(Input) then
+            return
+        end
 
-    local TopIcon = Icon(nil, 16, Theme.SubText, {
-        AnchorPoint = Vec2(0, 0.5),
-        Position = UD2(0, 18, 0.5, 0),
-        Parent = Topbar,
-    })
+        local Origin = PointerPosition(Input)
+        local Start = Root.Position
 
-    local TopTitle = Create("TextLabel", {
-        Position = UD2(0, 42, 0, 0),
-        Size = UD2(1, -130, 1, 0),
-        FontFace = Fonts.SemiBold,
-        TextSize = 14,
-        Parent = Topbar,
-    })
-
-    Create("TextLabel", {
-        AnchorPoint = Vec2(1, 0.5),
-        Position = UD2(1, -18, 0.5, 0),
-        Size = UD2(0, 0, 0, 16),
-        AutomaticSize = AutoX,
-        Text = "v" .. self.Version,
-        TextColor3 = Theme.SubText,
-        TextSize = 11,
-        Parent = Topbar,
-    })
-
-    Create("Frame", {
-        Position = UD2(0, 0, 1, -1),
-        Size = UD2(1, 0, 0, 1),
-        BackgroundColor3 = Theme.Outline,
-        BackgroundTransparency = 0.5,
-        Parent = Topbar,
-    })
-
-    local Pages = Create("Frame", {
-        Position = UD2(0, 0, 0, 52),
-        Size = UD2(1, 0, 1, -52),
-        BackgroundTransparency = 1,
-        Parent = Content,
-    })
-
-    for _, Handle in {Brand, Topbar} do
-        Handle.InputBegan:Connect(function(Input)
-            if not IsPress(Input) then
-                return
-            end
-
-            local Origin = PointerPosition(Input)
-            local Start = Root.Position
-
-            BeginDrag(Input, function(Pointer)
-                local Delta = Pointer - Origin
-                Root.Position = UD2(Start.X.Scale, Start.X.Offset + Delta.X, Start.Y.Scale, Start.Y.Offset + Delta.Y)
-            end)
+        BeginDrag(Input, function(Pointer)
+            local Delta = Pointer - Origin
+            Root.Position = UD2(Start.X.Scale, Start.X.Offset + Delta.X, Start.Y.Scale, Start.Y.Offset + Delta.Y)
         end)
-    end
+    end)
 
     Window.Root = Root
     Window.Scale = Scale
 
-    function Window:AddCategory(Name)
+    function Window:AddCategory()
         self.Order += 1
 
-        Create("TextLabel", {
-            Size = UD2(1, 0, 0, 24),
-            Text = Name:upper(),
-            TextColor3 = Theme.SubText,
-            FontFace = Fonts.SemiBold,
-            TextSize = 10,
+        if #self.Tabs == 0 then
+            return
+        end
+
+        Create("Frame", {
+            Size = UD2(0, 1, 0, 18),
+            BackgroundColor3 = Theme.Outline,
             LayoutOrder = self.Order,
-            Parent = Nav,
-        }, {Pad(8, 0, 0, 6)})
+            Parent = Strip,
+        })
     end
 
     function Window:ApplySearch()
@@ -2320,10 +2334,9 @@ function Library:CreateWindow(Options)
         Tab.Active = true
         Tab.Page.Visible = true
         Tab:Render(false)
-        TopTitle.Text = Tab.Name
-        SetIcon(TopIcon, Tab.Icon)
         Library:ClosePopup()
         self:ApplySearch()
+        self:UpdatePanels()
     end
 
     function Window:AddTab(TabOptions)
@@ -2338,32 +2351,26 @@ function Library:CreateWindow(Options)
         }
 
         local Button = Create("TextButton", {
-            Size = UD2(1, 0, 0, 32),
+            Size = UD2(0, 0, 0, 30),
+            AutomaticSize = AutoX,
             BackgroundColor3 = Theme.Accent,
             LayoutOrder = self.Order,
-            Parent = Nav,
-        }, {Corner(R6)})
-
-        local Indicator = Create("Frame", {
-            AnchorPoint = Vec2(0, 0.5),
-            Position = UD2(0, 0, 0.5, 0),
-            Size = UD2(0, 3, 0, 14),
-            Visible = false,
-            Theme = {BackgroundColor3 = "Accent"},
-            Parent = Button,
-        }, {Corner(Full)})
-
-        local TabIcon = Icon(Tab.Icon, 16, Theme.SubText, {
-            AnchorPoint = Vec2(0, 0.5),
-            Position = UD2(0, 14, 0.5, 0),
-            Parent = Button,
+            Parent = Strip,
+        }, {
+            Corner(Full),
+            Pad(0, 14, 0, 12),
+            List(7, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
         })
 
+        local ButtonStroke = Create("UIStroke", {Transparency = 1, Theme = {Color = "Accent"}, Parent = Button})
+        local TabIcon = Icon(Tab.Icon, 15, Theme.SubText, {LayoutOrder = 1, Parent = Button})
+
         local TabLabel = Create("TextLabel", {
-            Position = UD2(0, 40, 0, 0),
-            Size = UD2(1, -48, 1, 0),
+            Size = UD2(0, 0, 1, 0),
+            AutomaticSize = AutoX,
             Text = Tab.Name,
             TextColor3 = Theme.SubText,
+            LayoutOrder = 2,
             Parent = Button,
         })
 
@@ -2396,8 +2403,8 @@ function Library:CreateWindow(Options)
         function Tab:Render(Instant)
             local On = self.Active
 
-            Indicator.Visible = On
-            Apply(Button, {BackgroundColor3 = Theme.Accent, BackgroundTransparency = On and 0.86 or 1}, Instant)
+            Apply(Button, {BackgroundColor3 = Theme.Accent, BackgroundTransparency = On and 0.84 or 1}, Instant)
+            Apply(ButtonStroke, {Transparency = On and 0.5 or 1}, Instant)
             Apply(TabLabel, {TextColor3 = On and Theme.Text or Theme.SubText}, Instant)
             Apply(TabIcon, {ImageColor3 = On and Theme.Accent or Theme.SubText}, Instant)
         end
@@ -2420,47 +2427,63 @@ function Library:CreateWindow(Options)
             Group.Container = Create("Frame", {
                 Size = UD2(1, 0, 0, 0),
                 AutomaticSize = AutoY,
-                BackgroundTransparency = 1,
+                BackgroundColor3 = Theme.Panel,
                 LayoutOrder = self.Sides[Side],
                 Parent = self[Side],
-            }, {List(8)})
+            }, {Corner(R8), Stroke(), List(0)})
 
             local Header = Create("Frame", {
-                Size = UD2(1, 0, 0, 18),
+                Size = UD2(1, 0, 0, 34),
                 BackgroundTransparency = 1,
                 LayoutOrder = 1,
                 Parent = Group.Container,
             })
 
-            local Offset = 2
+            Create("Frame", {
+                AnchorPoint = Vec2(0, 0.5),
+                Position = UD2(0, 0, 0.5, 0),
+                Size = UD2(0, 2, 0, 14),
+                Theme = {BackgroundColor3 = "Accent"},
+                Parent = Header,
+            }, {Corner(Full)})
+
+            local Offset = 12
 
             if GroupOptions.Icon then
                 Icon(GroupOptions.Icon, 14, Theme.Accent, {
                     Theme = {ImageColor3 = "Accent"},
                     AnchorPoint = Vec2(0, 0.5),
-                    Position = UD2(0, 2, 0.5, 0),
+                    Position = UD2(0, 12, 0.5, 0),
                     Parent = Header,
                 })
 
-                Offset = 24
+                Offset = 33
             end
 
             Create("TextLabel", {
                 Position = UD2(0, Offset, 0, 0),
-                Size = UD2(1, -Offset, 1, 0),
+                Size = UD2(1, -Offset - 12, 1, 0),
                 Text = GroupOptions.Name or "",
-                TextColor3 = Theme.SubText,
                 FontFace = Fonts.SemiBold,
+                Parent = Header,
+            })
+
+            Create("Frame", {
+                AnchorPoint = Vec2(0, 1),
+                Position = UD2(0, 12, 1, 0),
+                Size = UD2(1, -24, 0, 1),
+                BackgroundColor3 = Theme.Outline,
+                BackgroundTransparency = 0.4,
                 Parent = Header,
             })
 
             Group.Body = Create("Frame", {
                 Size = UD2(1, 0, 0, 0),
                 AutomaticSize = AutoY,
-                BackgroundColor3 = Theme.Panel,
+                BackgroundTransparency = 1,
                 LayoutOrder = 2,
                 Parent = Group.Container,
-            }, {Corner(R8), Stroke(), Pad(12, 12, 12, 12), List(9)})
+            }, {Pad(10, 12, 12, 12), List(8)})
 
             table.insert(self.Groups, Group)
 
@@ -2494,6 +2517,118 @@ function Library:CreateWindow(Options)
         end
 
         return Tab
+    end
+
+    -- Side panels float beside the window (left, or right when there's no room) and show only while the menu is
+    -- open on one of their tabs.
+    local function PlacePanels()
+        local Offset = Root.AbsolutePosition - Library.Gui.AbsolutePosition
+
+        for _, Panel in Window.Panels do
+            local Width = Panel.Frame.AbsoluteSize.X
+            local X = Offset.X - Width - 12
+
+            if X < 8 then
+                X = Offset.X + Root.AbsoluteSize.X + 12
+            end
+
+            Panel.Frame.Position = UD2(0, X, 0, Offset.Y)
+        end
+    end
+
+    Root:GetPropertyChangedSignal("AbsolutePosition"):Connect(PlacePanels)
+    Root:GetPropertyChangedSignal("AbsoluteSize"):Connect(PlacePanels)
+
+    function Window:UpdatePanels()
+        for _, Panel in self.Panels do
+            local Show = Library.Open and self.Current ~= nil and Panel.Tabs[self.Current.Name] == true
+
+            if Show == Panel.Shown then
+                continue
+            end
+
+            Panel.Shown = Show
+
+            if Show then
+                Panel.Frame.Visible = true
+                Tween(Panel.Frame, {GroupTransparency = 0}, 0.22, Enum.EasingStyle.Quint)
+            else
+                Tween(Panel.Frame, {GroupTransparency = 1}, 0.15).Completed:Once(function()
+                    if not Panel.Shown then
+                        Panel.Frame.Visible = false
+                    end
+                end)
+            end
+
+            if Panel.OnShown then
+                Library:Fire(Panel.OnShown, Show)
+            end
+        end
+
+        PlacePanels()
+    end
+
+    function Window:AddSidePanel(PanelOptions)
+        local Panel = {Tabs = {}, Shown = false, OnShown = PanelOptions.OnShown}
+
+        for _, Name in PanelOptions.Tabs or {} do
+            Panel.Tabs[Name] = true
+        end
+
+        Panel.Frame = Create("CanvasGroup", {
+            Size = UD2(0, PanelOptions.Width or 220, 0, PanelOptions.Height or 300),
+            BackgroundColor3 = Theme.Background,
+            GroupTransparency = 1,
+            Visible = false,
+            Parent = Library.Gui,
+        }, {Corner(UD(0, 10)), Stroke()})
+
+        local Top = Create("Frame", {Size = UD2(1, 0, 0, 36), BackgroundColor3 = Theme.Sidebar, Parent = Panel.Frame})
+
+        Create("Frame", {
+            Size = UD2(1, 0, 0, 2),
+            Theme = {BackgroundColor3 = "Accent"},
+            Parent = Top,
+        }, {
+            Create("UIGradient", {
+                Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.2), NumberSequenceKeypoint.new(1, 1)}),
+            }),
+        })
+
+        Icon(PanelOptions.Icon or "eye", 14, Theme.Accent, {
+            Theme = {ImageColor3 = "Accent"},
+            AnchorPoint = Vec2(0, 0.5),
+            Position = UD2(0, 12, 0.5, 0),
+            Parent = Top,
+        })
+
+        Create("TextLabel", {
+            Position = UD2(0, 33, 0, 0),
+            Size = UD2(1, -45, 1, 0),
+            Text = PanelOptions.Title or "",
+            FontFace = Fonts.SemiBold,
+            Parent = Top,
+        })
+
+        Create("Frame", {
+            AnchorPoint = Vec2(0, 1),
+            Position = UD2(0, 0, 1, 0),
+            Size = UD2(1, 0, 0, 1),
+            BackgroundColor3 = Theme.Outline,
+            Parent = Top,
+        })
+
+        Panel.Body = Create("Frame", {
+            Position = UD2(0, 0, 0, 36),
+            Size = UD2(1, 0, 1, -36),
+            BackgroundTransparency = 1,
+            Parent = Panel.Frame,
+        })
+
+        table.insert(self.Panels, Panel)
+        self:UpdatePanels()
+
+        return Panel
     end
 
     function Window:AddSettingsTab()
