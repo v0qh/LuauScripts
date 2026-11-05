@@ -49,7 +49,7 @@ local Library = {
     ShowHotkeys = true,
     ShowWatermark = true,
     WatermarkTitle = "liminal.cc",
-    PresetNames = {"Purple", "Violet", "Orchid", "Indigo", "Lilac", "Crimson"},
+    PresetNames = {"Lilac", "Purple", "Violet", "Orchid", "Indigo", "Crimson"},
     Presets = {
         Purple = Rgb(139, 92, 246),
         Violet = Rgb(168, 85, 247),
@@ -68,7 +68,7 @@ local Library = {
         Off = Rgb(55, 55, 67),
         Text = Rgb(240, 240, 246),
         SubText = Rgb(132, 132, 148),
-        Accent = Rgb(139, 92, 246),
+        Accent = Rgb(196, 148, 255),
         Success = Rgb(88, 208, 140),
         Warning = Rgb(245, 190, 80),
         Danger = Rgb(240, 85, 105),
@@ -604,7 +604,7 @@ function Library:OpenModeMenu(Anchor, Bind)
     self:OpenPopup(self.ModeFrame, Anchor, nil, true)
 end
 
-function Library:OpenPopup(Popup, Anchor, OnClose, AlignRight)
+function Library:OpenPopup(Popup, Anchor, OnClose, AlignRight, AtMouse)
     self:ClosePopup()
 
     local Overlay = self.Overlay
@@ -612,6 +612,13 @@ function Library:OpenPopup(Popup, Anchor, OnClose, AlignRight)
     local Width, Height = Popup.Size.X.Offset, Popup.Size.Y.Offset
     local X = AlignRight and (Origin.X + Anchor.AbsoluteSize.X - Width) or Origin.X
     local Y = Origin.Y + Anchor.AbsoluteSize.Y + 4
+
+    if AtMouse then
+        local Mouse = UserInputService:GetMouseLocation() - Overlay.AbsolutePosition
+
+        X, Y = Mouse.X + 10, Mouse.Y + 10
+        Origin = Vec2(Mouse.X, Mouse.Y - 10)
+    end
 
     if Y + Height > Overlay.AbsoluteSize.Y - 8 then
         Y = Origin.Y - Height - 4
@@ -1224,7 +1231,7 @@ function Library:CreateColorPicker(Parent, Options, Order)
             Build()
         end
 
-        self:OpenPopup(Popup, Swatch, nil, true)
+        self:OpenPopup(Popup, Swatch, nil, true, true)
     end)
 
     return Picker
