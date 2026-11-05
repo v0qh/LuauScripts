@@ -659,6 +659,29 @@ function Library:SetOpen(State)
     self.Modal.Modal = State
     Window:UpdatePanels()
 
+    -- Games hide the cursor (cutscenes, first person); while the menu is open it's forced back on after the camera
+    -- runs each frame, and put back the way it was on close.
+    if State then
+        self.SavedMouseIcon = self.SavedMouseIcon == nil and UserInputService.MouseIconEnabled or self.SavedMouseIcon
+
+        RunService:BindToRenderStep("LiminalCursor", Enum.RenderPriority.Last.Value, function()
+            if not UserInputService.MouseIconEnabled then
+                UserInputService.MouseIconEnabled = true
+            end
+
+            if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+            end
+        end)
+    else
+        pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
+
+        if self.SavedMouseIcon ~= nil then
+            UserInputService.MouseIconEnabled = self.SavedMouseIcon
+            self.SavedMouseIcon = nil
+        end
+    end
+
     if State then
         Window.Root.Visible = true
         Tween(Window.Root, {GroupTransparency = 0}, 0.24, Enum.EasingStyle.Quint)
@@ -671,6 +694,38 @@ function Library:SetOpen(State)
             end
         end)
     end
+end
+
+-- Whether a screen rectangle touches the open menu (window, shown side panels, an open popup), so drawn overlays
+-- such as ESP can step aside instead of covering it.
+function Library:Overlaps(Left, Top, Right, Bottom)
+    local Window = self.Window
+
+    if not (self.Open and Window) then
+        return false
+    end
+
+    local function Hit(Object)
+        if not (Object and Object.Visible) then
+            return false
+        end
+
+        local Position, Size = Object.AbsolutePosition, Object.AbsoluteSize
+
+        return Right >= Position.X and Left <= Position.X + Size.X and Bottom >= Position.Y and Top <= Position.Y + Size.Y
+    end
+
+    if Hit(Window.Root) then
+        return true
+    end
+
+    for _, Panel in Window.Panels or {} do
+        if Panel.Shown and Hit(Panel.Frame) then
+            return true
+        end
+    end
+
+    return self.ActivePopup ~= nil and Hit(self.ActivePopup.Popup)
 end
 
 function Library:Toggle()
@@ -2072,6 +2127,12 @@ function Library:Unload()
 
     if self.Modal then
         self.Modal.Modal = false
+    end
+
+    pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
+
+    if self.SavedMouseIcon ~= nil then
+        UserInputService.MouseIconEnabled = self.SavedMouseIcon
     end
 
     if self.Gui then
