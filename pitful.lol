@@ -24,15 +24,15 @@ local GuiService = Services.GuiService
 local LocalPlayer = Services.Players.LocalPlayer
 
 local UD2, UD, Vec2, Rgb = UDim2.new, UDim.new, Vector2.new, Color3.fromRGB
-local R4, R5, R6, R8, Full = UD(0, 4), UD(0, 5), UD(0, 6), UD(0, 8), UD(1, 0)
+local R4, R5, R6, R8, Full = UD(0, 3), UD(0, 3), UD(0, 4), UD(0, 4), UD(1, 0)
 local AutoX, AutoY, AutoXY = Enum.AutomaticSize.X, Enum.AutomaticSize.Y, Enum.AutomaticSize.XY
 local Left, Center, Right = Enum.TextXAlignment.Left, Enum.TextXAlignment.Center, Enum.TextXAlignment.Right
 local White, Black = Rgb(255, 255, 255), Rgb(0, 0, 0)
 
 local Library = {
-    Name = "pitful.lol",
+    Name = "liminal.cc",
     Version = "5.0.0",
-    Directory = "pitful",
+    Directory = "liminal",
     Subfolders = {"Configs", "Themes"},
     IconSource = "https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua",
     Flags = {},
@@ -48,7 +48,7 @@ local Library = {
     Unloaded = false,
     ShowHotkeys = true,
     ShowWatermark = true,
-    WatermarkTitle = "pitful.lol",
+    WatermarkTitle = "liminal.cc",
     PresetNames = {"Purple", "Violet", "Orchid", "Indigo", "Lilac", "Crimson"},
     Presets = {
         Purple = Rgb(139, 92, 246),
@@ -2064,7 +2064,7 @@ function Library:CreateWindow(Options)
         ZIndex = 1,
         Parent = self.Gui,
     }, {
-        Corner(UD(0, 10)),
+        Corner(R6),
         Stroke(),
         Scale,
     })
@@ -2094,14 +2094,25 @@ function Library:CreateWindow(Options)
         BackgroundTransparency = 0.82,
         Theme = {BackgroundColor3 = "Accent"},
         Parent = Header,
-    }, {Corner(UD(0, 10)), Create("UIStroke", {Transparency = 0.55, Theme = {Color = "Accent"}})})
+    }, {Corner(R6), Create("UIStroke", {Transparency = 0.55, Theme = {Color = "Accent"}})})
 
-    Icon(Options.Icon or "flame", 18, Theme.Accent, {
-        AnchorPoint = Vec2(0.5, 0.5),
-        Position = UD2(0.5, 0, 0.5, 0),
-        Theme = {ImageColor3 = "Accent"},
-        Parent = Badge,
-    })
+    if Options.Logo then
+        Badge.BackgroundTransparency = 1
+
+        Create("ImageLabel", {
+            Size = UD2(1, 0, 1, 0),
+            Image = Options.Logo,
+            ScaleType = Enum.ScaleType.Fit,
+            Parent = Badge,
+        }, {Corner(R6)})
+    else
+        Icon(Options.Icon or "flame", 18, Theme.Accent, {
+            AnchorPoint = Vec2(0.5, 0.5),
+            Position = UD2(0.5, 0, 0.5, 0),
+            Theme = {ImageColor3 = "Accent"},
+            Parent = Badge,
+        })
+    end
 
     local FullName = Options.Name or self.Name
     local Base, Suffix = FullName:match("^(.-)(%..*)$")
@@ -2171,7 +2182,7 @@ function Library:CreateWindow(Options)
         BackgroundColor3 = Theme.Element,
         LayoutOrder = 1,
         Parent = Tools,
-    }, {Corner(Full), SearchStroke})
+    }, {Corner(R6), SearchStroke})
 
     Icon("search", 14, Theme.SubText, {AnchorPoint = Vec2(0, 0.5), Position = UD2(0, 11, 0.5, 0), Parent = SearchBox})
 
@@ -2197,7 +2208,7 @@ function Library:CreateWindow(Options)
         LayoutOrder = 2,
         Parent = Tools,
     }, {
-        Corner(Full),
+        Corner(R6),
         Stroke(),
         Pad(0, 12, 0, 3),
         List(8, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
@@ -2210,7 +2221,7 @@ function Library:CreateWindow(Options)
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=150&h=150",
         LayoutOrder = 1,
         Parent = Account,
-    }, {Corner(Full)})
+    }, {Corner(R4)})
 
     Create("TextLabel", {
         Size = UD2(0, 0, 0, 16),
@@ -2357,7 +2368,7 @@ function Library:CreateWindow(Options)
             LayoutOrder = self.Order,
             Parent = Strip,
         }, {
-            Corner(Full),
+            Corner(R6),
             Pad(0, 14, 0, 12),
             List(7, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
         })
@@ -2581,7 +2592,7 @@ function Library:CreateWindow(Options)
             GroupTransparency = 1,
             Visible = false,
             Parent = Library.Gui,
-        }, {Corner(UD(0, 10)), Stroke()})
+        }, {Corner(R6), Stroke()})
 
         local Top = Create("Frame", {Size = UD2(1, 0, 0, 36), BackgroundColor3 = Theme.Sidebar, Parent = Panel.Frame})
 
@@ -2637,7 +2648,7 @@ function Library:CreateWindow(Options)
 
         local Accent = Interface:AddColorPicker({
             Name = "Accent color",
-            Flag = "Pitful.Accent",
+            Flag = "Liminal.Accent",
             Default = Theme.Accent,
             Callback = function(Color)
                 Library:SetAccent(Color)
@@ -2656,11 +2667,11 @@ function Library:CreateWindow(Options)
             end,
         })
 
-        Interface:AddKeybind({Name = "Menu keybind", Flag = "Pitful.MenuKey", Bind = Library.MenuBind})
+        Interface:AddKeybind({Name = "Menu keybind", Flag = "Liminal.MenuKey", Bind = Library.MenuBind})
 
         Interface:AddToggle({
             Name = "Watermark",
-            Flag = "Pitful.Watermark",
+            Flag = "Liminal.Watermark",
             Default = Library.ShowWatermark,
             Callback = function(State)
                 Library:SetWatermarkVisible(State)
@@ -2669,7 +2680,7 @@ function Library:CreateWindow(Options)
 
         Interface:AddToggle({
             Name = "Hotkey list",
-            Flag = "Pitful.Hotkeys",
+            Flag = "Liminal.Hotkeys",
             Default = Library.ShowHotkeys,
             Callback = function(State)
                 Library:SetHotkeysVisible(State)
@@ -2756,5 +2767,7 @@ end
 
 Library.Services = Services
 Library.Create = Create
+Library.Icon = Icon
+Library.Fonts = Fonts
 
 return Library
