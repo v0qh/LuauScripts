@@ -837,7 +837,7 @@ function Library:Init()
         List(8, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
     })
 
-    Icon("flame", 14, Theme.Accent, {Theme = {ImageColor3 = "Accent"}, LayoutOrder = 1, Parent = self.Watermark})
+    self.WatermarkIcon = Icon("flame", 14, Theme.Accent, {Theme = {ImageColor3 = "Accent"}, LayoutOrder = 1, Parent = self.Watermark})
 
     self.WatermarkLabel = Create("TextLabel", {
         Size = UD2(0, 0, 1, 0),
@@ -1981,6 +1981,49 @@ function Library:DeleteConfig(Name)
     return true, "Deleted " .. Name
 end
 
+-- The autoload config's name is kept in <Directory>/autoload.txt and loaded once the menu is built.
+function Library:SetAutoload(Name)
+    if not self.FileSystem then
+        return false, "File system is not supported by this executor"
+    end
+
+    local Path = self.Directory .. "/autoload.txt"
+
+    if not Name or Name == "" then
+        if isfile(Path) then
+            delfile(Path)
+        end
+
+        return true, "Autoload cleared"
+    end
+
+    if not isfile(string.format("%s/Configs/%s.json", self.Directory, tostring(Name))) then
+        return false, "Save the config first"
+    end
+
+    writefile(Path, tostring(Name))
+
+    return true, Name .. " now loads on start"
+end
+
+function Library:GetAutoload()
+    local Path = self.Directory .. "/autoload.txt"
+
+    if self.FileSystem and isfile(Path) then
+        local Name = readfile(Path)
+
+        return Name ~= "" and Name or nil
+    end
+end
+
+function Library:LoadAutoload()
+    local Name = self:GetAutoload()
+
+    if Name then
+        return self:LoadConfig(Name)
+    end
+end
+
 function Library:ListConfigs()
     local Result = {}
 
@@ -2096,15 +2139,37 @@ function Library:CreateWindow(Options)
         Parent = Header,
     }, {Corner(R6), Create("UIStroke", {Transparency = 0.55, Theme = {Color = "Accent"}})})
 
+    -- A logo image stands on its own: no tile or border behind it, a little larger than the icon tile, and it also
+    -- replaces the flame in the watermark.
     if Options.Logo then
         Badge.BackgroundTransparency = 1
 
+        local BadgeStroke = Badge:FindFirstChildOfClass("UIStroke")
+
+        if BadgeStroke then
+            BadgeStroke:Destroy()
+        end
+
         Create("ImageLabel", {
-            Size = UD2(1, 0, 1, 0),
+            AnchorPoint = Vec2(0.5, 0.5),
+            Position = UD2(0.5, 0, 0.5, 0),
+            Size = UD2(0, 40, 0, 40),
             Image = Options.Logo,
             ScaleType = Enum.ScaleType.Fit,
             Parent = Badge,
-        }, {Corner(R6)})
+        })
+
+        if self.WatermarkIcon then
+            self.WatermarkIcon.Visible = false
+
+            Create("ImageLabel", {
+                Size = UD2(0, 16, 0, 16),
+                Image = Options.Logo,
+                ScaleType = Enum.ScaleType.Fit,
+                LayoutOrder = 1,
+                Parent = self.Watermark,
+            })
+        end
     else
         Icon(Options.Icon or "flame", 18, Theme.Accent, {
             AnchorPoint = Vec2(0.5, 0.5),
@@ -2369,7 +2434,7 @@ function Library:CreateWindow(Options)
             Parent = Strip,
         }, {
             Corner(R6),
-            Pad(0, 14, 0, 12),
+            Pad(0, 11, 0, 10),
             List(7, {FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center}),
         })
 
@@ -2740,6 +2805,26 @@ function Library:CreateWindow(Options)
         })
 
         Configuration:AddButton({Name = "Refresh list", Icon = "refresh-cw", Callback = Refresh})
+
+        local AutoloadLabel = Configuration:AddLabel("Autoload: " .. (Library:GetAutoload() or "none"))
+
+        Configuration:AddButton({
+            Name = "Set as autoload",
+            Icon = "star",
+            Callback = function()
+                Report(Library:SetAutoload(Saved.Value or Selected()))
+                AutoloadLabel:SetText("Autoload: " .. (Library:GetAutoload() or "none"))
+            end,
+        })
+
+        Configuration:AddButton({
+            Name = "Clear autoload",
+            Icon = "x",
+            Callback = function()
+                Report(Library:SetAutoload(nil))
+                AutoloadLabel:SetText("Autoload: none")
+            end,
+        })
 
         return Tab
     end
