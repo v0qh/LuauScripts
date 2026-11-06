@@ -687,26 +687,24 @@ function Library:SetOpen(State)
     self.Modal.Modal = State
     Window:UpdatePanels()
 
-    -- Games hide and lock the cursor (cutscenes, a locked centre in rounds); while the menu is open it's forced free
-    -- after the camera runs each frame, and on close the mouse goes back to whatever the game last asked for.
+    -- Games hide the cursor in rounds, so while the menu is open it's shown after the camera runs each frame, and on
+    -- close it goes back to what the game last set. The mouse lock itself is never written: the Modal button frees
+    -- the cursor while the menu is open, even over a locked centre. Forcing MouseBehavior used to throw off the
+    -- camera's own mouse-lock bookkeeping (CameraUtils saves and restores whatever it reads), so a right click in
+    -- the menu could leave the mouse frozen (LockCurrentPosition) after closing.
     if State then
         WatchGameMouse()
-        GameMouse.Behavior, GameMouse.Icon = UserInputService.MouseBehavior, UserInputService.MouseIconEnabled
+        GameMouse.Icon = UserInputService.MouseIconEnabled
 
         RunService:BindToRenderStep("LiminalCursor", Enum.RenderPriority.Last.Value, function()
             if not UserInputService.MouseIconEnabled then
                 UserInputService.MouseIconEnabled = true
             end
-
-            if UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
-                UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-            end
         end)
     else
         pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
 
-        if GameMouse.Behavior ~= nil then
-            UserInputService.MouseBehavior = GameMouse.Behavior
+        if GameMouse.Icon ~= nil then
             UserInputService.MouseIconEnabled = GameMouse.Icon ~= false
         end
     end
@@ -2160,8 +2158,7 @@ function Library:Unload()
 
     pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
 
-    if self.Open and GameMouse.Behavior ~= nil then
-        UserInputService.MouseBehavior = GameMouse.Behavior
+    if self.Open and GameMouse.Icon ~= nil then
         UserInputService.MouseIconEnabled = GameMouse.Icon ~= false
     end
 
