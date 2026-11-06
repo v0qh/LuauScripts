@@ -647,32 +647,28 @@ function Library:ClosePopup()
     end
 end
 
--- What the game itself last asked of the mouse (its own writes to MouseBehavior / MouseIconEnabled, not ours), so
--- closing the menu hands the mouse back exactly as the game wants it, even if that changed while the menu was open.
-local GameMouse = {Hooked = false}
+-- Whether the game itself wants the cursor shown, so closing the menu hands it back as the game last set it, even if
+-- that changed while the menu was open. Read from MouseIconEnabled's change signal (not a __newindex hook, which
+-- would run on every property write in the game): the menu only ever writes true, so a change to false is the game,
+-- and a change to true is the game unless it's one of the menu's own writes (counted).
+local GameMouse = {Watched = false, Ours = 0}
 
 local function WatchGameMouse()
-    if GameMouse.Hooked or not (hookmetamethod and checkcaller) then
+    if GameMouse.Watched then
         return
     end
 
-    GameMouse.Hooked = true
+    GameMouse.Watched = true
 
-    local Old
-
-    Old = hookmetamethod(game, "__newindex", (newcclosure or function(Function)
-        return Function
-    end)(function(Self, Key, Value)
-        if Self == UserInputService and not checkcaller() then
-            if Key == "MouseBehavior" then
-                GameMouse.Behavior = Value
-            elseif Key == "MouseIconEnabled" then
-                GameMouse.Icon = Value
-            end
+    Library:Connect(UserInputService:GetPropertyChangedSignal("MouseIconEnabled"), function()
+        if not UserInputService.MouseIconEnabled then
+            GameMouse.Icon = false
+        elseif GameMouse.Ours > 0 then
+            GameMouse.Ours -= 1
+        else
+            GameMouse.Icon = true
         end
-
-        return Old(Self, Key, Value)
-    end))
+    end)
 end
 
 function Library:SetOpen(State)
@@ -698,6 +694,7 @@ function Library:SetOpen(State)
 
         RunService:BindToRenderStep("LiminalCursor", Enum.RenderPriority.Last.Value, function()
             if not UserInputService.MouseIconEnabled then
+                GameMouse.Ours += 1
                 UserInputService.MouseIconEnabled = true
             end
         end)
