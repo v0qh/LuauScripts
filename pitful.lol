@@ -647,10 +647,6 @@ function Library:ClosePopup()
     end
 end
 
--- Whether the game itself wants the cursor shown, so closing the menu hands it back as the game last set it, even if
--- that changed while the menu was open. Read from MouseIconEnabled's change signal (not a __newindex hook, which
--- would run on every property write in the game): the menu only ever writes true, so a change to false is the game,
--- and a change to true is the game unless it's one of the menu's own writes (counted).
 local GameMouse = {Watched = false, Ours = 0}
 
 local function WatchGameMouse()
@@ -683,11 +679,6 @@ function Library:SetOpen(State)
     self.Modal.Modal = State
     Window:UpdatePanels()
 
-    -- Games hide the cursor in rounds, so while the menu is open it's shown after the camera runs each frame, and on
-    -- close it goes back to what the game last set. The mouse lock itself is never written: the Modal button frees
-    -- the cursor while the menu is open, even over a locked centre. Forcing MouseBehavior used to throw off the
-    -- camera's own mouse-lock bookkeeping (CameraUtils saves and restores whatever it reads), so a right click in
-    -- the menu could leave the mouse frozen (LockCurrentPosition) after closing.
     if State then
         WatchGameMouse()
         GameMouse.Icon = UserInputService.MouseIconEnabled
@@ -720,8 +711,6 @@ function Library:SetOpen(State)
     end
 end
 
--- Whether a screen rectangle touches the open menu (window, shown side panels, an open popup), so drawn overlays
--- such as ESP can step aside instead of covering it.
 function Library:Overlaps(Left, Top, Right, Bottom)
     local Window = self.Window
 
@@ -1370,7 +1359,6 @@ function GroupMethods:AddToggle(Options)
     local Side = CreateRight(Row)
     FitLabel(Label, Side, 34)
 
-    -- Off rows are dimmed so what's on stands out at a glance.
     local function Render(Instant)
         local On = Toggle.Value
 
@@ -2067,7 +2055,6 @@ function Library:DeleteConfig(Name)
     return true, "Deleted " .. Name
 end
 
--- The autoload config's name is kept in <Directory>/autoload.txt and loaded once the menu is built.
 function Library:SetAutoload(Name)
     if not self.FileSystem then
         return false, "File system is not supported by this executor"
@@ -2206,7 +2193,6 @@ function Library:CreateWindow(Options)
 
     local Header = Create("Frame", {Size = UD2(1, 0, 0, 60), BackgroundColor3 = Theme.Sidebar, Parent = Root})
 
-    -- The accent fades in and out along the top edge.
     Create("Frame", {
         Size = UD2(1, 0, 0, 2),
         Theme = {BackgroundColor3 = "Accent"},
@@ -2231,8 +2217,6 @@ function Library:CreateWindow(Options)
         Parent = Header,
     }, {Corner(R6), Create("UIStroke", {Transparency = 0.55, Theme = {Color = "Accent"}})})
 
-    -- A logo image stands on its own: no tile or border behind it, a little larger than the icon tile, and it also
-    -- replaces the flame in the watermark.
     if Options.Logo then
         Badge.BackgroundTransparency = 1
 
@@ -2316,7 +2300,6 @@ function Library:CreateWindow(Options)
         Parent = Header,
     })
 
-    -- Right side of the header: search, then who's playing.
     local Tools = Create("Frame", {
         AnchorPoint = Vec2(1, 0.5),
         Position = UD2(1, -14, 0.5, 0),
@@ -2398,7 +2381,6 @@ function Library:CreateWindow(Options)
         Parent = Header,
     })
 
-    -- Tabs run along the top as pills; categories become thin dividers between them.
     local Strip = Create("ScrollingFrame", {
         Position = UD2(0, 0, 0, 60),
         Size = UD2(1, 0, 0, 44),
@@ -2687,8 +2669,6 @@ function Library:CreateWindow(Options)
         return Tab
     end
 
-    -- Side panels float beside the window (left, or right when there's no room) and show only while the menu is
-    -- open on one of their tabs.
     local function PlacePanels()
         local Offset = Root.AbsolutePosition - Library.Gui.AbsolutePosition
 
@@ -2942,8 +2922,6 @@ function Library:CreateWindow(Options)
     return Window
 end
 
--- An image from the executor workspace, ready for an ImageLabel. With a URL the file is downloaded only when it's
--- missing (and only kept if it really is a PNG); a file that's already there is always used, even when downloads fail.
 function Library:LoadImage(Path, Url)
     local Load = getcustomasset or getsynasset
 
@@ -2976,11 +2954,6 @@ function Library:LoadImage(Path, Url)
     return Success and Asset or nil
 end
 
--- Loading screen, shown until Finish: the logo (or an icon) in a ring with an accent arc spinning around it, the
--- title with its suffix in the accent ("liminal" + ".cc"), a subtitle, a progress bar with what's loading and a
--- percentage, over a dimmed and blurred game. It goes away on its own after a minute if loading stops halfway.
---   Options: Title, Subtitle, Logo (image), Icon (used without a logo), Footer
---   Returns Step(Text, Fraction) and Finish(), called with a dot.
 function Library:CreateLoader(Options)
     Options = Options or {}
 
@@ -3029,7 +3002,6 @@ function Library:CreateLoader(Options)
         Create("UIGradient", {Rotation = 90, Color = ColorSequence.new(White, Rgb(205, 205, 215))}),
     })
 
-    -- A thin accent line across the top, fading out at both ends.
     Create("Frame", {Position = UD2(0, 20, 0, 0), Size = UD2(1, -40, 0, 2), BackgroundColor3 = Accent, Parent = Body}, {
         Create("UIGradient", {Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0), NumberSequenceKeypoint.new(1, 1)})}),
     })
