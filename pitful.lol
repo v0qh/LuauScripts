@@ -647,6 +647,34 @@ function Library:ClosePopup()
     end
 end
 
+-- What the game itself last asked of the mouse (its own writes to MouseBehavior / MouseIconEnabled, not ours), so
+-- closing the menu hands the mouse back exactly as the game wants it, even if that changed while the menu was open.
+local GameMouse = {Hooked = false}
+
+local function WatchGameMouse()
+    if GameMouse.Hooked or not (hookmetamethod and checkcaller) then
+        return
+    end
+
+    GameMouse.Hooked = true
+
+    local Old
+
+    Old = hookmetamethod(game, "__newindex", (newcclosure or function(Function)
+        return Function
+    end)(function(Self, Key, Value)
+        if Self == UserInputService and not checkcaller() then
+            if Key == "MouseBehavior" then
+                GameMouse.Behavior = Value
+            elseif Key == "MouseIconEnabled" then
+                GameMouse.Icon = Value
+            end
+        end
+
+        return Old(Self, Key, Value)
+    end))
+end
+
 function Library:SetOpen(State)
     local Window = self.Window
 
@@ -659,10 +687,11 @@ function Library:SetOpen(State)
     self.Modal.Modal = State
     Window:UpdatePanels()
 
-    -- Games hide the cursor (cutscenes, first person); while the menu is open it's forced back on after the camera
-    -- runs each frame, and put back the way it was on close.
+    -- Games hide and lock the cursor (cutscenes, a locked centre in rounds); while the menu is open it's forced free
+    -- after the camera runs each frame, and on close the mouse goes back to whatever the game last asked for.
     if State then
-        self.SavedMouseIcon = self.SavedMouseIcon == nil and UserInputService.MouseIconEnabled or self.SavedMouseIcon
+        WatchGameMouse()
+        GameMouse.Behavior, GameMouse.Icon = UserInputService.MouseBehavior, UserInputService.MouseIconEnabled
 
         RunService:BindToRenderStep("LiminalCursor", Enum.RenderPriority.Last.Value, function()
             if not UserInputService.MouseIconEnabled then
@@ -676,9 +705,9 @@ function Library:SetOpen(State)
     else
         pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
 
-        if self.SavedMouseIcon ~= nil then
-            UserInputService.MouseIconEnabled = self.SavedMouseIcon
-            self.SavedMouseIcon = nil
+        if GameMouse.Behavior ~= nil then
+            UserInputService.MouseBehavior = GameMouse.Behavior
+            UserInputService.MouseIconEnabled = GameMouse.Icon ~= false
         end
     end
 
@@ -2131,8 +2160,9 @@ function Library:Unload()
 
     pcall(RunService.UnbindFromRenderStep, RunService, "LiminalCursor")
 
-    if self.SavedMouseIcon ~= nil then
-        UserInputService.MouseIconEnabled = self.SavedMouseIcon
+    if self.Open and GameMouse.Behavior ~= nil then
+        UserInputService.MouseBehavior = GameMouse.Behavior
+        UserInputService.MouseIconEnabled = GameMouse.Icon ~= false
     end
 
     if self.Gui then
@@ -2916,6 +2946,202 @@ function Library:CreateWindow(Options)
     self.Window = Window
 
     return Window
+end
+
+-- An image from the executor workspace, ready for an ImageLabel. With a URL the file is downloaded only when it's
+-- missing (and only kept if it really is a PNG); a file that's already there is always used, even when downloads fail.
+function Library:LoadImage(Path, Url)
+    local Load = getcustomasset or getsynasset
+
+    if not (Load and isfile) then
+        return nil
+    end
+
+    if Url and writefile and not isfile(Path) then
+        pcall(function()
+            local Data = game:HttpGet(Url)
+
+            if type(Data) == "string" and string.sub(Data, 2, 4) == "PNG" then
+                local Folder = string.match(Path, "^(.*)/[^/]+$")
+
+                if Folder and makefolder and isfolder and not isfolder(Folder) then
+                    makefolder(Folder)
+                end
+
+                writefile(Path, Data)
+            end
+        end)
+    end
+
+    if not isfile(Path) then
+        return nil
+    end
+
+    local Success, Asset = pcall(Load, Path)
+
+    return Success and Asset or nil
+end
+
+-- Loading screen, shown until Finish: the logo (or an icon) in a ring with an accent arc spinning around it, the
+-- title with its suffix in the accent ("liminal" + ".cc"), a subtitle, a progress bar with what's loading and a
+-- percentage, over a dimmed and blurred game. It goes away on its own after a minute if loading stops halfway.
+--   Options: Title, Subtitle, Logo (image), Icon (used without a logo), Footer
+--   Returns Step(Text, Fraction) and Finish(), called with a dot.
+function Library:CreateLoader(Options)
+    Options = Options or {}
+
+    local Loader, Done = {}, false
+    local Title = Options.Title or self.Name
+    local Dot = string.find(Title, ".", 2, true)
+    local Accent = Theme.Accent
+
+    local Gui = Create("ScreenGui", {
+        Name = HttpService:GenerateGUID(false),
+        ResetOnSpawn = false,
+        IgnoreGuiInset = true,
+        DisplayOrder = 2000,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    })
+
+    if syn and syn.protect_gui then
+        pcall(syn.protect_gui, Gui)
+    end
+
+    if not pcall(function()
+        Gui.Parent = gethui and gethui() or Services.CoreGui
+    end) or not Gui.Parent then
+        Gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    end
+
+    local Blur = Create("BlurEffect", {Name = HttpService:GenerateGUID(false), Size = 0, Parent = Services.Lighting})
+    local Shade = Create("Frame", {Size = UD2(1, 0, 1, 0), BackgroundColor3 = Rgb(6, 6, 8), BackgroundTransparency = 1, Parent = Gui})
+    local Scale = Create("UIScale", {Scale = 0.94})
+    local Card = Create("CanvasGroup", {
+        AnchorPoint = Vec2(0.5, 0.5),
+        Position = UD2(0.5, 0, 0.5, 0),
+        Size = UD2(0, 320, 0, 240),
+        BackgroundTransparency = 1,
+        GroupTransparency = 1,
+        Parent = Gui,
+    }, {Scale})
+    local Body = Create("Frame", {
+        Position = UD2(0, 1, 0, 1),
+        Size = UD2(1, -2, 1, -2),
+        BackgroundColor3 = Theme.Background,
+        Parent = Card,
+    }, {
+        Corner(UD(0, 8)),
+        Stroke(Theme.Outline),
+        Create("UIGradient", {Rotation = 90, Color = ColorSequence.new(White, Rgb(205, 205, 215))}),
+    })
+
+    -- A thin accent line across the top, fading out at both ends.
+    Create("Frame", {Position = UD2(0, 20, 0, 0), Size = UD2(1, -40, 0, 2), BackgroundColor3 = Accent, Parent = Body}, {
+        Create("UIGradient", {Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0), NumberSequenceKeypoint.new(1, 1)})}),
+    })
+
+    local Arc = Create("UIGradient", {Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.45, 0.8), NumberSequenceKeypoint.new(1, 1)})})
+    local Ring = Create("Frame", {AnchorPoint = Vec2(0.5, 0), Position = UD2(0.5, 0, 0, 28), Size = UD2(0, 78, 0, 78), BackgroundColor3 = Theme.Panel, Parent = Body}, {
+        Corner(Full),
+        Create("UIStroke", {Color = Theme.Outline, Thickness = 2}),
+        Create("Frame", {Size = UD2(1, 0, 1, 0), BackgroundTransparency = 1}, {
+            Corner(Full),
+            Create("UIStroke", {Color = Accent, Thickness = 2}, {Arc}),
+        }),
+    })
+
+    if Options.Logo then
+        local Logo = Create("ImageLabel", {AnchorPoint = Vec2(0.5, 0.5), Position = UD2(0.5, 0, 0.5, 0), Size = UD2(0, 56, 0, 56), Image = Options.Logo, ImageTransparency = 1, ScaleType = Enum.ScaleType.Fit, Parent = Ring})
+
+        Tween(Logo, {ImageTransparency = 0}, 0.45, Enum.EasingStyle.Quint)
+    else
+        if not IconProvider then
+            LoadIconProvider()
+        end
+
+        Icon(Options.Icon or "flame", 34, Accent, {AnchorPoint = Vec2(0.5, 0.5), Position = UD2(0.5, 0, 0.5, 0), Parent = Ring})
+    end
+
+    Create("TextLabel", {
+        Position = UD2(0, 0, 0, 118),
+        Size = UD2(1, 0, 0, 26),
+        RichText = true,
+        Text = Dot and (string.sub(Title, 1, Dot - 1) .. '<font color="#' .. Accent:ToHex() .. '">' .. string.sub(Title, Dot) .. "</font>") or Title,
+        TextSize = 22,
+        FontFace = Fonts.SemiBold,
+        TextXAlignment = Center,
+        Parent = Body,
+    })
+
+    Create("TextLabel", {Position = UD2(0, 0, 0, 144), Size = UD2(1, 0, 0, 16), Text = Options.Subtitle or "", TextColor3 = Theme.SubText, TextSize = 12, TextXAlignment = Center, Parent = Body})
+
+    local Fill = Create("Frame", {Size = UD2(0, 0, 1, 0), BackgroundColor3 = White}, {
+        Corner(Full),
+        Create("UIGradient", {Color = ColorSequence.new(Accent:Lerp(Black, 0.22), Accent:Lerp(White, 0.35))}),
+    })
+
+    Create("Frame", {AnchorPoint = Vec2(0.5, 0), Position = UD2(0.5, 0, 0, 182), Size = UD2(0, 256, 0, 4), BackgroundColor3 = Theme.Element, Parent = Body}, {Corner(Full), Fill})
+
+    local Status = Create("TextLabel", {AnchorPoint = Vec2(0.5, 0), Position = UD2(0.5, 0, 0, 192), Size = UD2(0, 256, 0, 16), Text = "Starting", TextColor3 = Theme.SubText, TextSize = 11, Parent = Body})
+    local Percent = Create("TextLabel", {AnchorPoint = Vec2(0.5, 0), Position = UD2(0.5, 0, 0, 192), Size = UD2(0, 256, 0, 16), Text = "0%", TextSize = 11, FontFace = Fonts.SemiBold, TextXAlignment = Right, Parent = Body})
+
+    Create("TextLabel", {
+        Position = UD2(0, 0, 1, -24),
+        Size = UD2(1, 0, 0, 14),
+        Text = Options.Footer or ("v" .. self.Version .. "  ·  " .. os.date("%d.%m.%Y")),
+        TextColor3 = Theme.SubText,
+        TextTransparency = 0.4,
+        TextSize = 10,
+        FontFace = Fonts.Regular,
+        TextXAlignment = Center,
+        Parent = Body,
+    })
+
+    local Base, Elapsed = "Starting", 0
+    local Spin = RunService.RenderStepped:Connect(function(Delta)
+        Arc.Rotation = (Arc.Rotation + Delta * 270) % 360
+        Elapsed += Delta
+        Status.Text = Base .. string.rep(".", math.floor(Elapsed * 3) % 4)
+    end)
+
+    Tween(Shade, {BackgroundTransparency = 0.35}, 0.4, Enum.EasingStyle.Quint)
+    Tween(Blur, {Size = 14}, 0.4, Enum.EasingStyle.Quint)
+    Tween(Card, {GroupTransparency = 0}, 0.45, Enum.EasingStyle.Quint)
+    Tween(Scale, {Scale = 1}, 0.45, Enum.EasingStyle.Quint)
+
+    function Loader.Step(Text, Fraction)
+        if Done then
+            return
+        end
+
+        Base = Text
+        Percent.Text = math.floor(Fraction * 100 + 0.5) .. "%"
+        Tween(Fill, {Size = UD2(Fraction, 0, 1, 0)}, 0.35, Enum.EasingStyle.Quint)
+    end
+
+    function Loader.Finish()
+        if Done then
+            return
+        end
+
+        Loader.Step("Ready", 1)
+        Done = true
+
+        task.delay(0.4, function()
+            Tween(Card, {GroupTransparency = 1}, 0.35, Enum.EasingStyle.Quint)
+            Tween(Scale, {Scale = 1.04}, 0.35, Enum.EasingStyle.Quint)
+            Tween(Shade, {BackgroundTransparency = 1}, 0.35, Enum.EasingStyle.Quint)
+            Tween(Blur, {Size = 0}, 0.35, Enum.EasingStyle.Quint)
+            task.wait(0.4)
+            Spin:Disconnect()
+            Gui:Destroy()
+            Blur:Destroy()
+        end)
+    end
+
+    task.delay(60, Loader.Finish)
+
+    return Loader
 end
 
 Library.Services = Services
