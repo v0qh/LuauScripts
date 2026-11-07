@@ -384,11 +384,7 @@ function Library:Fire(Callback, ...)
         return
     end
 
-    local Success, Result = pcall(Callback, ...)
-
-    if not Success then
-        warn(string.format("[%s] callback error: %s", self.Name, tostring(Result)))
-    end
+    pcall(Callback, ...)
 end
 
 function Library:OnTheme(Callback)
